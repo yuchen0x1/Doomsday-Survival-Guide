@@ -1,8 +1,21 @@
 # APOCALYPSE SURVIVAL · 末日生存指南
 
-> 一份可离线运行、跨平台的末日生存百科全书。知识全部随应用打包，断网也能查；AI 只做辅助，绝不替代审核结论。
+**一份可离线运行、跨平台的末日生存百科全书。** 全部知识随应用打包，断网照样能查；AI 只做辅助，绝不替代审核结论。
 
-`apocalypse-survival` v1.0.0 · MIT License · pnpm 11 workspaces monorepo · Node >= 20
+[![在线 Demo](https://img.shields.io/badge/在线%20Demo-立即体验-0B8A5F?style=flat-square)](https://doomsday-survival-05439.app.workbuddy.host/?sharecode=ED7TUWRYKI)
+[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
+[![React](https://img.shields.io/badge/React-19-087EA4?style=flat-square&logo=react&logoColor=white)](apps/web)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)](tsconfig.base.json)
+[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)](apps/web/vite.config.ts)
+[![PWA](https://img.shields.io/badge/PWA-离线可用-5A0FC8?style=flat-square)](apps/web/vite.config.ts)
+[![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?style=flat-square&logo=tauri&logoColor=white)](apps/desktop)
+[![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=flat-square&logo=nestjs&logoColor=white)](apps/api)
+
+**[🔗 在线 Demo](https://doomsday-survival-05439.app.workbuddy.host/?sharecode=ED7TUWRYKI)** · **[📖 断网离线生存手册](docs/OFFLINE_SURVIVAL_MANUAL.html)** · [文档索引](#文档索引) · [快速开始](#快速开始)
+
+> Demo 为纯静态托管，**不启动后端**：全部图鉴、急救、技能、计算器、模拟器可直接使用，AI 助手会自动进入「本地检索模式」。静态托管没有 SPA 回退，刷新子页面会 404，从首页进入即可。
+
+![生存指挥中心](docs/assets/screenshots/web-home.png)
 
 ---
 
@@ -30,18 +43,31 @@ APOCALYPSE SURVIVAL 是一套「离线优先」的生存知识系统，覆盖 We
 
 ---
 
-## 三平台截图说明（占位）
+## 界面预览
 
-> 截图文件当前未随仓库提供，以下为**占位说明**。补图时请将图片放入 `docs/assets/screenshots/`，并取消下方注释或替换占位标记。
+> 以下截图均取自真实运行的应用，非设计稿或模型图。图片位于 `docs/assets/screenshots/`。
 
-| 平台 | 截图文件（占位） | 应展示内容 |
-| --- | --- | --- |
-| Web（桌面浏览器） | `docs/assets/screenshots/web-home.png` | 首页「末日生存指挥中心」真实统计卡片、快捷入口、危险提醒、在线/离线状态标记 |
-| Web（PWA / 移动视口） | `docs/assets/screenshots/web-mobile.png` | 移动端底部导航、紧凑排版、离线徽标 |
-| Windows 桌面（Tauri 2） | `docs/assets/screenshots/desktop-tray.png` | 系统托盘中文菜单（显示主窗口 / 紧急急救链接 / 退出） |
-| Android / iOS（Capacitor 6） | `docs/assets/screenshots/mobile-app.png` | 原生容器内的 Web 界面、安全区适配、底部导航 |
+**知识图鉴**：19 个一级分类、60 篇文章，支持难度与危险等级筛选、标签过滤。
 
-<!-- 待补充：<img src="docs/assets/screenshots/web-home.png" alt="Web 首页" /> 等 -->
+![知识图鉴](docs/assets/screenshots/web-knowledge.png)
+
+**急救医疗百科**：26 篇指南，按「创伤 / 心肺复苏 / 中毒」等场景组织，每篇标注来源。
+
+![急救医疗百科](docs/assets/screenshots/web-firstaid.png)
+
+**灾害模拟器**：12 个情境推演，决策树 + 复盘，界面明确标注「教学推演，非真实预测」。
+
+![灾害模拟器](docs/assets/screenshots/web-simulator.png)
+
+**AI 助手（后端未启动时的真实降级）**：不编造回答，明确标注「本地检索模式」，只返回知识库检索结果。
+
+![AI 离线降级](docs/assets/screenshots/web-ai-offline.png)
+
+**移动端 / PWA**：390×844 视口，底部导航、双列卡片、安全区适配。
+
+<img src="docs/assets/screenshots/web-mobile.png" alt="移动端首页" width="320" />
+
+> 桌面端（Tauri 2）与移动端原生容器（Capacitor 6）复用同一套 Web 资产，界面与上表一致；托盘菜单与原生安全区属于宿主能力，未单独截图。
 
 ---
 
@@ -100,6 +126,7 @@ Web 的 `/api` 请求在 dev 下由 Vite 代理到 `http://localhost:3000`（见
 ```text
 Doomsday Survival Guide/
 ├── README.md                  # 本文件
+├── LICENSE                    # MIT 许可证全文
 ├── package.json               # 根脚本（pnpm workspaces）
 ├── pnpm-workspace.yaml        # workspace 定义（packages/* + apps/*）
 ├── docker-compose.yml         # PostgreSQL 服务（见 docs/DEPLOYMENT.md）
@@ -127,6 +154,7 @@ Doomsday Survival Guide/
     ├── API.md                 # REST / JWT / SSE 接口清单
     ├── TEST_REPORT.md         # 阶段验证报告
     ├── KNOWN_ISSUES.md        # 已知限制与规避建议
+    ├── assets/screenshots/    # README 使用的真实界面截图
     └── OFFLINE_SURVIVAL_MANUAL.html  # 断网离线生存手册（单文件、零外部依赖）
 ```
 
@@ -254,7 +282,7 @@ AI 服务参数、环境变量清单见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
 ## 许可证声明
 
-本项目采用 **MIT License**（见根 `package.json` 的 `"license": "MIT"`）。
+本项目采用 **MIT License**，全文见根目录 [LICENSE](LICENSE)。
 
 - 代码可自由使用、修改、分发，须保留版权与许可声明。
 - **内容免责**：知识、急救、医疗、植物/动物识别与灾害推演内容仅供参考，不替代专业医疗救治、专业鉴定或官方应急指令；详见 [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md)。
