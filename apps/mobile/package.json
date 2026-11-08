@@ -1,0 +1,24 @@
+{
+  "name": "@apocalypse/mobile",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "APOCALYPSE SURVIVAL 移动端（Capacitor），前端复用 @apocalypse/web",
+  "scripts": {
+    "build": "pnpm --filter @apocalypse/web build",
+    "sync": "cap sync",
+    "android": "cap sync android",
+    "ios": "cap sync ios",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@apocalypse/web": "workspace:*"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/ios": "^6.2.0",
+    "typescript": "^5.7.2"
+  }
+}

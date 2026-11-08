@@ -1,0 +1,861 @@
+// APOCALYPSE SURVIVAL 后端数据模型
+// 恰好 35 张表：用户域 2 + 内容域 15 + 审核域 2 + 个人数据 12 + 运维域 2 + 扩展 2
+// 字段与 packages/core/src/types.ts 的领域类型一一对应。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/* ============ 枚举 ============ */
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum ReviewStatus {
+  draft
+  pending_review
+  reviewed
+  published
+  retired
+}
+
+enum DangerLevel {
+  L0
+  L1
+  L2
+  L3
+  L4
+}
+
+enum Credibility {
+  A
+  B
+  C
+  D
+}
+
+enum SourceType {
+  government
+  medical
+  academic
+  ngo
+  manual
+  community
+  ai_generated
+}
+
+enum QuizType {
+  plant
+  animal
+  first_aid
+  skill
+}
+
+enum BookmarkKind {
+  article
+  plant
+  animal
+  insect
+  medicine
+  first_aid
+  skill
+  supply
+  scenario
+  hazard
+}
+
+enum MapMarkerKind {
+  water
+  shelter
+  danger
+  route
+  supply
+  custom
+}
+
+enum OfflineStatus {
+  not_downloaded
+  downloading
+  downloaded
+  update_available
+}
+
+/* ============ 用户域（2） ============ */
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  name         String?
+  passwordHash String
+  role         UserRole     @default(USER)
+  status       String       @default("active")
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  sessions          UserSession[]
+  bookmarks         Bookmark[]
+  readingHistory    ReadingHistory[]
+  userNotes         UserNote[]
+  inventoryEntries  InventoryEntry[]
+  inventoryTx       InventoryTransaction[]
+  survivalProfiles  SurvivalProfile[]
+  quizRecords       QuizRecord[]
+  aiConversations   AIConversation[]
+  mapMarkers        MapMarker[]
+  mapRoutes         MapRoute[]
+  offlinePackages   OfflinePackage[]
+  emergencyContacts EmergencyContact[]
+  auditLogs         AuditLog[]
+  aiUsageLogs       AIUsageLog[]
+
+  @@index([role])
+}
+
+model UserSession {
+  id               String    @id @default(cuid())
+  userId           String
+  refreshTokenHash String
+  userAgent        String?
+  ip               String?
+  expiresAt        DateTime
+  revokedAt        DateTime?
+  createdAt        DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/* ============ 内容域（15） ============ */
+
+model Source {
+  id          String       @id @default(cuid())
+  name        String
+  url         String?
+  publisher   String?
+  publishedAt DateTime?
+  verifiedAt  DateTime?
+  verifiedBy  String?
+  type        SourceType
+  credibility Credibility
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  @@index([type, credibility])
+}
+
+model Article {
+  id            String       @id
+  categorySlug  String
+  title         String
+  aliases       String[]     @default([])
+  summary       String
+  coverImage    String?
+  environment   String[]     @default([])
+  scenarios     String[]     @default([])
+  sections      Json
+  steps         String[]     @default([])
+  tools         String[]     @default([])
+  precautions   String[]     @default([])
+  contraindications String[]  @default([])
+  tags          String[]     @default([])
+  difficulty    Int          @default(1)
+  relatedIds    String[]     @default([])
+  offlineReady  Boolean      @default(false)
+
+  // meta 字段组（与 ContentMeta 对齐）
+  dangerLevel   DangerLevel  @default(L0)
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+  @@index([categorySlug])
+}
+
+model Plant {
+  id             String       @id
+  category       String
+  name           String
+  scientificName String
+  aliases        String[]     @default([])
+  family         String
+  image          String?
+  leaf           String
+  flower         String
+  fruit          String
+  stem           String
+  root           String
+  season         String
+  distribution   String
+  habitat        String
+  usableParts    String[]     @default([])
+  uses           String[]     @default([])
+  toxicity       String
+  lookalikes     Json         @default("[]")
+  confusionRisk  String
+  edibilityWarning String
+  confidence     Credibility  @default(C)
+  tags           String[]     @default([])
+
+  dangerLevel   DangerLevel  @default(L0)
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+  @@index([category])
+}
+
+model Animal {
+  id             String       @id
+  animalClass    String
+  name           String
+  scientificName String
+  aliases        String[]     @default([])
+  image          String?
+  appearance     String
+  habitat        String
+  activityTime   String
+  behavior       String
+  diet           String
+  tracks         String[]     @default([])
+  feces          String
+  dangerLevel    DangerLevel  @default(L0)
+  possibleInjury String
+  safetyMeasures String
+  biteFirstAid   String
+  distribution   String
+  identificationConfidence Credibility @default(C)
+  identificationNote       String?
+  tags           String[]     @default([])
+
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  animalTracks AnimalTrack[]
+
+  @@index([reviewStatus, dangerLevel])
+  @@index([animalClass])
+}
+
+model AnimalTrack {
+  id          String   @id @default(cuid())
+  animalId    String
+  description String
+  size        String
+  gait        String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  animal Animal @relation(fields: [animalId], references: [id], onDelete: Cascade)
+
+  @@index([animalId])
+}
+
+model Insect {
+  id             String       @id
+  name           String
+  scientificName String
+  aliases        String[]     @default([])
+  image          String?
+  appearance     String
+  habitat        String
+  season         String
+  behavior       String
+  dangerLevel    DangerLevel  @default(L0)
+  stingBiteRisk  String
+  firstAid       String
+  uses           String[]     @default([])
+  distribution   String
+  confidence     Credibility  @default(C)
+  tags           String[]     @default([])
+
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+}
+
+model Medicine {
+  id               String       @id
+  name             String
+  aliases          String[]     @default([])
+  category         String
+  image            String?
+  purpose          String
+  commonForms      String[]     @default([])
+  keyPoints        String[]     @default([])
+  risks            String[]     @default([])
+  contraindications String[]     @default([])
+  storage          String
+  disclaimer       String
+  dangerLevel      DangerLevel  @default(L0)
+  tags             String[]     @default([])
+
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+}
+
+model FirstAidGuide {
+  id             String       @id
+  categorySlug   String
+  title          String
+  summary        String
+  image          String?
+  applicable     String[]     @default([])
+  dangerSignals  String[]     @default([])
+  immediateSafety String[]    @default([])
+  wrongActions   String[]     @default([])
+  steps          String[]     @default([])
+  whenToSeekHelp String[]     @default([])
+  difficulty     Int          @default(1)
+  tags           String[]     @default([])
+  relatedIds     String[]     @default([])
+  offlineReady   Boolean      @default(false)
+
+  dangerLevel   DangerLevel  @default(L0)
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+  @@index([categorySlug])
+}
+
+model Skill {
+  id              String       @id
+  categorySlug    String
+  title           String
+  summary         String
+  coverImage      String?
+  purpose         String
+  scenarios       String[]     @default([])
+  materials       String[]     @default([])
+  tools           String[]     @default([])
+  difficulty      Int          @default(1)
+  estimatedMinutes Int         @default(0)
+  steps           Json         @default("[]")
+  cautions        String[]     @default([])
+  failureReasons  String[]     @default([])
+  safetyChecklist String[]     @default([])
+  alternatives    String[]     @default([])
+  tags            String[]     @default([])
+  relatedIds      String[]     @default([])
+  verification    String       @default("pending_review")
+  dangerLevel     DangerLevel  @default(L0)
+  offlineReady    Boolean      @default(false)
+
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+  @@index([categorySlug])
+}
+
+model Supply {
+  id                 String       @id
+  category           String
+  name               String
+  image              String?
+  purpose            String
+  usage              String
+  storageMethod      String
+  shelfLife          String
+  scenarios          String[]     @default([])
+  risks              String[]     @default([])
+  substitutes        String[]     @default([])
+  relatedTutorialIds String[]     @default([])
+  unit               String       @default("个")
+  defaultPriority    Int          @default(2)
+  tags               String[]     @default([])
+
+  dangerLevel   DangerLevel  @default(L0)
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+  @@index([category])
+}
+
+model Scenario {
+  id                String       @id
+  slug              String       @unique
+  title             String
+  summary           String
+  image             String?
+  tags              String[]     @default([])
+  difficulty        Int          @default(1)
+  isSimulation      Boolean      @default(true)
+  debrief           String[]     @default([])
+  relatedArticleIds String[]     @default([])
+
+  dangerLevel   DangerLevel  @default(L0)
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  steps ScenarioStep[]
+
+  @@index([reviewStatus, dangerLevel])
+}
+
+model ScenarioStep {
+  id                 String       @id @default(cuid())
+  scenarioId         String
+  order              Int          @default(0)
+  scene              String
+  environment        String[]     @default([])
+  knownHazards       String[]     @default([])
+  availableResources String[]     @default([])
+  partyStatus        String
+  timeLimit          String?
+  objective          String
+  recommended        String[]     @default([])
+  discouraged        String[]     @default([])
+
+  dangerLevel   DangerLevel  @default(L0)
+  reviewStatus  ReviewStatus @default(published)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  scenario Scenario       @relation(fields: [scenarioId], references: [id], onDelete: Cascade)
+  choices  ScenarioChoice[]
+
+  @@index([scenarioId, order])
+}
+
+model ScenarioChoice {
+  id          String       @id @default(cuid())
+  stepId      String
+  order       Int          @default(0)
+  label       String
+  consequence String
+  nextStepId  String?
+  riskLevel   DangerLevel  @default(L1)
+  quality     String       @default("acceptable")
+
+  dangerLevel   DangerLevel  @default(L1)
+  reviewStatus  ReviewStatus @default(published)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  step ScenarioStep @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  @@index([stepId, order])
+}
+
+model Hazard {
+  id               String       @id
+  title            String
+  category         String
+  dangerLevel      DangerLevel  @default(L0)
+  description      String
+  indicators       String[]     @default([])
+  prevention       String[]     @default([])
+  emergencyResponse String[]    @default([])
+  region           String?
+
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, dangerLevel])
+  @@index([category])
+}
+
+model QuizQuestion {
+  id           String    @id
+  type         QuizType
+  question     String
+  options      String[]
+  answerIndex  Int
+  explanation  String
+  sourceRefId  String
+  sourceTitle  String
+  difficulty   Int       @default(1)
+
+  dangerLevel   DangerLevel  @default(L0)
+  reviewStatus  ReviewStatus @default(draft)
+  reviewNote    String?
+  reviewedAt    DateTime?
+  reviewedBy    String?
+  aiGenerated   Boolean      @default(false)
+  version       Int          @default(1)
+  sourceIds     String[]     @default([])
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([reviewStatus, type])
+}
+
+/* ============ 审核域（2） ============ */
+
+model ReviewRecord {
+  id           String   @id @default(cuid())
+  contentKind  String
+  contentId    String
+  fromStatus   String?
+  toStatus     String
+  decision     String
+  note         String?
+  reviewerId   String
+  reviewerEmail String
+  createdAt    DateTime @default(now())
+
+  @@index([contentKind, contentId])
+  @@index([createdAt])
+}
+
+model ContentTag {
+  id        String   @id @default(cuid())
+  kind      String
+  contentId String
+  tag       String
+
+  @@unique([kind, contentId, tag])
+  @@index([kind, tag])
+}
+
+/* ============ 个人数据（服务端同步副本，12） ============ */
+
+model Bookmark {
+  id         String       @id @default(cuid())
+  userId     String
+  kind       BookmarkKind
+  refId      String
+  title      String
+  tags       String[]     @default([])
+  note       String?
+  collection String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, kind, refId])
+  @@index([userId])
+}
+
+model ReadingHistory {
+  id        String       @id @default(cuid())
+  userId    String
+  refId     String
+  kind      BookmarkKind
+  title     String
+  at        DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, refId])
+  @@index([userId, at])
+}
+
+model UserNote {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String
+  body      String   @default("")
+  tags      String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model InventoryEntry {
+  id           String    @id @default(cuid())
+  userId       String
+  supplyId     String
+  name         String
+  category     String
+  quantity     Float     @default(0)
+  unit         String    @default("个")
+  minQuantity  Float     @default(0)
+  priority     Int       @default(2)
+  expiresAt    DateTime?
+  notes        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions InventoryTransaction[]
+
+  @@unique([userId, supplyId])
+  @@index([userId])
+}
+
+model InventoryTransaction {
+  id       String   @id @default(cuid())
+  userId   String
+  entryId  String
+  delta    Float
+  reason   String   @default("")
+  at       DateTime @default(now())
+
+  user  User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  entry InventoryEntry? @relation(fields: [entryId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([entryId])
+}
+
+model SurvivalProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  displayName   String   @default("")
+  householdSize Int      @default(1)
+  skills        String[] @default([])
+  shelterPlan   String   @default("")
+  notes         String   @default("")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model QuizRecord {
+  id           String   @id @default(cuid())
+  userId       String
+  questionId   String
+  chosenIndex  Int
+  correct      Boolean
+  at           DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, at])
+}
+
+model AIConversation {
+  id        String      @id @default(cuid())
+  userId    String
+  title     String      @default("新对话")
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  user     User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  messages AIMessage[]
+
+  @@index([userId])
+}
+
+model AIMessage {
+  id             String   @id @default(cuid())
+  conversationId String
+  role           String
+  content        String   @default("")
+  toolCalls      Json?
+  toolResults    Json?
+  createdAt      DateTime @default(now())
+
+  conversation AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model MapMarker {
+  id        String        @id @default(cuid())
+  userId    String
+  kind      MapMarkerKind @default(custom)
+  name      String
+  lat       Float
+  lng       Float
+  note      String?
+  verified  Boolean       @default(false)
+  private   Boolean       @default(true)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model MapRoute {
+  id            String   @id @default(cuid())
+  userId        String
+  name          String
+  points        Json     @default("[]")
+  distanceMeters Int?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model OfflinePackage {
+  id           String        @id @default(cuid())
+  userId       String
+  name         String
+  description  String        @default("")
+  categorySlugs String[]     @default([])
+  sizeBytes    Int           @default(0)
+  version      String        @default("1.0.0")
+  status       OfflineStatus @default(not_downloaded)
+  progress     Int?
+  downloadedAt DateTime?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
+  @@index([userId])
+}
+
+/* ============ 运维域（2） ============ */
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  userId    String?
+  action    String
+  method    String
+  path      String
+  status    Int?
+  ip        String?
+  userAgent String?
+  payload   Json?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId])
+}
+
+model SystemSetting {
+  key         String   @id
+  value       Json
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/* ============ 扩展（2） ============ */
+
+model EmergencyContact {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  relation  String
+  phone     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model AIUsageLog {
+  id               String    @id @default(cuid())
+  userId           String?
+  endpoint         String
+  model            String
+  status           String    @default("ok")
+  promptTokens     Int?
+  completionTokens Int?
+  totalTokens      Int?
+  latencyMs        Int?
+  error            String?
+  createdAt        DateTime  @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([userId])
+}

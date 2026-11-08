@@ -1,0 +1,38 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "APOCALYPSE SURVIVAL",
+  "version": "1.0.0",
+  "identifier": "local.survival.apocalypse",
+  "build": {
+    "beforeDevCommand": "pnpm --filter @apocalypse/web dev",
+    "devUrl": "http://localhost:5173",
+    "beforeBuildCommand": "pnpm --filter @apocalypse/web build",
+    "frontendDist": "../web/dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "APOCALYPSE SURVIVAL",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600
+      }
+    ],
+    "trayIcon": {
+      "id": "main-tray",
+      "tooltip": "APOCALYPSE SURVIVAL · 末日生存",
+      "iconPath": "icons/icon.png",
+      "menuOnLeftClick": true
+    },
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": ["icons/icon.ico", "icons/icon.png"]
+  }
+}

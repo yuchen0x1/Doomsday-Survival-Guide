@@ -1,0 +1,204 @@
+@import "tailwindcss";
+
+/* ============================================================
+   APOCALYPSE SURVIVAL 设计系统 —— 末日生存科技风
+   深石墨黑 / 军绿 / 沙漠卡其 / 危险红 / 警告橙
+   ============================================================ */
+
+@theme {
+  --color-void: #0b0d0c;        /* 主背景：深石墨黑 */
+  --color-pit: #0f1210;         /* 最深层 */
+  --color-panel: #141814;       /* 次级背景 */
+  --color-riser: #1a1f1a;       /* 卡片抬升面 */
+  --color-edge: #2a2f29;        /* 边框 */
+  --color-edge-hi: #3a413a;     /* 高亮边框 */
+
+  --color-moss: #4a6b3f;        /* 军绿主色 */
+  --color-moss-hi: #6b8f5e;     /* 军绿亮 */
+  --color-moss-dim: #2e4229;    /* 军绿暗 */
+
+  --color-sand: #c9a961;        /* 沙漠卡其强调 */
+  --color-sand-hi: #e3d3a3;     /* 卡其亮 */
+
+  --color-danger: #d84a3b;      /* 危险红 */
+  --color-danger-dim: #7a2a22;
+  --color-warn: #e08b34;        /* 警告橙 */
+  --color-warn-dim: #7a4a1c;
+  --color-info: #5a9bb5;        /* 信息蓝 */
+
+  --color-ink: #e8eae4;         /* 普通文字 */
+  --color-ink-dim: #9aa096;     /* 次级文字 */
+  --color-ink-faint: #6b7069;   /* 弱文字 */
+
+  --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", "Consolas", ui-monospace, monospace;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--color-void);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior-y: none;
+}
+
+/* 移动端安全区（Capacitor，index.html 已 viewport-fit=cover）。
+   不支持 env() 的环境回退为 0，web 桌面行为完全不变；顶部安全区在 AppLayout header 内处理。 */
+body {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* 网格底纹：军事信息终端质感 */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(74, 107, 63, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(74, 107, 63, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* 微型标签：大写 + 字距 */
+.micro-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+}
+
+/* 卡片：细边框 + 顶部强调线 */
+.panel {
+  background: var(--color-panel);
+  border: 1px solid var(--color-edge);
+  border-radius: 4px;
+  position: relative;
+}
+.panel-accent::before {
+  content: "";
+  position: absolute;
+  top: -1px; left: -1px;
+  width: 22px; height: 3px;
+  background: var(--color-moss-hi);
+}
+.panel-accent-sand::before { background: var(--color-sand); }
+.panel-accent-danger::before { background: var(--color-danger); }
+
+/* 按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 0.5rem 0.9rem;
+  border-radius: 3px;
+  border: 1px solid var(--color-edge);
+  background: var(--color-riser);
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+.btn:hover { border-color: var(--color-edge-hi); background: #20261f; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary {
+  background: var(--color-moss);
+  border-color: var(--color-moss-hi);
+  color: #f2f5ee;
+}
+.btn-primary:hover { background: var(--color-moss-hi); }
+.btn-sand {
+  background: transparent;
+  border-color: var(--color-sand);
+  color: var(--color-sand);
+}
+.btn-sand:hover { background: rgba(201, 169, 97, 0.12); }
+.btn-danger {
+  background: transparent;
+  border-color: var(--color-danger);
+  color: var(--color-danger);
+}
+.btn-danger:hover { background: rgba(216, 74, 59, 0.12); }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--color-ink-dim); }
+.btn-ghost:hover { background: var(--color-riser); color: var(--color-ink); border-color: var(--color-edge); }
+
+/* 表单控件 */
+.field {
+  width: 100%;
+  background: var(--color-pit);
+  border: 1px solid var(--color-edge);
+  border-radius: 3px;
+  padding: 0.55rem 0.75rem;
+  font-size: 13.5px;
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field:focus { border-color: var(--color-moss-hi); }
+.field::placeholder { color: var(--color-ink-faint); }
+select.field option { background: var(--color-panel); }
+
+/* 危险等级徽章 */
+.danger-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid currentColor;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--color-pit); }
+::-webkit-scrollbar-thumb { background: var(--color-edge); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-edge-hi); }
+
+/* 高危内容警示条 */
+.hazard-stripe {
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-danger) 0 10px,
+    #141814 10px 20px
+  );
+}
+
+/* 进度条 */
+.progress-track {
+  height: 6px;
+  background: var(--color-pit);
+  border: 1px solid var(--color-edge);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-moss), var(--color-moss-hi));
+  transition: width 0.3s ease;
+}
+
+/* 淡入 */
+@keyframes fade-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.fade-in { animation: fade-in 0.25s ease both; }
+
+/* 骨架屏 */
+@keyframes pulse-dim { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+.skeleton { background: var(--color-riser); animation: pulse-dim 1.4s ease-in-out infinite; border-radius: 3px; }
+
+/* 滚动文字（离线状态栏） */
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* 打印样式（PDF 导出手册） */
+@media print {
+  body { background: #fff !important; color: #111 !important; }
+  .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  .panel { border-color: #ccc !important; background: #fff !important; }
+}

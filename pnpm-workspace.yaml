@@ -1,0 +1,13 @@
+packages:
+  - "packages/*"
+  - "apps/*"
+
+allowBuilds:
+  esbuild: true
+  sharp: true
+  "@tailwindcss/oxide": true
+  "@tauri-apps/cli": true
+  "@prisma/client": true
+  "@prisma/engines": true
+  "@scarf/scarf": false
+  "prisma": true
