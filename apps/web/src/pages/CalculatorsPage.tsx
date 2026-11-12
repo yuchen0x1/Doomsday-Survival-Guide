@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { CALCULATORS, getCalculator } from '@apocalypse/core';
 import { Icon } from '../components/Icon';
 import { PageHeader, Panel, EmptyState, Tag } from '../components/ui';
@@ -32,13 +32,13 @@ export default function CalculatorsPage() {
         {/* 左：计算器列表 */}
         <div className="flex flex-col gap-1.5">
           {CALCULATORS.map((c) => (
-            <a key={c.id} href={`/calculator/${c.slug}`}
+            <Link key={c.id} to={`/calculator/${c.slug}`}
               className={`panel flex items-center gap-2.5 px-3.5 py-2.5 text-[13px] transition-colors ${
                 active.id === c.id ? '!border-[var(--color-sand)] bg-[var(--color-riser)]' : 'hover:border-[var(--color-edge-hi)]'
               }`}>
               <Icon name="calculator" size={14} className="text-[var(--color-sand)]" />
               {c.name}
-            </a>
+            </Link>
           ))}
         </div>
 

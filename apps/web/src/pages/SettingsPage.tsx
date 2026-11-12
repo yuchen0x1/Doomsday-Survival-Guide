@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Icon } from '../components/Icon';
+import { UpdateSettingsPanel } from '../components/PwaUpdate';
 import { PageHeader, Panel, Tag } from '../components/ui';
 import { useApp } from '../lib/store';
 import { getSetting, setSetting, exportAllData, importAllData } from '../lib/db';
@@ -86,6 +87,8 @@ export default function SettingsPage() {
             ))}
           </div>
         </Panel>
+
+        <UpdateSettingsPanel />
 
         <div className="flex flex-col gap-4">
           {/* 快捷键 */}

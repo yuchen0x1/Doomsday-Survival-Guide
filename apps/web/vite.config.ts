@@ -1,15 +1,25 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { VitePWA } from 'vite-plugin-pwa';
-import path from 'node:path';
+
+const configDir = path.dirname(fileURLToPath(import.meta.url));
+const configuredBase = process.env.VITE_BASE_PATH?.trim() || '/';
+const basePath = configuredBase.endsWith('/') ? configuredBase : `${configuredBase}/`;
+const rootPackage = JSON.parse(
+  fs.readFileSync(path.resolve(configDir, '../../package.json'), 'utf8'),
+) as { version?: string };
 
 export default defineConfig({
+  base: basePath,
   plugins: [
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
+      registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
         name: 'APOCALYPSE SURVIVAL 末日生存指南',
@@ -18,28 +28,33 @@ export default defineConfig({
         theme_color: '#0B0D0C',
         background_color: '#0B0D0C',
         display: 'standalone',
-        start_url: '/',
+        id: basePath,
+        start_url: basePath,
+        scope: basePath,
         icons: [
-          { src: 'icon-192.png', sizes: '192x192', type: 'image/png' },
-          { src: 'icon-512.png', sizes: '512x512', type: 'image/png' },
+          { src: `${basePath}icon-192.png`, sizes: '192x192', type: 'image/png' },
+          { src: `${basePath}icon-512.png`, sizes: '512x512', type: 'image/png' },
         ],
       },
       workbox: {
-        // 核心知识全部预缓存，保证离线可用
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
-        navigateFallback: '/index.html',
+        navigateFallback: `${basePath}index.html`,
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.origin !== self.location.origin && url.pathname.includes('/api/'),
+            urlPattern: ({ url }) =>
+              url.origin !== self.location.origin && url.pathname.includes('/api/'),
             handler: 'NetworkOnly',
           },
         ],
       },
     }),
   ],
+  define: {
+    __APP_VERSION__: JSON.stringify(process.env.VITE_APP_VERSION ?? rootPackage.version ?? '0.0.0'),
+  },
   resolve: {
-    alias: { '@': path.resolve(__dirname, 'src') },
+    alias: { '@': path.resolve(configDir, 'src') },
   },
   server: {
     port: 5173,

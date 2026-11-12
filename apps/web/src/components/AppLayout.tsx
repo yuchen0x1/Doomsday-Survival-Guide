@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Icon } from './Icon';
+import { PwaUpdateBanner } from './PwaUpdate';
 import { ToastHost } from './ui';
 import { useApp } from '../lib/store';
 import { detectPlatform, usePlatformLayout } from '../lib/platform';
 import { watchOnline } from '../lib/offline';
+import { PwaUpdateProvider } from '../lib/update';
 
 /** 导航结构（三端共用，按平台差异化呈现） */
 interface NavItem { to: string; label: string; icon: string; end?: boolean }
@@ -105,6 +107,7 @@ function GlobalSearchBox() {
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
+  const nav = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const platform = detectPlatform();
@@ -139,7 +142,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const sidebarWidth = collapsed ? 60 : 224;
 
   return (
-    <div className="flex h-full min-h-screen bg-[var(--color-void)]">
+    <PwaUpdateProvider>
+      <div className="flex h-full min-h-screen bg-[var(--color-void)]">
       {/* ===== 桌面侧边导航 ===== */}
       {isDesktop && (
         <aside
@@ -203,16 +207,16 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[3px] border border-[var(--color-moss)] bg-[var(--color-moss-dim)] font-mono text-[13px] font-bold text-[var(--color-moss-hi)]">A</span>
           )}
           <div className="hidden flex-1 md:flex"><GlobalSearchBox /></div>
-          <button className="btn btn-ghost md:hidden" onClick={() => window.location.assign('/search')} aria-label="搜索">
+          <button className="btn btn-ghost md:hidden" onClick={() => nav('/search')} aria-label="搜索">
             <Icon name="search" size={18} />
           </button>
           <div className="ml-auto flex items-center gap-2">
-            <button className="btn btn-ghost !px-2" onClick={() => window.location.assign('/first-aid')} title="紧急急救" style={{ color: 'var(--color-danger)' }}>
+            <button className="btn btn-ghost !px-2" onClick={() => nav('/first-aid')} title="紧急急救" style={{ color: 'var(--color-danger)' }}>
               <Icon name="firstaid" size={17} />
               <span className="hidden text-[12px] lg:inline">紧急急救</span>
             </button>
             <OnlineBadge />
-            <button className="btn btn-sand !py-1.5" onClick={() => window.location.assign('/ai')}>
+            <button className="btn btn-sand !py-1.5" onClick={() => nav('/ai')}>
               <Icon name="bot" size={15} />
               <span className="hidden sm:inline text-[12px]">AI 助手</span>
             </button>
@@ -259,7 +263,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {layout.fab && (
         <button
           className={`fixed bottom-16 right-3 z-40 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[var(--color-danger)] bg-[var(--color-danger-dim)] text-[var(--color-danger)] shadow-lg${platform === 'mobile' ? '' : ' md:hidden'}`}
-          onClick={() => window.location.assign('/first-aid')}
+          onClick={() => nav('/first-aid')}
           aria-label="紧急急救"
           title="紧急急救"
         >
@@ -268,6 +272,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       )}
 
       <ToastHost />
-    </div>
+      <PwaUpdateBanner />
+      </div>
+    </PwaUpdateProvider>
   );
 }
