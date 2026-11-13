@@ -102,6 +102,11 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4
+        with:
+          packages: "platform-tools platforms;android-34 build-tools;34.0.0"
+          log-accepted-android-sdk-licenses: false
       - run: node scripts/verify-release-versions.cjs
       - run: pnpm install --frozen-lockfile
       - name: Build bundled frontend
@@ -109,7 +114,6 @@ jobs:
       - run: pnpm --filter @apocalypse/mobile exec cap sync android
       - name: Build release APK
         run: |
-          sdkmanager "platforms;android-34" "build-tools;34.0.0"
           cd apps/mobile/android
           bash gradlew --no-daemon assembleRelease
       - name: Sign and verify release APK
