@@ -15,3 +15,9 @@ allowBuilds:
 overrides:
   deepmerge-ts: 8.0.2
   multer: 2.5.0
+  "ansi-regex@^4": 4.1.1
+  "ansi-regex@^5": 5.0.1
+  tar: 7.5.21
+
+patchedDependencies:
+  "@capacitor/cli@6.2.3": patches/@capacitor__cli@6.2.3.patch

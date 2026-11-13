@@ -50,6 +50,7 @@ jobs:
           pnpm lint
           pnpm typecheck
           pnpm test
+          node --test scripts/verify-capacitor-template.cjs
 
       - name: Build web PWA
         run: pnpm build

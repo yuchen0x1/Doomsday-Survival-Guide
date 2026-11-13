@@ -34,5 +34,7 @@ jobs:
         run: pnpm typecheck
       - name: Test
         run: pnpm test
+      - name: Capacitor archive compatibility
+        run: node --test scripts/verify-capacitor-template.cjs
       - name: Build
         run: pnpm build
