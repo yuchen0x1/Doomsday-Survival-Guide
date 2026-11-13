@@ -20,7 +20,7 @@
 
 **一份可离线运行、跨平台的末日生存百科全书。** 全部知识随应用打包，断网照样能查；AI 只做辅助，绝不替代审核结论。
 
-[![在线 Demo](https://img.shields.io/badge/在线%20Demo-立即体验-0B8A5F?style=flat-square)](https://doomsday-survival-05439.app.workbuddy.host/?sharecode=ED7TUWRYKI)
+[![在线 Demo](https://img.shields.io/badge/在线%20Demo-立即体验-0B8A5F?style=flat-square)](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![React](https://img.shields.io/badge/React-19-087EA4?style=flat-square&logo=react&logoColor=white)](apps/web)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)](tsconfig.base.json)
@@ -29,9 +29,9 @@
 [![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?style=flat-square&logo=tauri&logoColor=white)](apps/desktop)
 [![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=flat-square&logo=nestjs&logoColor=white)](apps/api)
 
-**[🔗 在线 Demo](https://doomsday-survival-05439.app.workbuddy.host/?sharecode=ED7TUWRYKI)** · **[📖 断网离线生存手册](docs/OFFLINE_SURVIVAL_MANUAL.html)** · [文档索引](#文档索引) · [快速开始](#快速开始)
+**[🔗 在线 Demo](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)** · **[📖 断网离线生存手册](docs/OFFLINE_SURVIVAL_MANUAL.html)** · [文档索引](#文档索引) · [快速开始](#快速开始)
 
-> Demo 为纯静态托管，**不启动后端**：全部图鉴、急救、技能、计算器、模拟器可直接使用，AI 助手会自动进入「本地检索模式」。静态托管没有 SPA 回退，刷新子页面会 404，从首页进入即可。
+> Demo 为 GitHub Pages 静态托管，**不启动后端**：全部图鉴、急救、技能、计算器、模拟器可直接使用，AI 助手会自动进入「本地检索模式」。部署提供 SPA 回退。历史 WorkBuddy Demo 不会随 GitHub 发布自动同步。
 
 ![生存指挥中心](docs/assets/screenshots/web-home.png)
 
