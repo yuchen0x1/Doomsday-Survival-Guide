@@ -132,7 +132,8 @@ export interface KindDef {
 }
 
 const str = (v: unknown): string => (typeof v === 'string' ? v : '');
-const strList = (v: unknown): string[] => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
+const strList = (v: unknown): string[] =>
+  Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : [];
 const num = (v: unknown, fallback = 0): number => (typeof v === 'number' ? v : fallback);
 
 function serializeAnimalTracks(rows: unknown): Record<string, unknown>[] {
@@ -153,7 +154,10 @@ function serializeAnimalTracks(rows: unknown): Record<string, unknown>[] {
 function serializeScenarioSteps(rows: unknown): Record<string, unknown>[] {
   if (!Array.isArray(rows)) return [];
   return [...rows]
-    .sort((a, b) => num((a as Record<string, unknown>).order) - num((b as Record<string, unknown>).order))
+    .sort(
+      (a, b) =>
+        num((a as Record<string, unknown>).order) - num((b as Record<string, unknown>).order),
+    )
     .map((r) => {
       const row = r as Record<string, unknown>;
       const choices = Array.isArray(row.choices)
@@ -188,7 +192,8 @@ export const KIND_DEFS: Record<ContentKind, KindDef> = {
     delegate: 'article',
     categoryField: 'categorySlug',
     titleField: 'title',
-    extraText: (row) => `${str(row.summary)} ${strList(row.steps).join(' ')} ${strList(row.precautions).join(' ')}`,
+    extraText: (row) =>
+      `${str(row.summary)} ${strList(row.steps).join(' ')} ${strList(row.precautions).join(' ')}`,
     serialize: (row, sources) => ({
       id: str(row.id),
       categorySlug: str(row.categorySlug),
@@ -216,7 +221,8 @@ export const KIND_DEFS: Record<ContentKind, KindDef> = {
     categoryField: 'category',
     titleField: 'name',
     dExcludeField: 'confidence',
-    extraText: (row) => `${str(row.toxicity)} ${strList(row.uses).join(' ')} ${str(row.edibilityWarning)}`,
+    extraText: (row) =>
+      `${str(row.toxicity)} ${strList(row.uses).join(' ')} ${str(row.edibilityWarning)}`,
     serialize: (row, sources) => ({
       id: str(row.id),
       category: str(row.category),
@@ -316,7 +322,8 @@ export const KIND_DEFS: Record<ContentKind, KindDef> = {
     delegate: 'medicine',
     categoryField: 'category',
     titleField: 'name',
-    extraText: (row) => `${str(row.purpose)} ${strList(row.keyPoints).join(' ')} ${strList(row.risks).join(' ')}`,
+    extraText: (row) =>
+      `${str(row.purpose)} ${strList(row.keyPoints).join(' ')} ${strList(row.risks).join(' ')}`,
     serialize: (row, sources) => ({
       id: str(row.id),
       name: str(row.name),

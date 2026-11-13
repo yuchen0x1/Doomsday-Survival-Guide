@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { CALCULATORS, getCalculator } from '../src/calculators';
 
 describe('生存计算器', () => {

@@ -10,7 +10,8 @@ export const hazards: HazardRecord[] = [
     title: '暴雨与洪涝',
     category: '气象灾害',
     dangerLevel: 'L3',
-    description: '短时强降雨或持续降雨会引发河流水位暴涨、城市内涝与山洪。洪水来势快、挟带杂物与泥沙，冲刷力强，人员在水中极易失去平衡被冲走，通信、供电与道路也可能同时中断。防范重点是提前避险、绝不涉水，以及在洪水到来前转移到安全高处。',
+    description:
+      '短时强降雨或持续降雨会引发河流水位暴涨、城市内涝与山洪。洪水来势快、挟带杂物与泥沙，冲刷力强，人员在水中极易失去平衡被冲走，通信、供电与道路也可能同时中断。防范重点是提前避险、绝不涉水，以及在洪水到来前转移到安全高处。',
     indicators: [
       '气象部门发布暴雨橙色、红色预警，或所在区域连续数小时强降雨',
       '河水在短时间内明显上涨、变浑，出现漂浮杂物与异常水流声',
@@ -31,14 +32,19 @@ export const hazards: HazardRecord[] = [
       '洪水退去后注意饮食与饮水卫生，防止肠道传染病，返回前先确认房屋结构安全',
     ],
     region: '全国多雨地区，山区与低洼城市风险更高',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('china_meteorology_typhoon', 'mem_gov_cn', 'fema') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('china_meteorology_typhoon', 'mem_gov_cn', 'fema'),
+    }),
   },
   {
     id: 'hz-typhoon',
     title: '台风（飓风）',
     category: '气象灾害',
     dangerLevel: 'L3',
-    description: '台风伴随狂风、暴雨与风暴潮，可摧毁临时建筑、掀翻广告牌、折断树木与电线，并引发城市内涝与沿海增水。防范核心是台风登陆前做好加固与储备，登陆时绝对留在室内安全区域，不在风停间隙外出——台风眼过后风向会突然反转。',
+    description:
+      '台风伴随狂风、暴雨与风暴潮，可摧毁临时建筑、掀翻广告牌、折断树木与电线，并引发城市内涝与沿海增水。防范核心是台风登陆前做好加固与储备，登陆时绝对留在室内安全区域，不在风停间隙外出——台风眼过后风向会突然反转。',
     indicators: [
       '气象部门发布台风蓝色及以上预警，或台风路径图显示将影响本地',
       '天空云层快速增厚，海面出现长涌浪，风力明显持续增强',
@@ -59,14 +65,19 @@ export const hazards: HazardRecord[] = [
       '台风过后外出时注意坠落物、断线与积水路段，绕开受损电力设施',
     ],
     region: '东南沿海及受台风外围影响地区',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('china_meteorology_typhoon', 'mem_gov_cn', 'cma_weather') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('china_meteorology_typhoon', 'mem_gov_cn', 'cma_weather'),
+    }),
   },
   {
     id: 'hz-heat-stroke',
     title: '高温中暑与热射病',
     category: '气象灾害',
     dangerLevel: 'L3',
-    description: '在高温、高湿、不通风或强日照环境下，人体产热大于散热，会先出现中暑（头晕、乏力、恶心），继续发展可成为热射病：核心体温急剧升高、意识障碍，属于可危及生命的急症。户外作业者、老年人、儿童与慢性病患者是重点人群。',
+    description:
+      '在高温、高湿、不通风或强日照环境下，人体产热大于散热，会先出现中暑（头晕、乏力、恶心），继续发展可成为热射病：核心体温急剧升高、意识障碍，属于可危及生命的急症。户外作业者、老年人、儿童与慢性病患者是重点人群。',
     indicators: [
       '气象部门发布高温橙色、红色预警，连续多日最高气温超过 35℃',
       '在炎热环境中出现头晕、头痛、大量出汗后转为少汗、恶心呕吐、乏力',
@@ -88,14 +99,19 @@ export const hazards: HazardRecord[] = [
       '恢复后仍建议就医，热射病可能造成器官损伤',
     ],
     region: '夏季全国大部分地区，南方与西北干热区尤甚',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('who_heat', 'cma_weather', 'nhc') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('who_heat', 'cma_weather', 'nhc'),
+    }),
   },
   {
     id: 'hz-cold-wave',
     title: '寒潮与冻伤',
     category: '气象灾害',
     dangerLevel: 'L3',
-    description: '寒潮带来剧烈降温、大风与雨雪冰冻，低温与风寒效应叠加会迅速消耗体温，造成失温与冻伤。冻伤多发生在手指、脚趾、耳、鼻等末梢部位，复冻与不当处理会加重组织损伤。防范重点是防风保暖、保持干燥与及时进入温暖环境。',
+    description:
+      '寒潮带来剧烈降温、大风与雨雪冰冻，低温与风寒效应叠加会迅速消耗体温，造成失温与冻伤。冻伤多发生在手指、脚趾、耳、鼻等末梢部位，复冻与不当处理会加重组织损伤。防范重点是防风保暖、保持干燥与及时进入温暖环境。',
     indicators: [
       '气象部门发布寒潮预警，24 小时内气温骤降 10℃ 以上并伴有大风',
       '暴露皮肤出现麻木、刺痛、苍白或蜡黄，触之发硬发凉',
@@ -117,14 +133,19 @@ export const hazards: HazardRecord[] = [
       '清除积雪与冰面时量力而行，防止滑倒摔伤',
     ],
     region: '冬春季全国，北方与高海拔地区风险更高',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('cma_weather', 'mem_gov_cn', 'nhc') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('cma_weather', 'mem_gov_cn', 'nhc'),
+    }),
   },
   {
     id: 'hz-earthquake',
     title: '地震',
     category: '地质灾害',
     dangerLevel: 'L3',
-    description: '地震突然发生，强烈的地面晃动可造成建筑倒塌、玻璃破碎、燃气管道破裂与次生火灾。室内的主要风险来自坠落物与垮塌结构，室外的风险来自建筑物外墙、广告牌与电线。正确的第一反应能显著降低伤亡。',
+    description:
+      '地震突然发生，强烈的地面晃动可造成建筑倒塌、玻璃破碎、燃气管道破裂与次生火灾。室内的主要风险来自坠落物与垮塌结构，室外的风险来自建筑物外墙、广告牌与电线。正确的第一反应能显著降低伤亡。',
     indicators: [
       '地面突然强烈晃动、吊灯摇摆、门窗作响、鱼缸水面荡出',
       '动物异常躁动，井水水位突然变化',
@@ -145,14 +166,19 @@ export const hazards: HazardRecord[] = [
       '注意燃气与电气安全，闻到燃气味先开窗并关闭阀门，不要开关电器',
     ],
     region: '全球地震带及各地区地震风险区',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('usgs_quake', 'mem_gov_cn', 'fema') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('usgs_quake', 'mem_gov_cn', 'fema'),
+    }),
   },
   {
     id: 'hz-wildfire',
     title: '山火（森林草原火灾）',
     category: '灾害事故',
     dangerLevel: 'L3',
-    description: '山火在风力作用下蔓延极快，会产生高温、浓烟与飞火（火星被风带到远处引燃新火点）。烟雾会迅速降低能见度并损伤呼吸道，撤离通道可能被火切断。防范核心是野外不用火、发现火情立即报告并沿预定路线撤离。',
+    description:
+      '山火在风力作用下蔓延极快，会产生高温、浓烟与飞火（火星被风带到远处引燃新火点）。烟雾会迅速降低能见度并损伤呼吸道，撤离通道可能被火切断。防范核心是野外不用火、发现火情立即报告并沿预定路线撤离。',
     indicators: [
       '远处山脊或林区出现烟柱、火光，闻到焦糊气味',
       '气象部门发布高火险预警，天干风大、植被干燥',
@@ -173,14 +199,19 @@ export const hazards: HazardRecord[] = [
       '服从防火指挥部门撤离安排，不返回火场取物',
     ],
     region: '林区、草原与城乡结合部',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('cma_weather', 'mem_gov_cn', 'nws_weather') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('cma_weather', 'mem_gov_cn', 'nws_weather'),
+    }),
   },
   {
     id: 'hz-lightning',
     title: '雷电天气',
     category: '气象灾害',
     dangerLevel: 'L3',
-    description: '雷电可直接击中人体或通过接触传导、跨步电压造成电击烧伤与心脏功能紊乱，击中树木、建筑时产生的侧闪与飞溅物同样危险。户外与开阔地、高处、水边是最危险的位置，室内也需防范电器与线路被雷击损坏。',
+    description:
+      '雷电可直接击中人体或通过接触传导、跨步电压造成电击烧伤与心脏功能紊乱，击中树木、建筑时产生的侧闪与飞溅物同样危险。户外与开阔地、高处、水边是最危险的位置，室内也需防范电器与线路被雷击损坏。',
     indicators: [
       '气象部门发布雷电预警，天空乌云密布、电闪与雷声间隔很短',
       '看见闪电后不久即听到雷声，说明雷暴正在逼近',
@@ -201,14 +232,19 @@ export const hazards: HazardRecord[] = [
       '雷雨过后远离仍可能漏电的电线、路灯与积水中的配电设施',
     ],
     region: '全国，夏季午后与山区多发',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('cma_weather', 'nws_weather', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('cma_weather', 'nws_weather', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'hz-co-poisoning',
     title: '一氧化碳中毒',
     category: '事故灾难',
     dangerLevel: 'L4',
-    description: '含碳燃料在密闭或通风不良环境中不完全燃烧会产生一氧化碳，它无色无味，与血红蛋白的结合能力远高于氧气，可在不知不觉中使人中毒。冬季使用燃气热水器、煤炉取暖、密闭车内怠速取暖是常见成因，浓度升高时可致命。',
+    description:
+      '含碳燃料在密闭或通风不良环境中不完全燃烧会产生一氧化碳，它无色无味，与血红蛋白的结合能力远高于氧气，可在不知不觉中使人中毒。冬季使用燃气热水器、煤炉取暖、密闭车内怠速取暖是常见成因，浓度升高时可致命。',
     indicators: [
       '在使用燃气具、煤炉或燃油设备的房间内出现头晕、头痛、恶心、心悸',
       '同屋多人同时出现类似不适，离开房间后症状缓解',
@@ -230,14 +266,19 @@ export const hazards: HazardRecord[] = [
       '即使症状轻微也应就医，迟发脑病可能在数天后出现',
     ],
     region: '全国，北方冬季与使用燃气热水器地区高发',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('nhc', 'cdc', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('nhc', 'cdc', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'hz-electric-shock',
     title: '触电与电气事故',
     category: '事故灾难',
     dangerLevel: 'L4',
-    description: '电流通过人体可造成灼伤、心律紊乱甚至心脏骤停，潮湿环境与破损设备会显著降低安全电压阈值。雷雨天气的线路感应、设备漏电、私拉乱接与湿手操作是常见成因。救助触电者的第一原则是先断电、再施救，避免连环触电。',
+    description:
+      '电流通过人体可造成灼伤、心律紊乱甚至心脏骤停，潮湿环境与破损设备会显著降低安全电压阈值。雷雨天气的线路感应、设备漏电、私拉乱接与湿手操作是常见成因。救助触电者的第一原则是先断电、再施救，避免连环触电。',
     indicators: [
       '电器外壳麻手、漏电保护器频繁跳闸、线路发热或有烧焦气味',
       '设备进水、电线外皮破损、接头裸露或私拉乱接',
@@ -259,14 +300,19 @@ export const hazards: HazardRecord[] = [
       '电气火灾先断电再灭火，断电前禁止用水扑救',
     ],
     region: '全国通用',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('mem_gov_cn', 'nhc', 'rc_firstaid') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('mem_gov_cn', 'nhc', 'rc_firstaid'),
+    }),
   },
   {
     id: 'hz-drowning',
     title: '溺水',
     category: '事故灾难',
     dangerLevel: 'L4',
-    description: '溺水可在短短数分钟内导致呼吸停止与缺氧性脑损伤，儿童、青少年与非游泳区野泳者风险最高。溺水过程往往安静无声，旁观者误以为在玩水而错过救援时机。预防远胜于救援：不去危险水域、不单独下水、下水前评估自身状态。',
+    description:
+      '溺水可在短短数分钟内导致呼吸停止与缺氧性脑损伤，儿童、青少年与非游泳区野泳者风险最高。溺水过程往往安静无声，旁观者误以为在玩水而错过救援时机。预防远胜于救援：不去危险水域、不单独下水、下水前评估自身状态。',
     indicators: [
       '水域无防护设施、无救生员，水流湍急、水下有暗流与淤泥',
       '溺水者头部时沉时浮、张嘴不出声、眼神发直，做不出划水动作',
@@ -288,14 +334,19 @@ export const hazards: HazardRecord[] = [
       '不要采用倒挂控水等错误方法延误急救',
     ],
     region: '全国水域周边，夏季与节假日高发',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('rc_firstaid', 'who_firstaid', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('rc_firstaid', 'who_firstaid', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'hz-hypothermia',
     title: '低温失温',
     category: '环境危害',
     dangerLevel: 'L3',
-    description: '当体温核心低于 35℃ 即发生失温，常见于寒冷、大风、雨雪或落水后长时间暴露。失温会先引起剧烈寒战与判断力下降，进而出现意识模糊、动作失调，最终危及生命。湿透的衣物与风寒效应会让热量流失速度成倍增加。',
+    description:
+      '当体温核心低于 35℃ 即发生失温，常见于寒冷、大风、雨雪或落水后长时间暴露。失温会先引起剧烈寒战与判断力下降，进而出现意识模糊、动作失调，最终危及生命。湿透的衣物与风寒效应会让热量流失速度成倍增加。',
     indicators: [
       '在寒冷或风雨环境中持续寒战，随后寒战反而停止——可能已进入中度失温',
       '言语含糊、反应迟钝、走路摇晃、双手不听使唤',
@@ -316,14 +367,19 @@ export const hazards: HazardRecord[] = [
       '不要用热水浸泡或用力搓揉肢体，避免复温过快引发心律问题',
     ],
     region: '高海拔、北方冬季、户外与涉水作业场景',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('wilderness_society', 'rc_firstaid', 'cma_weather') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('wilderness_society', 'rc_firstaid', 'cma_weather'),
+    }),
   },
   {
     id: 'hz-snake-insect',
     title: '蛇虫叮咬（蛇、蜂、蝎、蜘蛛）',
     category: '生物危害',
     dangerLevel: 'L3',
-    description: '毒蛇、蜂类、蝎子与某些蜘蛛的叮咬可引起剧烈局部肿痛、出血与全身中毒反应，蜂蜇还可能引发严重过敏反应导致休克。户外作业、野外徒步、翻动杂物与夜间活动是主要暴露场景。处置的关键是冷静制动、尽快就医，避免错误土方法加重伤害。',
+    description:
+      '毒蛇、蜂类、蝎子与某些蜘蛛的叮咬可引起剧烈局部肿痛、出血与全身中毒反应，蜂蜇还可能引发严重过敏反应导致休克。户外作业、野外徒步、翻动杂物与夜间活动是主要暴露场景。处置的关键是冷静制动、尽快就医，避免错误土方法加重伤害。',
     indicators: [
       '野外出现蛇类爬行痕迹、蜕皮或听到草丛沙沙声',
       '叮咬处迅速肿胀、剧痛、淤斑，或出现麻木、视物模糊、吞咽困难',
@@ -345,14 +401,19 @@ export const hazards: HazardRecord[] = [
       '既往有过敏史者外出随身携带肾上腺素笔并告知同伴',
     ],
     region: '全国林区、农田、草地与温暖潮湿地区',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('who_firstaid', 'rc_firstaid', 'wilderness_society') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('who_firstaid', 'rc_firstaid', 'wilderness_society'),
+    }),
   },
   {
     id: 'hz-epidemic',
     title: '传染病疫情与聚集性疫情',
     category: '公共卫生',
     dangerLevel: 'L3',
-    description: '呼吸道、肠道与虫媒传染病在人群聚集、卫生条件下降或灾害后容易出现传播甚至暴发。灾害导致的供水中断、居住拥挤与医疗资源紧张会进一步放大风险。核心措施是早发现、早隔离、勤洗手、注意饮食饮水安全与按要求接种疫苗。',
+    description:
+      '呼吸道、肠道与虫媒传染病在人群聚集、卫生条件下降或灾害后容易出现传播甚至暴发。灾害导致的供水中断、居住拥挤与医疗资源紧张会进一步放大风险。核心措施是早发现、早隔离、勤洗手、注意饮食饮水安全与按要求接种疫苗。',
     indicators: [
       '官方通报出现聚集性病例或发布传染病疫情风险提示',
       '短时间内多人出现发热、腹泻、皮疹或呕吐等症状',
@@ -374,14 +435,19 @@ export const hazards: HazardRecord[] = [
       '关注当地疾控与卫生健康部门发布的防控指引并配合流调',
     ],
     region: '全国通用，灾后与人群聚集场所风险更高',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('cdc', 'nhc', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('cdc', 'nhc', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'hz-duststorm',
     title: '沙尘暴与扬沙浮尘',
     category: '气象灾害',
     dangerLevel: 'L2',
-    description: '沙尘天气由强风卷起地表沙尘形成，能见度骤降、空气质量恶化，颗粒物会刺激眼睛与呼吸道，对哮喘等呼吸系统疾病患者影响明显。交通方面能见度降低会显著增加追尾与迷路风险。重点是减少外出、做好呼吸与眼部防护。',
+    description:
+      '沙尘天气由强风卷起地表沙尘形成，能见度骤降、空气质量恶化，颗粒物会刺激眼睛与呼吸道，对哮喘等呼吸系统疾病患者影响明显。交通方面能见度降低会显著增加追尾与迷路风险。重点是减少外出、做好呼吸与眼部防护。',
     indicators: [
       '气象部门发布沙尘暴黄色、橙色、红色预警',
       '天空呈土黄色或橙色，能见度明显下降，远处建筑物轮廓模糊',
@@ -402,14 +468,19 @@ export const hazards: HazardRecord[] = [
       '沙尘过后注意补水润喉，关注空气质量指数变化',
     ],
     region: '北方与西北地区春季多发，可影响华北、东北',
-    meta: meta({ dangerLevel: 'L2', reviewStatus: 'published', sources: pick('cma_weather', 'mem_gov_cn', 'nws_weather') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      reviewStatus: 'published',
+      sources: pick('cma_weather', 'mem_gov_cn', 'nws_weather'),
+    }),
   },
   {
     id: 'hz-icy-road',
     title: '路面结冰与黑冰',
     category: '交通出行',
     dangerLevel: 'L2',
-    description: '降水后气温骤降到零度以下或夜间凝露会在路面形成薄冰层，尤其在桥梁、隧道口、背阴坡与高架路段最先结冰且不易被发现（黑冰）。车辆在结冰路面制动距离成倍增加，行人滑倒也易造成骨折等损伤。重点是降速、避免急操作、提前规划行程。',
+    description:
+      '降水后气温骤降到零度以下或夜间凝露会在路面形成薄冰层，尤其在桥梁、隧道口、背阴坡与高架路段最先结冰且不易被发现（黑冰）。车辆在结冰路面制动距离成倍增加，行人滑倒也易造成骨折等损伤。重点是降速、避免急操作、提前规划行程。',
     indicators: [
       '气象部门发布道路结冰预警或寒潮低温预警',
       '夜间降雨后气温降至 0℃ 附近，清晨路面出现反光薄冰',
@@ -431,14 +502,19 @@ export const hazards: HazardRecord[] = [
       '冰雪天气优先选择公共交通，减少非必要自驾',
     ],
     region: '全国冬季，北方与高海拔地区高发',
-    meta: meta({ dangerLevel: 'L2', reviewStatus: 'published', sources: pick('cma_weather', 'nws_weather', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      reviewStatus: 'published',
+      sources: pick('cma_weather', 'nws_weather', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'hz-gas-leak',
     title: '燃气泄漏',
     category: '事故灾难',
     dangerLevel: 'L4',
-    description: '天然气、液化石油气泄漏后在密闭空间内积聚，遇明火、电火花或开关电器即可能燃烧爆炸。泄漏本身也会造成窒息风险。识别泄漏、杜绝火源、自然通风与迅速撤离是处置的四个关键动作，任何操作电器或点火的行为都可能引燃整个空间。',
+    description:
+      '天然气、液化石油气泄漏后在密闭空间内积聚，遇明火、电火花或开关电器即可能燃烧爆炸。泄漏本身也会造成窒息风险。识别泄漏、杜绝火源、自然通风与迅速撤离是处置的四个关键动作，任何操作电器或点火的行为都可能引燃整个空间。',
     indicators: [
       '闻到明显的臭味（燃气加臭剂的特殊气味）',
       '燃气表指针异常转动、用气量突然增加',
@@ -460,14 +536,19 @@ export const hazards: HazardRecord[] = [
       '泄漏区域禁止车辆驶入与人员围观，确认专业人员检修后方可恢复用气',
     ],
     region: '全国使用燃气的城市与农村地区',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('mem_gov_cn', 'nhc', 'cdc') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('mem_gov_cn', 'nhc', 'cdc'),
+    }),
   },
   {
     id: 'hz-snowstorm',
     title: '暴雪与雪灾',
     category: '气象灾害',
     dangerLevel: 'L3',
-    description: '暴雪伴随大幅降温与大风，会造成道路积雪结冰、能见度下降、车辆被困与电力通信中断，压垮简易棚架与树木。野外与行车场景中，失温和车辆被困是主要人身风险。重点是提前储备、减少非必要出行、被困时就地求生等待救援。',
+    description:
+      '暴雪伴随大幅降温与大风，会造成道路积雪结冰、能见度下降、车辆被困与电力通信中断，压垮简易棚架与树木。野外与行车场景中，失温和车辆被困是主要人身风险。重点是提前储备、减少非必要出行、被困时就地求生等待救援。',
     indicators: [
       '气象部门发布暴雪橙色、红色预警或道路结冰预警',
       '降雪持续数小时不减，积雪快速加深，风吹雪形成雪堆',
@@ -488,14 +569,19 @@ export const hazards: HazardRecord[] = [
       '雪后出行穿防滑鞋，避开屋檐冰凌与临时构筑物',
     ],
     region: '北方与高海拔地区冬季',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('cma_weather', 'mem_gov_cn', 'nws_weather') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('cma_weather', 'mem_gov_cn', 'nws_weather'),
+    }),
   },
   {
     id: 'hz-avalanche',
     title: '雪崩',
     category: '地质灾害',
     dangerLevel: 'L4',
-    description: '积雪在陡坡上失稳下滑形成雪崩，速度快、冲击力大，可在数秒内掩埋人员与道路，被埋者面临窒息与低温的双重威胁。天气骤变、人为震动与陡坡大面积新雪堆积是常见诱因。防范核心是关注雪崩预警、避开高风险坡面、携带必要装备。',
+    description:
+      '积雪在陡坡上失稳下滑形成雪崩，速度快、冲击力大，可在数秒内掩埋人员与道路，被埋者面临窒息与低温的双重威胁。天气骤变、人为震动与陡坡大面积新雪堆积是常见诱因。防范核心是关注雪崩预警、避开高风险坡面、携带必要装备。',
     indicators: [
       '登山或滑雪途中听到山上传来轰鸣声，雪面出现裂缝与塌陷',
       '雪崩预警发布，近期降雪量大且伴随大风与快速升温',
@@ -517,14 +603,19 @@ export const hazards: HazardRecord[] = [
       '持续观察坡面积雪与新裂缝，防止救援时再次被埋',
     ],
     region: '高海拔山区与积雪陡坡地带',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('wilderness_society', 'cma_weather', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('wilderness_society', 'cma_weather', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'hz-tsunami',
     title: '海啸',
     category: '地质灾害',
     dangerLevel: 'L4',
-    description: '海底地震、火山或滑坡可能引发海啸，巨浪以极快速度冲向海岸，破坏力远超普通风浪。海啸往往在主震后数分钟至数小时到达，第一波之后还有更强的后续波。沿海地区的核心避险动作是：看到预警或异常退海，立即向内陆高处撤离。',
+    description:
+      '海底地震、火山或滑坡可能引发海啸，巨浪以极快速度冲向海岸，破坏力远超普通风浪。海啸往往在主震后数分钟至数小时到达，第一波之后还有更强的后续波。沿海地区的核心避险动作是：看到预警或异常退海，立即向内陆高处撤离。',
     indicators: [
       '强烈地震发生在沿海或海底，震后感到持续晃动',
       '海面异常快速退潮，露出平时淹没的海床与鱼虾',
@@ -545,14 +636,19 @@ export const hazards: HazardRecord[] = [
       '服从政府疏散指令，不因好奇返回岸边拍摄',
     ],
     region: '沿海地区及岛屿',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('fema', 'mem_gov_cn', 'usgs_quake') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('fema', 'mem_gov_cn', 'usgs_quake'),
+    }),
   },
   {
     id: 'hz-landslide',
     title: '泥石流与山体滑坡',
     category: '地质灾害',
     dangerLevel: 'L3',
-    description: '强降雨、地震或植被破坏会使山体土石失稳下滑，泥石流沿沟谷高速冲出，携带巨石与树木，冲击力极大且来势突然。山区沟口、切坡建房与公路边坡是高风险区。识别前兆、沿垂直于沟谷方向撤离是保命关键。',
+    description:
+      '强降雨、地震或植被破坏会使山体土石失稳下滑，泥石流沿沟谷高速冲出，携带巨石与树木，冲击力极大且来势突然。山区沟口、切坡建房与公路边坡是高风险区。识别前兆、沿垂直于沟谷方向撤离是保命关键。',
     indicators: [
       '持续强降雨或地震后，山坡出现裂缝、鼓胀、坡脚渗浑水',
       '沟谷传来异常轰鸣声，河水突然断流或变得非常浑浊',
@@ -573,14 +669,19 @@ export const hazards: HazardRecord[] = [
       '协助转移老弱人员，及时向村社与应急部门报告险情',
     ],
     region: '山区、丘陵与沟谷地带，汛期高发',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('mem_gov_cn', 'cma_weather', 'fema') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('mem_gov_cn', 'cma_weather', 'fema'),
+    }),
   },
   {
     id: 'hz-fog-driving',
     title: '浓雾行车',
     category: '交通出行',
     dangerLevel: 'L2',
-    description: '团雾与浓雾会使能见度在数十米内骤降，驾驶员难以及时发现前车与障碍物，是高速多车连环相撞的典型诱因。雾天地面湿滑也会延长制动距离。核心原则是低速、开灯、拉大车距、必要时果断驶离道路等待。',
+    description:
+      '团雾与浓雾会使能见度在数十米内骤降，驾驶员难以及时发现前车与障碍物，是高速多车连环相撞的典型诱因。雾天地面湿滑也会延长制动距离。核心原则是低速、开灯、拉大车距、必要时果断驶离道路等待。',
     indicators: [
       '气象部门发布大雾黄色、橙色、红色预警',
       '能见度低于 200 米，前方车辆轮廓模糊，路牌难以辨认',
@@ -601,14 +702,19 @@ export const hazards: HazardRecord[] = [
       '雾散确认路况后再继续行程，不因赶时间冒险提速',
     ],
     region: '全国，秋冬清晨与水网、山区路段多发',
-    meta: meta({ dangerLevel: 'L2', reviewStatus: 'published', sources: pick('cma_weather', 'nws_weather', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      reviewStatus: 'published',
+      sources: pick('cma_weather', 'nws_weather', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'hz-chem-leak',
     title: '危险化学品泄漏',
     category: '事故灾难',
     dangerLevel: 'L4',
-    description: '化工企业、运输车辆或储存设施发生泄漏时，有毒有害、易燃易爆物质会随风扩散，造成中毒、灼伤、爆炸与环境污染。公众面临的主要风险是吸入与接触暴露。核心原则是向上风向高处撤离、远离泄漏区、不围观、不接触不明物质。',
+    description:
+      '化工企业、运输车辆或储存设施发生泄漏时，有毒有害、易燃易爆物质会随风扩散，造成中毒、灼伤、爆炸与环境污染。公众面临的主要风险是吸入与接触暴露。核心原则是向上风向高处撤离、远离泄漏区、不围观、不接触不明物质。',
     indicators: [
       '闻到刺激性或异常化学气味，看到不明烟雾、液体流淌或气雾',
       '周边人员出现流泪、咳嗽、胸闷、皮肤刺痛等不适',
@@ -629,14 +735,19 @@ export const hazards: HazardRecord[] = [
       '服从应急指挥部疏散安排，不要擅自返回或围观抢险',
     ],
     region: '化工园区周边、危化品运输沿线',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('mem_gov_cn', 'cdc', 'nhc') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('mem_gov_cn', 'cdc', 'nhc'),
+    }),
   },
   {
     id: 'hz-food-poisoning',
     title: '食物中毒',
     category: '公共卫生',
     dangerLevel: 'L3',
-    description: '食用被细菌、病毒或毒素污染的食物后，可在数小时内出现恶心、呕吐、腹痛、腹泻，严重者出现脱水与休克。灾后断电、水源污染与剩菜变质是高发场景。识别可疑食物、及时补液与就医是处置重点，切勿因症状缓解而掉以轻心。',
+    description:
+      '食用被细菌、病毒或毒素污染的食物后，可在数小时内出现恶心、呕吐、腹痛、腹泻，严重者出现脱水与休克。灾后断电、水源污染与剩菜变质是高发场景。识别可疑食物、及时补液与就医是处置重点，切勿因症状缓解而掉以轻心。',
     indicators: [
       '进食共同食物后多人在短时间内先后出现胃肠症状',
       '食物有异味、变色、发黏，冰箱断电后长时间存放',
@@ -657,14 +768,19 @@ export const hazards: HazardRecord[] = [
       '老年人与儿童脱水进展快，应尽早送医而不是在家观察',
     ],
     region: '全国通用，灾后与集体聚餐场景高发',
-    meta: meta({ dangerLevel: 'L3', reviewStatus: 'published', sources: pick('usda_food', 'cdc', 'nhc') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      reviewStatus: 'published',
+      sources: pick('usda_food', 'cdc', 'nhc'),
+    }),
   },
   {
     id: 'hz-building-fire',
     title: '建筑火灾与火场逃生',
     category: '事故灾难',
     dangerLevel: 'L4',
-    description: '建筑火灾中，浓烟与高温往往比火焰更早致命：烟气上升速度快，含有一氧化碳等有毒气体，能见度迅速归零。逃生时间通常只有几分钟，正确选择疏散通道、防烟姿势与报警时机直接决定生还概率。火灾面前，财物一律放弃。',
+    description:
+      '建筑火灾中，浓烟与高温往往比火焰更早致命：烟气上升速度快，含有一氧化碳等有毒气体，能见度迅速归零。逃生时间通常只有几分钟，正确选择疏散通道、防烟姿势与报警时机直接决定生还概率。火灾面前，财物一律放弃。',
     indicators: [
       '闻到焦糊味、看到烟雾从门缝或窗外渗入，听到燃烧噼啪声',
       '烟感报警器或消防广播响起，楼道出现烟雾',
@@ -686,7 +802,11 @@ export const hazards: HazardRecord[] = [
       '逃出后到集合点清点人数，不擅自返回火场，配合消防救援',
     ],
     region: '全国通用，住宅、商场、群租房与高层建筑重点',
-    meta: meta({ dangerLevel: 'L4', reviewStatus: 'published', sources: pick('mem_gov_cn', 'fema', 'rc_firstaid') }),
+    meta: meta({
+      dangerLevel: 'L4',
+      reviewStatus: 'published',
+      sources: pick('mem_gov_cn', 'fema', 'rc_firstaid'),
+    }),
   },
   /* ============ articles2-agent 追加：基础设施 / 环境 / 能源 ============ */
   {
@@ -694,7 +814,8 @@ export const hazards: HazardRecord[] = [
     title: '城市大范围停电',
     category: '基础设施',
     dangerLevel: 'L2',
-    description: '城市供电系统故障或灾害导致的大范围停电，会造成交通信号失效、电梯困人、供水加压停止、通讯基站后备电源耗尽等一系列连锁影响。黑暗与秩序缺失本身也会放大跌倒、碰撞与走失风险，老旧住宅楼与地下空间受影响尤为明显。',
+    description:
+      '城市供电系统故障或灾害导致的大范围停电，会造成交通信号失效、电梯困人、供水加压停止、通讯基站后备电源耗尽等一系列连锁影响。黑暗与秩序缺失本身也会放大跌倒、碰撞与走失风险，老旧住宅楼与地下空间受影响尤为明显。',
     indicators: [
       '街区、楼宇照明与交通信号同时熄灭',
       '电梯停运，楼道内人员滞留',
@@ -721,7 +842,8 @@ export const hazards: HazardRecord[] = [
     title: '长期断水',
     category: '基础设施',
     dangerLevel: 'L2',
-    description: '供水管网破损、水源污染或灾害导致的持续性停水。缺水会迅速影响饮用、烹饪、冲洗与医疗清洁，若水源被污染后恢复供水，还可能因管网倒吸造成大范围介水疾病。卫生条件恶化是断水后期最主要的风险。',
+    description:
+      '供水管网破损、水源污染或灾害导致的持续性停水。缺水会迅速影响饮用、烹饪、冲洗与医疗清洁，若水源被污染后恢复供水，还可能因管网倒吸造成大范围介水疾病。卫生条件恶化是断水后期最主要的风险。',
     indicators: [
       '水龙头无水或水压极低且持续数日',
       '通知公告说明水源地或管网故障',
@@ -748,7 +870,8 @@ export const hazards: HazardRecord[] = [
     title: '洪水',
     category: '水文气象',
     dangerLevel: 'L3',
-    description: '暴雨、溃坝或上游来水引发的江河泛滥与城市内涝。洪水上涨速度快、携带杂物与污染物，极易冲开井盖、冲毁道路，并使垂落电线与水中的电力设施带电。涉水转移中的冲倒、溺水与触电是主要伤亡原因。',
+    description:
+      '暴雨、溃坝或上游来水引发的江河泛滥与城市内涝。洪水上涨速度快、携带杂物与污染物，极易冲开井盖、冲毁道路，并使垂落电线与水中的电力设施带电。涉水转移中的冲倒、溺水与触电是主要伤亡原因。',
     indicators: [
       '水位短时间内持续上涨，水流出现漩涡',
       '河道水色变浑、漂浮物明显增多',
@@ -775,7 +898,8 @@ export const hazards: HazardRecord[] = [
     title: '地震',
     category: '地质',
     dangerLevel: 'L3',
-    description: '地壳快速释放能量造成的地面震动，可在数十秒内造成房屋倒塌、燃气管道破裂与次生起火。主震后余震频繁，山区还需防范滑坡、落石与堰塞湖。室内家具倾倒与玻璃飞散是城市环境中的常见伤害来源。',
+    description:
+      '地壳快速释放能量造成的地面震动，可在数十秒内造成房屋倒塌、燃气管道破裂与次生起火。主震后余震频繁，山区还需防范滑坡、落石与堰塞湖。室内家具倾倒与玻璃飞散是城市环境中的常见伤害来源。',
     indicators: [
       '地面突然晃动、吊灯摆动、器皿作响',
       '动物异常躁动、井水位突变',
@@ -802,7 +926,8 @@ export const hazards: HazardRecord[] = [
     title: '极端低温与寒潮',
     category: '气象',
     dangerLevel: 'L2',
-    description: '冷空气快速南下造成气温骤降至常年同期罕见水平的天气过程。大风显著加剧体感寒冷，露天停留过久会导致失温与冻伤，老年人、婴幼儿与户外工作者风险最高。道路结冰与管线冻裂是主要次生影响。',
+    description:
+      '冷空气快速南下造成气温骤降至常年同期罕见水平的天气过程。大风显著加剧体感寒冷，露天停留过久会导致失温与冻伤，老年人、婴幼儿与户外工作者风险最高。道路结冰与管线冻裂是主要次生影响。',
     indicators: [
       '24 小时内降温幅度达 10℃ 以上并持续走低',
       '气象部门发布寒潮预警',
@@ -829,7 +954,8 @@ export const hazards: HazardRecord[] = [
     title: '极端高温与热浪',
     category: '气象',
     dangerLevel: 'L2',
-    description: '持续数日的高温高湿天气，人体散热负担加重，容易引发热痉挛、热衰竭与热射病。热射病进展快、可危及生命，是高温天气中最危险的急症。老旧建筑、密闭车间与独居老人是重点风险场景。',
+    description:
+      '持续数日的高温高湿天气，人体散热负担加重，容易引发热痉挛、热衰竭与热射病。热射病进展快、可危及生命，是高温天气中最危险的急症。老旧建筑、密闭车间与独居老人是重点风险场景。',
     indicators: [
       '连续多日最高气温超过 35℃ 且夜间降温有限',
       '气象部门发布高温红色或橙色预警',
@@ -856,7 +982,8 @@ export const hazards: HazardRecord[] = [
     title: '森林与草原火灾',
     category: '生态',
     dangerLevel: 'L3',
-    description: '干旱、大风与可燃物富集条件下快速蔓延的野火。火头推进速度快于步行速度，产生的高温、浓烟与飞火可在短时间内封堵撤离路线，一氧化碳与颗粒物对呼吸道的伤害往往先于火焰到达。',
+    description:
+      '干旱、大风与可燃物富集条件下快速蔓延的野火。火头推进速度快于步行速度，产生的高温、浓烟与飞火可在短时间内封堵撤离路线，一氧化碳与颗粒物对呼吸道的伤害往往先于火焰到达。',
     indicators: [
       '远处山林出现烟柱或连续火线',
       '空气中弥漫烟味、飘落灰烬',
@@ -883,7 +1010,8 @@ export const hazards: HazardRecord[] = [
     title: '雷暴与强对流',
     category: '气象',
     dangerLevel: 'L2',
-    description: '伴随雷电、短时强降水、大风或冰雹的强对流天气，发展迅速、局地性强。雷击可直接击中户外人员与高耸物体，短时暴雨则易引发城市内涝与山区山洪，是夏季户外活动中最常见的突发气象风险。',
+    description:
+      '伴随雷电、短时强降水、大风或冰雹的强对流天气，发展迅速、局地性强。雷击可直接击中户外人员与高耸物体，短时暴雨则易引发城市内涝与山区山洪，是夏季户外活动中最常见的突发气象风险。',
     indicators: [
       '远处闪电后短时间内听到雷声',
       '积雨云迅速发展、云底发黑',
@@ -910,7 +1038,8 @@ export const hazards: HazardRecord[] = [
     title: '山洪与泥石流',
     category: '地质',
     dangerLevel: 'L2',
-    description: '强降雨或冰雪快速融水在陡峭沟谷中形成的暴涨洪流，常裹挟大量泥沙石块形成泥石流。其暴发突然、来势凶猛，从听到沟谷轰鸣到冲击抵达往往只有几分钟，沟口扇形地与切坡建房区是最危险的堆积区。',
+    description:
+      '强降雨或冰雪快速融水在陡峭沟谷中形成的暴涨洪流，常裹挟大量泥沙石块形成泥石流。其暴发突然、来势凶猛，从听到沟谷轰鸣到冲击抵达往往只有几分钟，沟口扇形地与切坡建房区是最危险的堆积区。',
     indicators: [
       '沟谷上游传来异常轰鸣声',
       '溪流突然断流或水位暴涨、变浑',
@@ -937,7 +1066,8 @@ export const hazards: HazardRecord[] = [
     title: '危险化学品泄漏',
     category: '环境健康',
     dangerLevel: 'L4',
-    description: '生产、运输或储存环节导致的有毒有害物质泄漏，可能以气体、液体形式扩散。高浓度有毒气体可在短时间内经呼吸道造成中毒甚至致命后果，部分物质还伴随燃烧爆炸风险。风向决定扩散方向，隐蔽空间内浓度积聚更快。',
+    description:
+      '生产、运输或储存环节导致的有毒有害物质泄漏，可能以气体、液体形式扩散。高浓度有毒气体可在短时间内经呼吸道造成中毒甚至致命后果，部分物质还伴随燃烧爆炸风险。风向决定扩散方向，隐蔽空间内浓度积聚更快。',
     indicators: [
       '刺激性、甜腻或类似臭鸡蛋的异常气味',
       '不明液体流淌、挥发成雾或伴随气泡',
@@ -964,7 +1094,8 @@ export const hazards: HazardRecord[] = [
     title: '燃气泄漏',
     category: '基础设施',
     dangerLevel: 'L3',
-    description: '天然气、液化石油气或人工煤气因管道破损、胶管老化或阀门未关而泄漏。燃气在密闭空间内积聚达到爆炸极限后，遇明火或电火花即发生爆炸，是家庭与餐饮场所常见的高危险情，嗅觉警示剂的气味是主要识别线索。',
+    description:
+      '天然气、液化石油气或人工煤气因管道破损、胶管老化或阀门未关而泄漏。燃气在密闭空间内积聚达到爆炸极限后，遇明火或电火花即发生爆炸，是家庭与餐饮场所常见的高危险情，嗅觉警示剂的气味是主要识别线索。',
     indicators: [
       '闻到臭鸡蛋或刺激性气味',
       '燃气表在不用气时仍缓慢转动',
@@ -991,7 +1122,8 @@ export const hazards: HazardRecord[] = [
     title: '电力设施危险',
     category: '能源',
     dangerLevel: 'L3',
-    description: '架空线路、配电箱、变压器与施工临时用电设施在破损、倒伏或防护缺失时构成的电击风险。灾害过后断落的电线与积水中的电力设施尤其危险，感应电与跨步电压同样可造成伤害，肉眼无法判断导体是否带电。',
+    description:
+      '架空线路、配电箱、变压器与施工临时用电设施在破损、倒伏或防护缺失时构成的电击风险。灾害过后断落的电线与积水中的电力设施尤其危险，感应电与跨步电压同样可造成伤害，肉眼无法判断导体是否带电。',
     indicators: [
       '架空线断落、杆塔倾斜或导线垂地',
       '配电箱门缺失、箱体带电火花或焦糊味',
@@ -1018,7 +1150,8 @@ export const hazards: HazardRecord[] = [
     title: '野生动物袭击',
     category: '生物',
     dangerLevel: 'L2',
-    description: '在林区、山区与城乡交界地带遭遇具有攻击性的野生动物，包括野猪、熊、毒蛇与具有领地意识的犬只。多数袭击发生在动物受惊、护幼或被食物气味吸引时，蛇咬伤与群体性追逐踩踏是常见的伤害形式。',
+    description:
+      '在林区、山区与城乡交界地带遭遇具有攻击性的野生动物，包括野猪、熊、毒蛇与具有领地意识的犬只。多数袭击发生在动物受惊、护幼或被食物气味吸引时，蛇咬伤与群体性追逐踩踏是常见的伤害形式。',
     indicators: [
       '发现新鲜足迹、粪便或抓痕',
       '动物发出警告性嘶吼、竖毛或反复徘徊',
@@ -1045,7 +1178,8 @@ export const hazards: HazardRecord[] = [
     title: '食物中毒',
     category: '环境健康',
     dangerLevel: 'L2',
-    description: '食用被致病菌、病毒或天然毒素污染的食物后出现的急性群体性胃肠道疾病。灾后冷链中断、水源污染与集体供餐条件简陋会显著增加暴发风险，剩菜、生熟交叉与来源不明的野菜野味是常见诱因。',
+    description:
+      '食用被致病菌、病毒或天然毒素污染的食物后出现的急性群体性胃肠道疾病。灾后冷链中断、水源污染与集体供餐条件简陋会显著增加暴发风险，剩菜、生熟交叉与来源不明的野菜野味是常见诱因。',
     indicators: [
       '短时间内多人先后出现呕吐、腹泻、腹痛',
       '进食同一批次食物后集中发病',
@@ -1072,7 +1206,8 @@ export const hazards: HazardRecord[] = [
     title: '传染病暴发风险',
     category: '环境健康',
     dangerLevel: 'L2',
-    description: '灾后或安置点内因人口密集、卫生设施不足、饮水与食品受污染而出现的呼吸道或肠道传染病传播风险。潜伏期内的隐性传播使早期识别困难，老人、婴幼儿与慢性病患者更容易发展为重症。',
+    description:
+      '灾后或安置点内因人口密集、卫生设施不足、饮水与食品受污染而出现的呼吸道或肠道传染病传播风险。潜伏期内的隐性传播使早期识别困难，老人、婴幼儿与慢性病患者更容易发展为重症。',
     indicators: [
       '安置点内出现聚集性发热、咳嗽或腹泻病例',
       '饮水发浑、有异味或消毒检测不达标',
@@ -1099,7 +1234,8 @@ export const hazards: HazardRecord[] = [
     title: '通讯中断',
     category: '基础设施',
     dangerLevel: 'L1',
-    description: '灾害或故障导致的移动网络与固定通讯大范围不可用。信息通道切断会延误预警接收与求救信号传递，加剧恐慌与谣言传播，并使依赖网络的支付、导航与调度一并瘫痪，是其他灾害的放大器。',
+    description:
+      '灾害或故障导致的移动网络与固定通讯大范围不可用。信息通道切断会延误预警接收与求救信号传递，加剧恐慌与谣言传播，并使依赖网络的支付、导航与调度一并瘫痪，是其他灾害的放大器。',
     indicators: [
       '手机长时间无信号或无法接通',
       '网络信号满格但数据业务不可用',

@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest';
-import { computeRequiredDanger, isDangerAtLeast, maxDanger, DANGER_ORDER } from '../src/danger';
+import { describe, expect, it } from 'vitest';
+import { computeRequiredDanger, DANGER_ORDER, isDangerAtLeast, maxDanger } from '../src/danger';
 
 describe('danger 等级工具', () => {
   it('isDangerAtLeast 按序比较', () => {

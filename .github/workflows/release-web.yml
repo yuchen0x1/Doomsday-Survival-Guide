@@ -25,27 +25,40 @@ jobs:
     env:
       RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref_name }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout requested main/tag ref
+        uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref }}
-      - uses: pnpm/action-setup@v4
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 11.20.0
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22.13.0
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @apocalypse/web typecheck
-      - run: pnpm test
-      - run: pnpm build
+      - name: Validate release version
+        run: node -e "if (process.env.RELEASE_TAG !== 'v' + require('./package.json').version) throw new Error('Release tag must match package version')"
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Generate API types
+        run: pnpm --filter @apocalypse/api prisma:generate
+      - name: Validate
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+      - name: Build web PWA
+        run: pnpm build
       - name: Package web assets and checksum
         shell: bash
         run: |
           mkdir -p release
           tar -czf "release/apocalypse-survival-web-${RELEASE_TAG}.tar.gz" -C apps/web/dist .
-          sha256sum "release/apocalypse-survival-web-${RELEASE_TAG}.tar.gz" > "release/SHA256SUMS"
-      - uses: actions/upload-artifact@v4
+          (cd release && sha256sum "apocalypse-survival-web-${RELEASE_TAG}.tar.gz" > SHA256SUMS)
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
         with:
           name: web-release-${{ env.RELEASE_TAG }}
           path: release/
@@ -59,7 +72,8 @@ jobs:
     env:
       RELEASE_TAG: ${{ inputs.version_tag }}
     steps:
-      - uses: actions/download-artifact@v4
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
         with:
           name: web-release-${{ env.RELEASE_TAG }}
           path: release

@@ -48,5 +48,13 @@ export function src(
   credibility: SourceReference['credibility'],
   extra: Partial<SourceReference> = {},
 ): SourceReference {
-  return { id, name, type, credibility, verifiedAt: DATA_VERSION_DATE, verifiedBy: 'editorial-team', ...extra };
+  return {
+    id,
+    name,
+    type,
+    credibility,
+    verifiedAt: DATA_VERSION_DATE,
+    verifiedBy: 'editorial-team',
+    ...extra,
+  };
 }

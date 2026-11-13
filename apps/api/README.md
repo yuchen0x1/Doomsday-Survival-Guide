@@ -65,31 +65,31 @@ curl -s "http://localhost:3000/api/content/articles?limit=2"
 
 ## 常用地址
 
-| 地址 | 说明 |
-| --- | --- |
-| `http://localhost:3000/api` | 全局路由前缀（`app.setGlobalPrefix('api')`） |
-| `http://localhost:3000/api/docs` | Swagger UI（OpenAPI 文档，Bearer 认证） |
-| `http://localhost:3000/api/health` | 健康检查（含数据库探测，返回 `status` / `db`） |
-| `http://localhost:3000/api/ai/health` | AI 服务健康（仅探测服务端是否配置密钥，不外呼） |
-| `http://localhost:8080` | 可选 Adminer（`docker compose --profile tools up -d adminer`） |
+| 地址                                  | 说明                                                           |
+| ------------------------------------- | -------------------------------------------------------------- |
+| `http://localhost:3000/api`           | 全局路由前缀（`app.setGlobalPrefix('api')`）                   |
+| `http://localhost:3000/api/docs`      | Swagger UI（OpenAPI 文档，Bearer 认证）                        |
+| `http://localhost:3000/api/health`    | 健康检查（含数据库探测，返回 `status` / `db`）                 |
+| `http://localhost:3000/api/ai/health` | AI 服务健康（仅探测服务端是否配置密钥，不外呼）                |
+| `http://localhost:8080`               | 可选 Adminer（`docker compose --profile tools up -d adminer`） |
 
 主要接口：
 
-| 方法 | 路径 | 认证 | 说明 |
-| --- | --- | --- | --- |
-| GET | `/api/health` | 公开 | 健康检查 |
-| GET | `/api/ai/health` | 公开 | `{ "available": boolean, "model"?: string }` |
-| POST | `/api/ai/chat` | 公开 | SSE 流式对话 |
-| POST | `/api/ai/identify` | 公开 | 植物/动物图片识别 |
-| GET | `/api/content/:kind` | 公开 | 内容列表（如 `articles`），分页/过滤 |
-| GET | `/api/content/:kind/:id` | 公开 | 内容详情 |
-| GET | `/api/content/search` | 公开 | 全文搜索 |
-| POST | `/api/auth/register` | 公开 | 注册（默认 `USER` 角色） |
-| POST | `/api/auth/login` | 公开 | 登录，返回 `accessToken` / `refreshToken` |
-| GET | `/api/auth/me` | Bearer | 当前登录用户 |
-| GET | `/api/admin/stats` | Bearer + `ADMIN` | 运营统计 |
-| GET | `/api/admin/content/:kind` | Bearer + `ADMIN` | 管理端内容列表 |
-| POST | `/api/admin/content/:kind/:id/status` | Bearer + `ADMIN` | 审核状态迁移 |
+| 方法 | 路径                                  | 认证             | 说明                                         |
+| ---- | ------------------------------------- | ---------------- | -------------------------------------------- |
+| GET  | `/api/health`                         | 公开             | 健康检查                                     |
+| GET  | `/api/ai/health`                      | 公开             | `{ "available": boolean, "model"?: string }` |
+| POST | `/api/ai/chat`                        | 公开             | SSE 流式对话                                 |
+| POST | `/api/ai/identify`                    | 公开             | 植物/动物图片识别                            |
+| GET  | `/api/content/:kind`                  | 公开             | 内容列表（如 `articles`），分页/过滤         |
+| GET  | `/api/content/:kind/:id`              | 公开             | 内容详情                                     |
+| GET  | `/api/content/search`                 | 公开             | 全文搜索                                     |
+| POST | `/api/auth/register`                  | 公开             | 注册（默认 `USER` 角色）                     |
+| POST | `/api/auth/login`                     | 公开             | 登录，返回 `accessToken` / `refreshToken`    |
+| GET  | `/api/auth/me`                        | Bearer           | 当前登录用户                                 |
+| GET  | `/api/admin/stats`                    | Bearer + `ADMIN` | 运营统计                                     |
+| GET  | `/api/admin/content/:kind`            | Bearer + `ADMIN` | 管理端内容列表                               |
+| POST | `/api/admin/content/:kind/:id/status` | Bearer + `ADMIN` | 审核状态迁移                                 |
 
 审核状态机（纯函数，见 `src/common/content-state.ts`）：
 `draft → pending_review → reviewed → published → retired`，仅允许相邻正向迁移，禁止回退与跨级。
@@ -98,28 +98,28 @@ curl -s "http://localhost:3000/api/content/articles?limit=2"
 
 来自 `.env.example`。带 `*` 的为启动/迁移必填或强烈建议修改。
 
-| 变量 | 默认值 | 说明 |
-| --- | --- | --- |
-| `API_PORT` | `3000` | 服务监听端口 |
-| `NODE_ENV` | `development` | 运行环境 |
-| `DATABASE_URL` * | `postgresql://survival:survival@localhost:5432/apocalypse_survival` | PostgreSQL 连接串，与 docker-compose 一致 |
-| `SQLITE_PATH` | `./data/local.db` | 桌面端/本地回退库路径 |
-| `JWT_SECRET` * | `change-me-to-a-strong-random-secret-32bytes` | JWT 签名密钥，生产必须替换为 ≥32 字节随机值 |
-| `JWT_EXPIRES_IN` | `7d` | 访问令牌有效期（refresh 固定 30d） |
-| `ADMIN_EMAIL` | `admin@survival.local` | `prisma db seed` 创建的管理员邮箱 |
-| `ADMIN_PASSWORD` * | `change-me-initial-admin-password` | seed 管理员初始密码，部署后必须修改 |
-| `AI_BASE_URL` | `https://api.xiaomimimo.com/v1` | OpenAI 兼容端点 |
-| `AI_MODEL` | `mimo-v2.6-Flash` | 模型名 |
-| `AI_API_KEY` | （空） | **仅服务端持有**；留空即降级，见下节 |
-| `AI_TIMEOUT_MS` | `60000` | 流式请求超时（毫秒） |
-| `AI_RATE_LIMIT_PER_MIN` | `20` | 每用户每分钟 AI 请求上限 |
-| `API_RATE_LIMIT_PER_MIN` | `300` | 全局每 IP 每分钟请求上限 |
-| `UPLOAD_MAX_BYTES` | `5242880` | 上传体积上限（字节，默认 5MB） |
-| `ENABLE_CORS_WHITELIST` | `false` | 是否启用 CORS 白名单（生产建议 `true`） |
-| `CORS_ORIGINS` | `http://localhost:5173,http://localhost:3000` | 允许的来源，逗号分隔 |
-| `S3_ENDPOINT` / `S3_REGION` / `S3_BUCKET` / `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` / `S3_PUBLIC_BASE_URL` | （空） | 可选 S3 兼容对象存储 |
-| `MAP_TILE_URL` | `https://tile.openstreetmap.org/{z}/{x}/{y}.png` | 地图瓦片服务，可替换为合规服务商 |
-| `MAP_ATTRIBUTION` | `© OpenStreetMap contributors` | 地图署名 |
+| 变量                                                                                                           | 默认值                                                              | 说明                                        |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- | ------------------------------------------- |
+| `API_PORT`                                                                                                     | `3000`                                                              | 服务监听端口                                |
+| `NODE_ENV`                                                                                                     | `development`                                                       | 运行环境                                    |
+| `DATABASE_URL` *                                                                                               | `postgresql://survival:survival@localhost:5432/apocalypse_survival` | PostgreSQL 连接串，与 docker-compose 一致   |
+| `SQLITE_PATH`                                                                                                  | `./data/local.db`                                                   | 桌面端/本地回退库路径                       |
+| `JWT_SECRET` *                                                                                                 | `change-me-to-a-strong-random-secret-32bytes`                       | JWT 签名密钥，生产必须替换为 ≥32 字节随机值 |
+| `JWT_EXPIRES_IN`                                                                                               | `7d`                                                                | 访问令牌有效期（refresh 固定 30d）          |
+| `ADMIN_EMAIL`                                                                                                  | `admin@survival.local`                                              | `prisma db seed` 创建的管理员邮箱           |
+| `ADMIN_PASSWORD` *                                                                                             | `change-me-initial-admin-password`                                  | seed 管理员初始密码，部署后必须修改         |
+| `AI_BASE_URL`                                                                                                  | `https://api.xiaomimimo.com/v1`                                     | OpenAI 兼容端点                             |
+| `AI_MODEL`                                                                                                     | `mimo-v2.6-Flash`                                                   | 模型名                                      |
+| `AI_API_KEY`                                                                                                   | （空）                                                              | **仅服务端持有**；留空即降级，见下节        |
+| `AI_TIMEOUT_MS`                                                                                                | `60000`                                                             | 流式请求超时（毫秒）                        |
+| `AI_RATE_LIMIT_PER_MIN`                                                                                        | `20`                                                                | 每用户每分钟 AI 请求上限                    |
+| `API_RATE_LIMIT_PER_MIN`                                                                                       | `300`                                                               | 全局每 IP 每分钟请求上限                    |
+| `UPLOAD_MAX_BYTES`                                                                                             | `5242880`                                                           | 上传体积上限（字节，默认 5MB）              |
+| `ENABLE_CORS_WHITELIST`                                                                                        | `false`                                                             | 是否启用 CORS 白名单（生产建议 `true`）     |
+| `CORS_ORIGINS`                                                                                                 | `http://localhost:5173,http://localhost:3000`                       | 允许的来源，逗号分隔                        |
+| `S3_ENDPOINT` / `S3_REGION` / `S3_BUCKET` / `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` / `S3_PUBLIC_BASE_URL` | （空）                                                              | 可选 S3 兼容对象存储                        |
+| `MAP_TILE_URL`                                                                                                 | `https://tile.openstreetmap.org/{z}/{x}/{y}.png`                    | 地图瓦片服务，可替换为合规服务商            |
+| `MAP_ATTRIBUTION`                                                                                              | `© OpenStreetMap contributors`                                      | 地图署名                                    |
 
 > **安全红线**：`AI_API_KEY` 只能出现在服务端环境变量中，严禁写入前端代码、构建产物或提交到仓库。
 > 所有密钥类变量都不应提交；`.env` 已被 `.gitignore` 忽略。

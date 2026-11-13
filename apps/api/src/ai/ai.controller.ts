@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import type { Response } from 'express';
-import { IsArray, IsIn, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
+import { IsArray, IsIn, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import type { Response } from 'express';
 import { AuthUser, CurrentUser, Public } from '../common/decorators';
 import { AIService, type IdentifyResult } from './ai.service';
 
@@ -53,10 +53,7 @@ export class AIController {
   @Public()
   @Post('identify')
   @ApiOperation({ summary: '植物/动物图片识别' })
-  identify(
-    @Body() body: IdentifyBodyDto,
-    @CurrentUser() user?: AuthUser,
-  ): Promise<IdentifyResult> {
+  identify(@Body() body: IdentifyBodyDto, @CurrentUser() user?: AuthUser): Promise<IdentifyResult> {
     return this.aiService.identify(body.image, body.kind, user?.sub);
   }
 }

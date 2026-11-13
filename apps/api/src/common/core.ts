@@ -8,51 +8,49 @@
  * 类型导入仍可使用裸标识符（配合 tsconfig paths）。
  */
 export {
-  DANGER_ORDER,
-  DANGER_LABELS,
-  REVIEW_RULES,
   computeRequiredDanger,
+  DANGER_LABELS,
+  DANGER_ORDER,
   isDangerAtLeast,
   maxDanger,
+  REVIEW_RULES,
 } from '../../../../packages/core/src/danger';
-
-export {
-  validateContentMeta,
-  validateArticle,
-  validatePlant,
-  validateAnimal,
-  validateFirstAid,
-  validateSkill,
-  validateMedicine,
-  credibilityRank,
-} from '../../../../packages/core/src/validate';
-
 export type {
-  ValidationIssue,
-  DatasetBundle,
-} from '../../../../packages/core/src/validate';
-
-export type {
-  ContentMeta,
-  DangerLevel,
-  Credibility,
-  ReviewStatus,
-  SourceType,
-  SourceReference,
-  KnowledgeArticle,
-  PlantSpecies,
   AnimalSpecies,
   AnimalTrack,
-  InsectSpecies,
-  MedicineEntry,
-  FirstAidGuide,
-  SurvivalSkill,
-  SupplyItem,
-  DisasterScenario,
-  ScenarioStep,
-  ScenarioChoice,
-  HazardRecord,
-  QuizQuestion,
   Bookmark,
+  ContentMeta,
+  Credibility,
+  DangerLevel,
+  DisasterScenario,
+  FirstAidGuide,
+  HazardRecord,
   HomeStats,
+  InsectSpecies,
+  KnowledgeArticle,
+  MedicineEntry,
+  PlantSpecies,
+  QuizQuestion,
+  ReviewStatus,
+  ScenarioChoice,
+  ScenarioStep,
+  SourceReference,
+  SourceType,
+  SupplyItem,
+  SurvivalSkill,
 } from '../../../../packages/core/src/types';
+
+export type {
+  DatasetBundle,
+  ValidationIssue,
+} from '../../../../packages/core/src/validate';
+export {
+  credibilityRank,
+  validateAnimal,
+  validateArticle,
+  validateContentMeta,
+  validateFirstAid,
+  validateMedicine,
+  validatePlant,
+  validateSkill,
+} from '../../../../packages/core/src/validate';

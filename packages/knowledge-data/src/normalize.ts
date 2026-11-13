@@ -1,8 +1,14 @@
-import { computeRequiredDanger, DANGER_ORDER } from '@apocalypse/core';
 import type {
-  AnimalSpecies, DisasterScenario, FirstAidGuide, HazardRecord,
-  KnowledgeArticle, MedicineEntry, PlantSpecies, SurvivalSkill,
+  AnimalSpecies,
+  DisasterScenario,
+  FirstAidGuide,
+  HazardRecord,
+  KnowledgeArticle,
+  MedicineEntry,
+  PlantSpecies,
+  SurvivalSkill,
 } from '@apocalypse/core';
+import { computeRequiredDanger, DANGER_ORDER } from '@apocalypse/core';
 
 /**
  * 危险等级归一化：内容加载时按审核规则（REVIEW_RULES）强制提升危险等级。
@@ -31,11 +37,9 @@ const animalText = (a: AnimalSpecies): string =>
 const firstAidText = (f: FirstAidGuide): string =>
   `${f.title} ${f.summary} ${f.dangerSignals.join(' ')} ${f.steps.join(' ')}`;
 
-const skillText = (s: SurvivalSkill): string =>
-  `${s.title} ${s.summary} ${s.cautions.join(' ')}`;
+const skillText = (s: SurvivalSkill): string => `${s.title} ${s.summary} ${s.cautions.join(' ')}`;
 
-const medicineText = (m: MedicineEntry): string =>
-  `${m.name} ${m.purpose} ${m.risks.join(' ')}`;
+const medicineText = (m: MedicineEntry): string => `${m.name} ${m.purpose} ${m.risks.join(' ')}`;
 
 const hazardText = (h: HazardRecord): string =>
   `${h.title} ${h.description} ${h.indicators.join(' ')} ${h.prevention.join(' ')} ${h.emergencyResponse.join(' ')}`;

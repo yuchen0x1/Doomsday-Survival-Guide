@@ -1,8 +1,20 @@
-import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type {
-  AIConversation, Bookmark, InventoryEntry, InventoryTransaction, LearningProgress,
-  MapMarker, MapRoute, OfflinePackage, QuizRecord, ReadingHistoryItem, SurvivalProfile, UserNote,
+  AIConversation,
+  Bookmark,
+  InventoryEntry,
+  InventoryTransaction,
+  LearningProgress,
+  MapMarker,
+  MapRoute,
+  OfflinePackage,
+  QuizRecord,
+  ReadingHistoryItem,
+  SurvivalProfile,
+  UserNote,
 } from '@apocalypse/core';
+import { type DBSchema, type IDBPDatabase, openDB } from 'idb';
+import { BACKUP_STORES, parseBackup } from './backup';
+import { validateInventory } from './inventory';
 
 /**
  * 本地持久层（IndexedDB）。
@@ -25,8 +37,17 @@ interface ApocalypseDB extends DBSchema {
 }
 
 type StoreName =
-  | 'bookmarks' | 'history' | 'inventory' | 'transactions' | 'notes' | 'settings'
-  | 'quizRecords' | 'offlinePackages' | 'conversations' | 'mapMarkers' | 'mapRoutes';
+  | 'bookmarks'
+  | 'history'
+  | 'inventory'
+  | 'transactions'
+  | 'notes'
+  | 'settings'
+  | 'quizRecords'
+  | 'offlinePackages'
+  | 'conversations'
+  | 'mapMarkers'
+  | 'mapRoutes';
 
 const DB_NAME = 'apocalypse-survival';
 const DB_VERSION = 1;
@@ -54,6 +75,9 @@ export function getDB(): Promise<IDBPDatabase<ApocalypseDB>> {
         db.createObjectStore('mapMarkers', { keyPath: 'id' });
         db.createObjectStore('mapRoutes', { keyPath: 'id' });
       },
+    }).catch((error) => {
+      dbPromise = null;
+      throw error;
     });
   }
   return dbPromise;
@@ -123,17 +147,77 @@ export const clearHistory = () => clear('history');
 
 /* ---------- 物资清单 ---------- */
 export const listInventory = () => all<InventoryEntry>('inventory');
-export const addInventory = (e: Omit<InventoryEntry, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> =>
-  put('inventory', { ...e, id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as InventoryEntry);
+export const addInventory = async (
+  e: Omit<InventoryEntry, 'id' | 'createdAt' | 'updatedAt'>,
+): Promise<void> => {
+  validateInventory(e);
+  await put('inventory', {
+    ...e,
+    id: uid(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  } as InventoryEntry);
+};
 export async function updateInventory(id: string, patch: Partial<InventoryEntry>): Promise<void> {
-  const db = await getDB();
-  const old = await db.get('inventory', id);
-  if (old) await put('inventory', { ...old, ...patch, updatedAt: new Date().toISOString() });
+  await mutateInventory(
+    id,
+    (old) => ({ ...old, ...patch, id: old.id, createdAt: old.createdAt }),
+    '盘点调整',
+  );
 }
 export const removeInventory = (id: string) => del('inventory', id);
 export const listTransactions = () => all<InventoryTransaction>('transactions');
-export async function pushTransaction(entryId: string, delta: number, reason: string): Promise<void> {
+export async function pushTransaction(
+  entryId: string,
+  delta: number,
+  reason: string,
+): Promise<void> {
   await put('transactions', { id: uid(), entryId, delta, reason, at: new Date().toISOString() });
+}
+
+async function mutateInventory(
+  id: string,
+  change: (old: InventoryEntry) => InventoryEntry,
+  reason: string,
+): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction(['inventory', 'transactions'], 'readwrite');
+  const done = tx.done;
+  // Attach immediately so an IndexedDB abort cannot become an unhandled rejection.
+  void done.catch(() => {});
+  try {
+    const old = await tx.objectStore('inventory').get(id);
+    if (!old) throw new Error('物资已被删除，请刷新清单');
+    const next = change(old);
+    validateInventory(next);
+    const at = new Date().toISOString();
+    const delta = Number((next.quantity - old.quantity).toFixed(6));
+    await tx.objectStore('inventory').put({ ...next, updatedAt: at });
+    if (delta !== 0)
+      await tx.objectStore('transactions').put({ id: uid(), entryId: id, delta, reason, at });
+    await done;
+  } catch (error) {
+    try {
+      tx.abort();
+    } catch {
+      /* The transaction may already have aborted. */
+    }
+    await done.catch(() => {});
+    throw error;
+  }
+}
+
+export async function changeInventoryQuantity(
+  id: string,
+  delta: number,
+  reason: string,
+): Promise<void> {
+  if (!Number.isFinite(delta)) throw new Error('数量变化必须是有效数字');
+  await mutateInventory(
+    id,
+    (old) => ({ ...old, quantity: Math.max(0, Number((old.quantity + delta).toFixed(6))) }),
+    reason,
+  );
 }
 
 /* ---------- 笔记 ---------- */
@@ -142,7 +226,12 @@ export const listNotes = async (): Promise<UserNote[]> => {
   return items.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 };
 export const addNote = (n: Omit<UserNote, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> =>
-  put('notes', { ...n, id: uid(), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } as UserNote);
+  put('notes', {
+    ...n,
+    id: uid(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  } as UserNote);
 export async function updateNote(id: string, patch: Partial<UserNote>): Promise<void> {
   const db = await getDB();
   const old = await db.get('notes', id);
@@ -185,7 +274,10 @@ export async function getLearningProgress(): Promise<LearningProgress> {
     }
   }
   return {
-    answered, correct, wrongBook, streakDays: streak,
+    answered,
+    correct,
+    wrongBook,
+    streakDays: streak,
     lastStudyDate: sortedDays[sortedDays.length - 1],
   };
 }
@@ -226,29 +318,57 @@ export async function exportAllData(): Promise<string> {
   const db = await getDB();
   const payload: Record<string, unknown> = { version: 1, exportedAt: new Date().toISOString() };
   const stores = [
-    'bookmarks', 'history', 'inventory', 'transactions', 'notes', 'settings',
-    'quizRecords', 'offlinePackages', 'conversations', 'mapMarkers', 'mapRoutes',
+    'bookmarks',
+    'history',
+    'inventory',
+    'transactions',
+    'notes',
+    'settings',
+    'quizRecords',
+    'offlinePackages',
+    'conversations',
+    'mapMarkers',
+    'mapRoutes',
   ] as const;
-  for (const s of stores) payload[s] = await db.getAll(s);
+  const tx = db.transaction(stores, 'readonly');
+  await Promise.all(
+    stores.map(async (s) => {
+      payload[s] = await tx.objectStore(s).getAll();
+    }),
+  );
+  await tx.done;
   return JSON.stringify(payload, null, 2);
 }
 
 export async function importAllData(json: string): Promise<number> {
-  const payload = JSON.parse(json) as Record<string, unknown>;
-  if (!payload || payload.version !== 1) throw new Error('备份文件格式不正确');
+  const { data, count } = parseBackup(json);
   const db = await getDB();
-  let count = 0;
-  const stores = [
-    'bookmarks', 'history', 'inventory', 'transactions', 'notes', 'settings',
-    'quizRecords', 'offlinePackages', 'conversations', 'mapMarkers', 'mapRoutes',
-  ] as const;
-  for (const s of stores) {
-    const rows = payload[s] as unknown[] | undefined;
-    if (Array.isArray(rows)) {
-      const tx = db.transaction(s, 'readwrite');
-      for (const row of rows) { await tx.store.put(row as never); count++; }
-      await tx.done;
+  const tx = db.transaction(BACKUP_STORES, 'readwrite');
+  const done = tx.done;
+  void done.catch(() => {});
+  try {
+    for (const s of BACKUP_STORES) {
+      const rows = data[s] ?? [];
+      for (const row of rows) {
+        await tx.objectStore(s).put(row as never);
+      }
     }
+    await done;
+  } catch (error) {
+    try {
+      tx.abort();
+    } catch {
+      /* Already aborted. */
+    }
+    await done.catch(() => {});
+    throw error;
   }
   return count;
+}
+
+/** Clear only this application's records, retaining schema and unrelated origin data. */
+export async function clearAllData(): Promise<void> {
+  const db = await getDB();
+  const tx = db.transaction(BACKUP_STORES, 'readwrite');
+  await Promise.all([...BACKUP_STORES.map((s) => tx.objectStore(s).clear()), tx.done]);
 }

@@ -30,12 +30,12 @@ npx cap open ios
 
 ## 平台差异（均在 web 层实现）
 
-| 差异 | 实现 |
-| --- | --- |
-| 底部导航 + 悬浮急救按钮 | `usePlatformLayout()` 在 mobile 返回 `{sidebar:false, bottomNav:true, fab:true}`，`AppLayout` 强制显示（去掉 `md:hidden` 断点） |
-| 安全区 | `index.html` 已 `viewport-fit=cover`；`styles/index.css` body 左右 `env(safe-area-inset-*)`，header 顶部 `calc(env(safe-area-inset-top) + 10px)`，底部导航 `env(safe-area-inset-bottom)`；`env()` 不支持时回退 0，web 行为不变 |
-| 相机权限 | 植物识别页 `<input type="file" accept="image/*" capture="environment">`——仅 `isMobile()` 时附加 `capture`，移动端直接调起后置相机；web/桌面仍是文件选择器 |
-| 平台检测 | `window.Capacitor.isNativePlatform()`（全局对象，web 构建不依赖 @capacitor/core 包） |
+| 差异                    | 实现                                                                                                                                                                                                                           |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 底部导航 + 悬浮急救按钮 | `usePlatformLayout()` 在 mobile 返回 `{sidebar:false, bottomNav:true, fab:true}`，`AppLayout` 强制显示（去掉 `md:hidden` 断点）                                                                                                |
+| 安全区                  | `index.html` 已 `viewport-fit=cover`；`styles/index.css` body 左右 `env(safe-area-inset-*)`，header 顶部 `calc(env(safe-area-inset-top) + 10px)`，底部导航 `env(safe-area-inset-bottom)`；`env()` 不支持时回退 0，web 行为不变 |
+| 相机权限                | 植物识别页 `<input type="file" accept="image/*" capture="environment">`——仅 `isMobile()` 时附加 `capture`，移动端直接调起后置相机；web/桌面仍是文件选择器                                                                      |
+| 平台检测                | `window.Capacitor.isNativePlatform()`（全局对象，web 构建不依赖 @capacitor/core 包）                                                                                                                                           |
 
 ## 验证状态
 

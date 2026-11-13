@@ -15,7 +15,14 @@ export type Credibility = 'A' | 'B' | 'C' | 'D';
 export type ReviewStatus = 'draft' | 'pending_review' | 'reviewed' | 'published' | 'retired';
 
 /** 内容来源类型 */
-export type SourceType = 'government' | 'medical' | 'academic' | 'ngo' | 'manual' | 'community' | 'ai_generated';
+export type SourceType =
+  | 'government'
+  | 'medical'
+  | 'academic'
+  | 'ngo'
+  | 'manual'
+  | 'community'
+  | 'ai_generated';
 
 export interface SourceReference {
   id: string;
@@ -86,8 +93,13 @@ export interface KnowledgeArticle {
 /* ============ 植物图鉴 ============ */
 
 export type PlantCategory =
-  | 'edible' | 'medicinal' | 'toxic' | 'irritant'
-  | 'fiber' | 'material' | 'utility';
+  | 'edible'
+  | 'medicinal'
+  | 'toxic'
+  | 'irritant'
+  | 'fiber'
+  | 'material'
+  | 'utility';
 
 export interface PlantSpecies {
   id: string;
@@ -121,8 +133,14 @@ export interface PlantSpecies {
 /* ============ 动物图鉴 ============ */
 
 export type AnimalClass =
-  | 'mammal' | 'bird' | 'reptile' | 'amphibian'
-  | 'fish' | 'insect' | 'arthropod' | 'dangerous';
+  | 'mammal'
+  | 'bird'
+  | 'reptile'
+  | 'amphibian'
+  | 'fish'
+  | 'insect'
+  | 'arthropod'
+  | 'dangerous';
 
 export interface AnimalTrack {
   id: string;
@@ -261,9 +279,18 @@ export interface SurvivalSkill {
 /* ============ 物资 ============ */
 
 export type SupplyCategory =
-  | 'food' | 'water' | 'medical' | 'camping' | 'lighting'
-  | 'communication' | 'tools' | 'protection' | 'energy'
-  | 'hygiene' | 'repair' | 'agriculture';
+  | 'food'
+  | 'water'
+  | 'medical'
+  | 'camping'
+  | 'lighting'
+  | 'communication'
+  | 'tools'
+  | 'protection'
+  | 'energy'
+  | 'hygiene'
+  | 'repair'
+  | 'agriculture';
 
 export interface SupplyItem {
   id: string;
@@ -433,7 +460,17 @@ export interface LearningProgress {
 
 /* ============ 收藏 / 历史 / 笔记 ============ */
 
-export type BookmarkKind = 'article' | 'plant' | 'animal' | 'insect' | 'medicine' | 'first_aid' | 'skill' | 'supply' | 'scenario' | 'hazard';
+export type BookmarkKind =
+  | 'article'
+  | 'plant'
+  | 'animal'
+  | 'insect'
+  | 'medicine'
+  | 'first_aid'
+  | 'skill'
+  | 'supply'
+  | 'scenario'
+  | 'hazard';
 
 export interface Bookmark {
   id: string;
@@ -500,9 +537,14 @@ export interface OfflinePackage {
 /* ============ AI ============ */
 
 export type AIToolName =
-  | 'search_knowledge' | 'search_plants' | 'search_animals'
-  | 'search_first_aid' | 'search_items' | 'search_skills'
-  | 'calculate_supplies' | 'get_offline_status';
+  | 'search_knowledge'
+  | 'search_plants'
+  | 'search_animals'
+  | 'search_first_aid'
+  | 'search_items'
+  | 'search_skills'
+  | 'calculate_supplies'
+  | 'get_offline_status';
 
 export interface AIToolCall {
   name: AIToolName;
@@ -565,7 +607,17 @@ export interface MapRoute {
 
 /* ============ 搜索 ============ */
 
-export type SearchDocKind = 'article' | 'plant' | 'animal' | 'insect' | 'medicine' | 'first_aid' | 'skill' | 'supply' | 'scenario' | 'hazard';
+export type SearchDocKind =
+  | 'article'
+  | 'plant'
+  | 'animal'
+  | 'insect'
+  | 'medicine'
+  | 'first_aid'
+  | 'skill'
+  | 'supply'
+  | 'scenario'
+  | 'hazard';
 
 export interface SearchDocument {
   id: string;

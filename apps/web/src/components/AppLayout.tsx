@@ -1,16 +1,25 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { getSetting } from '../lib/db';
+import { watchOnline } from '../lib/offline';
+import { detectPlatform, usePlatformLayout } from '../lib/platform';
+import { useApp } from '../lib/store';
+import { PwaUpdateProvider } from '../lib/update';
 import { Icon } from './Icon';
 import { PwaUpdateBanner } from './PwaUpdate';
 import { ToastHost } from './ui';
-import { useApp } from '../lib/store';
-import { detectPlatform, usePlatformLayout } from '../lib/platform';
-import { watchOnline } from '../lib/offline';
-import { PwaUpdateProvider } from '../lib/update';
 
 /** 导航结构（三端共用，按平台差异化呈现） */
-interface NavItem { to: string; label: string; icon: string; end?: boolean }
-interface NavSection { title: string; items: NavItem[] }
+interface NavItem {
+  to: string;
+  label: string;
+  icon: string;
+  end?: boolean;
+}
+interface NavSection {
+  title: string;
+  items: NavItem[];
+}
 
 export const NAV_SECTIONS: NavSection[] = [
   {
@@ -81,7 +90,10 @@ function OnlineBadge() {
       }}
       title={online ? '网络正常，AI 助手可用' : '离线模式：本地知识库可用，AI 不可用'}
     >
-      <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: 'currentColor' }} />
+      <span
+        className="inline-block h-1.5 w-1.5 rounded-full"
+        style={{ background: 'currentColor' }}
+      />
       {online ? 'ONLINE' : 'OFFLINE 离线'}
     </span>
   );
@@ -93,11 +105,18 @@ function GlobalSearchBox() {
   return (
     <form
       className="relative flex-1 max-w-xl"
-      onSubmit={(e) => { e.preventDefault(); if (q.trim()) nav(`/search?q=${encodeURIComponent(q.trim())}`); }}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (q.trim()) nav(`/search?q=${encodeURIComponent(q.trim())}`);
+      }}
     >
-      <Icon name="search" size={15} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-ink-faint)]" />
+      <Icon
+        name="search"
+        size={15}
+        className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-ink-faint)]"
+      />
       <input
-        className="field !pl-9 !py-2"
+        className="field global-search-input !pl-9 !py-2"
         placeholder="搜索生存知识、植物、急救…（Ctrl+K）"
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -107,14 +126,30 @@ function GlobalSearchBox() {
 }
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const nav = useNavigate();
+  return (
+    <PwaUpdateProvider>
+      <AppLayoutContent>{children}</AppLayoutContent>
+    </PwaUpdateProvider>
+  );
+}
+
+function AppLayoutContent({ children }: { children: React.ReactNode }) {
   const location = useLocation();
+  const nav = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const platform = detectPlatform();
   const layout = usePlatformLayout();
   const setOnline = useApp((s) => s.setOnline);
   const hydrate = useApp((s) => s.hydrate);
   const hydrated = useApp((s) => s.hydrated);
+  const loadError = useApp((s) => s.loadError);
+  useEffect(() => {
+    getSetting('prefs', { compactMode: false })
+      .then((p) => {
+        document.documentElement.dataset.compact = String(p.compactMode);
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     hydrate();
@@ -123,14 +158,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, [hydrate, setOnline]);
 
   // 路由变化时移动端滚动置顶
-  useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   // 桌面端快捷键 Ctrl+K 聚焦搜索
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
-        const el = document.querySelector<HTMLInputElement>('.global-search-input, input[placeholder^="搜索"]');
+        const el = document.querySelector<HTMLInputElement>(
+          '.global-search-input, input[placeholder^="搜索"]',
+        );
         el?.focus();
       }
     };
@@ -142,8 +181,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   const sidebarWidth = collapsed ? 60 : 224;
 
   return (
-    <PwaUpdateProvider>
-      <div className="flex h-full min-h-screen bg-[var(--color-void)]">
+    <div className="flex h-full min-h-screen bg-[var(--color-void)]">
       {/* ===== 桌面侧边导航 ===== */}
       {isDesktop && (
         <aside
@@ -151,11 +189,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           style={{ width: sidebarWidth }}
         >
           <div className="flex items-center gap-2.5 border-b border-[var(--color-edge)] px-3.5 py-3.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[3px] border border-[var(--color-moss)] bg-[var(--color-moss-dim)] font-mono text-[13px] font-bold text-[var(--color-moss-hi)]">A</span>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[3px] border border-[var(--color-moss)] bg-[var(--color-moss-dim)] font-mono text-[13px] font-bold text-[var(--color-moss-hi)]">
+              A
+            </span>
             {!collapsed && (
               <div className="min-w-0">
-                <div className="truncate font-mono text-[12px] font-bold tracking-[0.16em] text-[var(--color-ink)]">APOCALYPSE</div>
-                <div className="truncate text-[10px] tracking-[0.3em] text-[var(--color-sand)]">SURVIVAL · 末日生存</div>
+                <div className="truncate font-mono text-[12px] font-bold tracking-[0.16em] text-[var(--color-ink)]">
+                  APOCALYPSE
+                </div>
+                <div className="truncate text-[10px] tracking-[0.3em] text-[var(--color-sand)]">
+                  SURVIVAL · 末日生存
+                </div>
               </div>
             )}
           </div>
@@ -187,6 +231,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </nav>
 
           <button
+            type="button"
             className="flex items-center gap-2 border-t border-[var(--color-edge)] px-3.5 py-2.5 text-[11px] text-[var(--color-ink-faint)] hover:text-[var(--color-ink)]"
             onClick={() => setCollapsed((c) => !c)}
           >
@@ -204,19 +249,34 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}
         >
           {platform === 'mobile' && (
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[3px] border border-[var(--color-moss)] bg-[var(--color-moss-dim)] font-mono text-[13px] font-bold text-[var(--color-moss-hi)]">A</span>
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[3px] border border-[var(--color-moss)] bg-[var(--color-moss-dim)] font-mono text-[13px] font-bold text-[var(--color-moss-hi)]">
+              A
+            </span>
           )}
-          <div className="hidden flex-1 md:flex"><GlobalSearchBox /></div>
-          <button className="btn btn-ghost md:hidden" onClick={() => nav('/search')} aria-label="搜索">
+          <div className="hidden flex-1 md:flex">
+            <GlobalSearchBox />
+          </div>
+          <button
+            type="button"
+            className="btn btn-ghost md:hidden"
+            onClick={() => nav('/search')}
+            aria-label="搜索"
+          >
             <Icon name="search" size={18} />
           </button>
           <div className="ml-auto flex items-center gap-2">
-            <button className="btn btn-ghost !px-2" onClick={() => nav('/first-aid')} title="紧急急救" style={{ color: 'var(--color-danger)' }}>
+            <button
+              type="button"
+              className="btn btn-ghost !px-2"
+              onClick={() => nav('/first-aid')}
+              title="紧急急救"
+              style={{ color: 'var(--color-danger)' }}
+            >
               <Icon name="firstaid" size={17} />
               <span className="hidden text-[12px] lg:inline">紧急急救</span>
             </button>
             <OnlineBadge />
-            <button className="btn btn-sand !py-1.5" onClick={() => nav('/ai')}>
+            <button type="button" className="btn btn-sand !py-1.5" onClick={() => nav('/ai')}>
               <Icon name="bot" size={15} />
               <span className="hidden sm:inline text-[12px]">AI 助手</span>
             </button>
@@ -226,7 +286,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {/* 内容区 */}
         <main className="bg-grid min-h-0 flex-1 px-4 pb-24 pt-5 md:pb-10 md:px-6">
           <div className="mx-auto w-full max-w-[1280px]">
-            {hydrated ? children : (
+            {loadError && (
+              <div
+                role="alert"
+                className="mb-4 rounded border border-[var(--color-danger)] p-3 text-sm"
+              >
+                本地个人数据读取失败，当前清单可能不完整。请重试，不要清除数据。{' '}
+                <button type="button" className="btn" onClick={() => hydrate()}>
+                  重新读取
+                </button>
+              </div>
+            )}
+            {hydrated ? (
+              children
+            ) : (
               <div className="flex h-60 items-center justify-center">
                 <span className="skeleton h-8 w-8 rounded-full" />
               </div>
@@ -262,6 +335,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* 移动端浮动紧急按钮 */}
       {layout.fab && (
         <button
+          type="button"
           className={`fixed bottom-16 right-3 z-40 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[var(--color-danger)] bg-[var(--color-danger-dim)] text-[var(--color-danger)] shadow-lg${platform === 'mobile' ? '' : ' md:hidden'}`}
           onClick={() => nav('/first-aid')}
           aria-label="紧急急救"
@@ -273,7 +347,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
       <ToastHost />
       <PwaUpdateBanner />
-      </div>
-    </PwaUpdateProvider>
+    </div>
   );
 }

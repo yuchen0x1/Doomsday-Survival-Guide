@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { resolveRef, resolveRefs } from '../src/lib/knowledge';
 import { getDataset } from '@apocalypse/knowledge-data';
+import { describe, expect, it } from 'vitest';
+import { resolveRef, resolveRefs } from '../src/lib/knowledge';
 
 /**
  * 路由一致性回归测试。
@@ -60,7 +60,10 @@ describe('resolveRef / resolveRefs 路由一致性', () => {
       for (const link of links) {
         expect(link.href.startsWith('/'), `非法 href: ${link.href}`).toBe(true);
         // 不得再退化为分类页或列表页
-        expect(link.href.startsWith('/knowledge/'), `${a.id} 文章链接退化为分类页: ${link.href}`).toBe(false);
+        expect(
+          link.href.startsWith('/knowledge/'),
+          `${a.id} 文章链接退化为分类页: ${link.href}`,
+        ).toBe(false);
         expect(link.href.startsWith('/hazards/'), `${a.id} 危险链接错误: ${link.href}`).toBe(false);
         total++;
       }

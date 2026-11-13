@@ -1,9 +1,8 @@
-import { Controller, Get, Param, Put, Body } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
+import { BadRequestException, Body, Controller, Get, Param, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { AuthUser, CurrentUser } from '../common/decorators';
 import { SYNC_RESOURCES, SyncService } from './sync.service';
-import { BadRequestException } from '@nestjs/common';
 
 @ApiTags('sync')
 @SkipThrottle({ ai: true })

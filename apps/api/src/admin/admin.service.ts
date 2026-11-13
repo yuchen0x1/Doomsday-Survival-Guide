@@ -6,18 +6,18 @@ import {
 } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
 import { canTransition, isReviewStatus } from '../common/content-state';
+import { type ContentMeta, type ValidationIssue, validateContentMeta } from '../common/core';
+import type { AuthUser } from '../common/decorators';
 import {
   AUTHORITATIVE_SOURCE_TYPES,
-  KIND_DEFS,
   buildMeta,
-  extraTextOf,
-  titleOf,
   type ContentKind,
+  extraTextOf,
+  KIND_DEFS,
   type SourceRow,
+  titleOf,
 } from '../common/kinds';
-import { validateContentMeta, type ContentMeta, type ValidationIssue } from '../common/core';
 import { PrismaService } from '../prisma/prisma.service';
-import type { AuthUser } from '../common/decorators';
 
 const PROTECTED_FIELDS = new Set([
   'id',
@@ -114,7 +114,10 @@ export class AdminService {
       if (PROTECTED_FIELDS.has(key) || key === 'sourceIds') continue;
       data[key] = value;
     }
-    const id = typeof body.id === 'string' && body.id ? body.id : `draft-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const id =
+      typeof body.id === 'string' && body.id
+        ? body.id
+        : `draft-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
     const record = await delegate.create({
       data: {
         ...data,
@@ -125,7 +128,11 @@ export class AdminService {
         version: 1,
       },
     });
-    await this.syncTags(kind, record.id as string, Array.isArray(body.tags) ? (body.tags as string[]) : []);
+    await this.syncTags(
+      kind,
+      record.id as string,
+      Array.isArray(body.tags) ? (body.tags as string[]) : [],
+    );
     await this.prisma.auditLog.create({
       data: {
         userId: actor.sub,
@@ -148,7 +155,10 @@ export class AdminService {
   ): Promise<Record<string, unknown>> {
     const def = KIND_DEFS[kind];
     const delegate = this.delegate(kind);
-    const existing = (await delegate.findUnique({ where: { id } })) as Record<string, unknown> | null;
+    const existing = (await delegate.findUnique({ where: { id } })) as Record<
+      string,
+      unknown
+    > | null;
     if (!existing) {
       throw new NotFoundException({ code: 'NOT_FOUND', message: '内容不存在' });
     }
@@ -288,10 +298,7 @@ export class AdminService {
     return serialized;
   }
 
-  private needsAuthoritativeSource(
-    kind: ContentKind,
-    row: Record<string, unknown>,
-  ): boolean {
+  private needsAuthoritativeSource(kind: ContentKind, row: Record<string, unknown>): boolean {
     if (kind === 'first-aid' || kind === 'medicines') return true;
     if (kind === 'articles') {
       return MEDICAL_CATEGORY_SLUGS.has(String(row.categorySlug));

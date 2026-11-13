@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   DefaultValuePipe,
@@ -9,11 +10,10 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { AuthUser, CurrentUser, Roles } from '../common/decorators';
-import { isContentKind, type ContentKind } from '../common/kinds';
-import { BadRequestException } from '@nestjs/common';
+import { type ContentKind, isContentKind } from '../common/kinds';
 import { AdminService } from './admin.service';
 
 @ApiTags('admin')

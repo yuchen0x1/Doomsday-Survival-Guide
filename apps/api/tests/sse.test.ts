@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import {
-  OpenAITransformer,
-  SSE_DONE,
+  type AIStreamEvent,
   formatSSE,
+  OpenAITransformer,
   parseSSEData,
+  SSE_DONE,
   safeParse,
   transformUpstreamLine,
-  type AIStreamEvent,
 } from '../src/ai/sse';
 
 /**
@@ -138,10 +138,7 @@ describe('OpenAITransformer（上游 chunk → 前端事件）', () => {
 
   it('transformUpstreamLine 产出的 delta 可直接 formatSSE 成契约帧', () => {
     const tr = new OpenAITransformer();
-    const events = transformUpstreamLine(
-      'data: {"choices":[{"delta":{"content":"A"}}]}',
-      tr,
-    );
+    const events = transformUpstreamLine('data: {"choices":[{"delta":{"content":"A"}}]}', tr);
     expect(events).toEqual([{ type: 'delta', text: 'A' }]);
     expect(formatSSE(events[0])).toBe('data: {"type":"delta","text":"A"}\n\n');
   });

@@ -10,7 +10,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'basics',
     title: '生存优先级：三法则与行动顺序',
     aliases: ['生存三法则', 'Rule of 3', '三法则'],
-    summary: '用“三法则”快速估算人在无空气、无庇护、无水、无食物下的坚持时限，并按“信号—庇护—饮水—食物”的顺序分配体力与资源。',
+    summary:
+      '用“三法则”快速估算人在无空气、无庇护、无水、无食物下的坚持时限，并按“信号—庇护—饮水—食物”的顺序分配体力与资源。',
     environment: ['野外', '灾害被困', '城市断供'],
     scenarios: ['迷路等待救援', '灾害后被困建筑或野外', '多日无法获得补给'],
     sections: [
@@ -48,14 +49,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 2,
     relatedIds: ['scn-food-shortage', 'art-psychology-01', 'art-first-aid-02', 'art-basics-04'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L1', sources: pick('fema', 'survival_manual_military', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L1',
+      sources: pick('fema', 'survival_manual_military', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'art-basics-02',
     categorySlug: 'basics',
     title: 'S.T.O.P 原则：迷路或受困后的第一反应',
     aliases: ['STOP原则', '停下来想一想', '迷路第一反应'],
-    summary: 'Stop 停下、Think 思考、Observe 观察、Plan 计划——四步防止惊慌乱走导致的二次失误，是所有迷路场景的通用起点。',
+    summary:
+      'Stop 停下、Think 思考、Observe 观察、Plan 计划——四步防止惊慌乱走导致的二次失误，是所有迷路场景的通用起点。',
     environment: ['野外', '山区', '城市灾害'],
     scenarios: ['发现自己偏离路线', '队伍走散', '突遇浓雾或天色骤暗'],
     sections: [
@@ -94,14 +99,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 1,
     relatedIds: ['scn-forest-lost', 'hz-earthquake', 'hz-hypothermia', 'art-psychology-01'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L1', sources: pick('survival_manual_military', 'fema', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L1',
+      sources: pick('survival_manual_military', 'fema', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'art-basics-03',
     categorySlug: 'basics',
     title: '家庭应急包清单与维护',
     aliases: ['应急包', '逃生包', 'Go Bag'],
-    summary: '按“72 小时、按人头、可背走”的原则配置家庭应急包，覆盖饮水、食物、保暖、照明、通讯、医疗与个人必需品，并定期轮换维护。',
+    summary:
+      '按“72 小时、按人头、可背走”的原则配置家庭应急包，覆盖饮水、食物、保暖、照明、通讯、医疗与个人必需品，并定期轮换维护。',
     environment: ['家庭', '城市', '灾害疏散'],
     scenarios: ['地震后紧急撤离', '台风停电停水', '接到疏散通知'],
     sections: [
@@ -138,7 +147,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['应急包', '物资清单', '家庭准备', '72小时'],
     difficulty: 2,
-    relatedIds: ['sup-repair-sewing-kit', 'scn-food-shortage', 'skill-tools-firesteel', 'art-disasters-03'],
+    relatedIds: [
+      'sup-repair-sewing-kit',
+      'scn-food-shortage',
+      'skill-tools-firesteel',
+      'art-disasters-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L2', sources: pick('fema', 'cdc', 'mem_gov_cn') }),
   },
@@ -147,7 +161,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'basics',
     title: '风险评估与决策：行动前的四步判断',
     aliases: ['风险评估', '安全决策', '四步判断法'],
-    summary: '用“停—看—听—想”四步快速评估现场风险，识别侥幸、沉没成本、从众等决策偏差，优先选择可逆、可补救的方案。',
+    summary:
+      '用“停—看—听—想”四步快速评估现场风险，识别侥幸、沉没成本、从众等决策偏差，优先选择可逆、可补救的方案。',
     environment: ['通用', '野外', '灾害现场'],
     scenarios: ['是否继续前进', '是否冒险取回物资', '恶劣天气下是否撤离'],
     sections: [
@@ -195,7 +210,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'wilderness',
     title: '迷路处置流程：从停下到获救',
     aliases: ['迷路怎么办', '走失处置', '迷失方向'],
-    summary: '迷路后按“停下确认—评估原路返回—就地建立等待点—持续信号”的流程行动，避免乱走扩大搜索范围。',
+    summary:
+      '迷路后按“停下确认—评估原路返回—就地建立等待点—持续信号”的流程行动，避免乱走扩大搜索范围。',
     environment: ['山区', '森林', '荒漠', '郊野'],
     scenarios: ['徒步偏离标记路线', '浓雾中与队伍走散', '天黑前发现无法按原计划返回'],
     sections: [
@@ -235,14 +251,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['scn-forest-lost', 'hz-drowning', 'hz-icy-road', 'art-basics-02'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('survival_manual_military', 'fema', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('survival_manual_military', 'fema', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'art-wilderness-02',
     categorySlug: 'wilderness',
     title: '求救信号方法：视觉、听觉与电子手段',
     aliases: ['求救方法', 'SOS信号', '如何被救援发现'],
-    summary: '按可发现、可识别、可持续三原则组合使用烟火、反光、色彩、哨声与电子定位，提高被搜救发现的概率。',
+    summary:
+      '按可发现、可识别、可持续三原则组合使用烟火、反光、色彩、哨声与电子定位，提高被搜救发现的概率。',
     environment: ['野外', '海上', '废墟被困'],
     scenarios: ['等待空中或地面搜救', '手机无信号', '与队伍失散后求援'],
     sections: [
@@ -280,9 +300,17 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['求救信号', 'SOS', '反光镜', '哨子'],
     difficulty: 2,
-    relatedIds: ['sup-comm-signal-mirror', 'sup-comm-whistle', 'hz-electric-shock', 'art-energy-03'],
+    relatedIds: [
+      'sup-comm-signal-mirror',
+      'sup-comm-whistle',
+      'hz-electric-shock',
+      'art-energy-03',
+    ],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L1', sources: pick('fema', 'survival_manual_military', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L1',
+      sources: pick('fema', 'survival_manual_military', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'art-wilderness-03',
@@ -329,14 +357,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['scn-severe-weather', 'scn-wilderness-injury', 'hz-lightning', 'art-weather-01'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('cma_weather', 'mem_gov_cn', 'survival_manual_military') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('cma_weather', 'mem_gov_cn', 'survival_manual_military'),
+    }),
   },
   {
     id: 'art-wilderness-04',
     categorySlug: 'wilderness',
     title: '夜间野外风险：失温、视野与野生动物',
     aliases: ['野外过夜', '夜宿风险', '夜间安全'],
-    summary: '夜间的核心风险是视野下降导致的跌落误伤、体温快速流失与野生动物活动，通过提前扎营、保持干燥与密封食物来化解。',
+    summary:
+      '夜间的核心风险是视野下降导致的跌落误伤、体温快速流失与野生动物活动，通过提前扎营、保持干燥与密封食物来化解。',
     environment: ['野外', '山区', '林地'],
     scenarios: ['被迫野外过夜', '天黑后仍未到达营地', '夜间转移'],
     sections: [
@@ -375,7 +407,10 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['hz-hypothermia', 'hz-wildlife-attack', 'fa-hypothermia', 'art-hazards-03'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('survival_manual_military', 'nws_weather', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('survival_manual_military', 'nws_weather', 'mem_gov_cn'),
+    }),
   },
 
   /* ============ plants 植物图鉴 ============ */
@@ -384,7 +419,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'plants',
     title: '植物识别方法：从生境到花果的观察顺序',
     aliases: ['认植物', '植物辨识', '野外植物观察'],
-    summary: '按“生境株型—叶序叶形—花果茎根”的顺序观察，用多个稳定特征组合交叉比对图鉴，避免凭单一特征或“眼熟”下结论。',
+    summary:
+      '按“生境株型—叶序叶形—花果茎根”的顺序观察，用多个稳定特征组合交叉比对图鉴，避免凭单一特征或“眼熟”下结论。',
     environment: ['野外', '林地', '田边', '城市绿地'],
     scenarios: ['野外辨识植物', '核对图鉴记录', '排除有毒相似种'],
     sections: [
@@ -430,7 +466,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'plants',
     title: '可食用植物安全确认原则',
     aliases: ['野菜能不能吃', '植物可食性判断', '安全试吃原则'],
-    summary: '没有 100% 确认就不入口：可食性必须靠多特征完整匹配可靠图鉴，流行的“通用可食性测试”不能排除毒素，杜绝因误判导致的食物中毒。',
+    summary:
+      '没有 100% 确认就不入口：可食性必须靠多特征完整匹配可靠图鉴，流行的“通用可食性测试”不能排除毒素，杜绝因误判导致的食物中毒。',
     environment: ['野外', '乡村', '灾害缺粮'],
     scenarios: ['寻找替代食物', '辨认野菜野果', '灾后采集植物充饥'],
     sections: [
@@ -469,14 +506,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['hz-food-poisoning', 'hz-foodborne', 'plant-cicuta', 'art-plants-03'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('flora_china', 'survival_manual_military', 'cdc') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('flora_china', 'survival_manual_military', 'cdc'),
+    }),
   },
   {
     id: 'art-plants-03',
     categorySlug: 'plants',
     title: '有毒植物误食与接触的现场处置',
     aliases: ['植物中毒处理', '误食有毒植物', '野菜中毒'],
-    summary: '误食或接触有毒植物后：立即停止摄入、保留样本、按途径冲洗，不盲目催吐，尽快携带样本就医并说明植物种类与时间。',
+    summary:
+      '误食或接触有毒植物后：立即停止摄入、保留样本、按途径冲洗，不盲目催吐，尽快携带样本就医并说明植物种类与时间。',
     environment: ['野外', '乡村', '家庭绿化'],
     scenarios: ['误食不明野果野菜', '接触汁液后皮肤红肿', '儿童误食观赏植物'],
     sections: [
@@ -525,7 +566,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'animals',
     title: '与野生动物安全共处的通用准则',
     aliases: ['野生动物安全', '遇到野生动物', '人兽共处'],
-    summary: '保持距离、不投喂、管好食物与气味、缓慢后退不奔跑——用一套通用行为准则降低与野生动物冲突的概率。',
+    summary:
+      '保持距离、不投喂、管好食物与气味、缓慢后退不奔跑——用一套通用行为准则降低与野生动物冲突的概率。',
     environment: ['山林', '草原', '城市近郊', '露营地'],
     scenarios: ['徒步偶遇野生动物', '营地夜间有动物来访', '山区居民日常活动'],
     sections: [
@@ -562,7 +604,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['野生动物', '安全距离', '营地防范', '遭遇应对'],
     difficulty: 1,
-    relatedIds: ['hz-wildlife-attack', 'sup-light-camping-lantern', 'hz-earthquake', 'art-animals-03'],
+    relatedIds: [
+      'hz-wildlife-attack',
+      'sup-light-camping-lantern',
+      'hz-earthquake',
+      'art-animals-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('mem_gov_cn', 'field_guide_cn', 'iucn') }),
   },
@@ -571,7 +618,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'animals',
     title: '蛇咬伤的预防、识别与现场处置',
     aliases: ['被蛇咬了怎么办', '毒蛇识别', '蛇伤处理'],
-    summary: '预防重于处置：穿高帮鞋长裤、打草惊蛇、避开翻石；被咬后保持冷静、制动患肢、去除饰品、尽快就医，杜绝切开吸吮等错误做法。',
+    summary:
+      '预防重于处置：穿高帮鞋长裤、打草惊蛇、避开翻石；被咬后保持冷静、制动患肢、去除饰品、尽快就医，杜绝切开吸吮等错误做法。',
     environment: ['草丛', '林地', '田埂', '石堆'],
     scenarios: ['徒步被蛇袭击', '务农时遭蛇咬', '夜间照明不足踩到蛇'],
     sections: [
@@ -618,7 +666,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'animals',
     title: '熊与野猪遭遇：预防与应对策略',
     aliases: ['遇到熊怎么办', '野猪应对', '大型动物遭遇'],
-    summary: '预防核心是声响通报、食物管理与保持距离；遭遇时不奔跑、缓慢后退、护住头颈，按动物类型与攻击性质调整应对方式。',
+    summary:
+      '预防核心是声响通报、食物管理与保持距离；遭遇时不奔跑、缓慢后退、护住头颈，按动物类型与攻击性质调整应对方式。',
     environment: ['山林', '林缘', '农田周边'],
     scenarios: ['徒步偶遇熊', '农作时惊动野猪', '营地发现熊来访痕迹'],
     sections: [
@@ -658,7 +707,10 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['animal-wild-boar', 'animal-black-bear', 'hz-wildlife-attack', 'art-animals-01'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('mem_gov_cn', 'field_guide_cn', 'survival_manual_military') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('mem_gov_cn', 'field_guide_cn', 'survival_manual_military'),
+    }),
   },
 
   /* ============ insects 昆虫图鉴 ============ */
@@ -667,7 +719,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'insects',
     title: '蜱虫防范与叮咬后的正确处置',
     aliases: ['蜱虫', '草爬子', '蜱叮咬处理'],
-    summary: '长裤扎袜、驱避剂、事后全身检查是预防关键；被叮咬后用镊子贴皮垂直拔出、不挤压，消毒并记录日期，出现发热等症状及时就医。',
+    summary:
+      '长裤扎袜、驱避剂、事后全身检查是预防关键；被叮咬后用镊子贴皮垂直拔出、不挤压，消毒并记录日期，出现发热等症状及时就医。',
     environment: ['草地', '林缘', '灌丛', '乡村庭院'],
     scenarios: ['徒步穿过高草区', '户外作业后发现蜱虫', '宠物带蜱回家'],
     sections: [
@@ -713,7 +766,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'insects',
     title: '蜂蛰伤的现场应对与过敏识别',
     aliases: ['被蜜蜂蛰了', '蜂蜇处理', '蜂蛰过敏'],
-    summary: '先离开蜂群、用卡片刮除毒刺、清洁冷敷；重点识别全身过敏反应——一旦出现呼吸困难或喉咙发紧，立即呼叫急救并使用随身肾上腺素自动注射器。',
+    summary:
+      '先离开蜂群、用卡片刮除毒刺、清洁冷敷；重点识别全身过敏反应——一旦出现呼吸困难或喉咙发紧，立即呼叫急救并使用随身肾上腺素自动注射器。',
     environment: ['野外', '庭院', '果园', '城市绿地'],
     scenarios: ['徒步被蜂群攻击', '劳作时踩到蜂巢', '既往过敏者被蛰'],
     sections: [
@@ -760,7 +814,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'insects',
     title: '危险节肢动物的识别与遭遇应对',
     aliases: ['毒虫识别', '蜘蛛蝎子蜈蚣', '危险节肢动物'],
-    summary: '认识蝎子、毒蜘蛛、蜈蚣等常见危险节肢动物的外形与栖息环境，做好进入检查与封堵；被蜇咬后清洁冷敷、观察全身症状，异常及时就医。',
+    summary:
+      '认识蝎子、毒蜘蛛、蜈蚣等常见危险节肢动物的外形与栖息环境，做好进入检查与封堵；被蜇咬后清洁冷敷、观察全身症状，异常及时就医。',
     environment: ['石缝', '朽木', '庭院', '住宿环境'],
     scenarios: ['翻动石块被蜇', '夜间被蜈蚣爬到', '住宿发现毒虫'],
     sections: [
@@ -808,7 +863,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'medicines',
     title: '家庭常备药的分类与管理',
     aliases: ['家庭药箱', '常备药品清单', '小药箱管理'],
-    summary: '按外伤处理、退热镇痛、抗过敏、肠胃、慢性病处方药、消毒用品六类配置家庭药箱，登记有效期与开封时间，儿童与老人用药单独管理。',
+    summary:
+      '按外伤处理、退热镇痛、抗过敏、肠胃、慢性病处方药、消毒用品六类配置家庭药箱，登记有效期与开封时间，儿童与老人用药单独管理。',
     environment: ['家庭', '宿舍', '应急储备'],
     scenarios: ['组建家庭药箱', '季节性疾病备药', '应急物资配置'],
     sections: [
@@ -845,7 +901,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['家庭药箱', '常备药', '药品管理', '有效期'],
     difficulty: 2,
-    relatedIds: ['fa-medication-safety', 'insect-housefly', 'fa-otc-pain-relievers', 'art-medicines-02'],
+    relatedIds: [
+      'fa-medication-safety',
+      'insect-housefly',
+      'fa-otc-pain-relievers',
+      'art-medicines-02',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('fda_meds', 'nhc', 'cdc') }),
   },
@@ -854,7 +915,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'medicines',
     title: '药品储存条件与过期药品处理',
     aliases: ['药品保存', '过期药处理', '药品储存温度'],
-    summary: '多数药品需避光、干燥、阴凉保存，部分需冷藏不可冷冻；开封后按说明书时限使用，性状改变即弃用，过期药送回收点不随意丢弃。',
+    summary:
+      '多数药品需避光、干燥、阴凉保存，部分需冷藏不可冷冻；开封后按说明书时限使用，性状改变即弃用，过期药送回收点不随意丢弃。',
     environment: ['家庭', '药箱', '应急储备'],
     scenarios: ['药品受潮变质', '停电后冷藏药存放', '清理家庭过期药'],
     sections: [
@@ -891,7 +953,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['药品储存', '有效期', '冷藏药品', '过期回收'],
     difficulty: 2,
-    relatedIds: ['fa-medication-safety', 'skill-food-keep-salt-cure', 'skill-containers-store-water', 'art-medicines-01'],
+    relatedIds: [
+      'fa-medication-safety',
+      'skill-food-keep-salt-cure',
+      'skill-containers-store-water',
+      'art-medicines-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('fda_meds', 'cdc', 'nhc') }),
   },
@@ -900,7 +967,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'medicines',
     title: '应急用药的通用原则与误服处置',
     aliases: ['安全用药', '应急吃药', '误服过量处理'],
-    summary: '应急场景先救命后用药：严格按说明书与医嘱，不叠加同成分复方药、不滥用抗生素、不自行调整处方药；误服过量立即携带包装就医。',
+    summary:
+      '应急场景先救命后用药：严格按说明书与医嘱，不叠加同成分复方药、不滥用抗生素、不自行调整处方药；误服过量立即携带包装就医。',
     environment: ['家庭', '野外', '灾害安置'],
     scenarios: ['断医断药时的用药决策', '误服过量或混服', '儿童误拿药品'],
     sections: [
@@ -937,7 +1005,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['安全用药', '误服处置', '用药原则', '过敏反应'],
     difficulty: 3,
-    relatedIds: ['fa-medication-safety', 'fa-allergic-reaction', 'fa-otc-pain-relievers', 'art-medicines-01'],
+    relatedIds: [
+      'fa-medication-safety',
+      'fa-allergic-reaction',
+      'fa-otc-pain-relievers',
+      'art-medicines-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L2', sources: pick('fda_meds', 'nhc', 'cdc') }),
   },
@@ -948,7 +1021,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'first-aid',
     title: '现场急救通用原则：先安全，后施救',
     aliases: ['急救原则', '现场救护', '救人第一步'],
-    summary: '施救前先确认环境安全、做好自我防护、指定呼救分工，只做会做的事，持续观察并完整交接，是所有急救场景的共同底层原则。',
+    summary:
+      '施救前先确认环境安全、做好自我防护、指定呼救分工，只做会做的事，持续观察并完整交接，是所有急救场景的共同底层原则。',
     environment: ['事故现场', '野外', '家庭', '灾害现场'],
     scenarios: ['路遇事故', '同伴受伤', '灾害中救助他人'],
     sections: [
@@ -988,14 +1062,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 2,
     relatedIds: ['sup-protect-goggles', 'sup-protect-helmet', 'sup-med-gloves', 'art-medicines-03'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('who_firstaid', 'rc_firstaid', 'ifrc_firstaid') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('who_firstaid', 'rc_firstaid', 'ifrc_firstaid'),
+    }),
   },
   {
     id: 'art-first-aid-02',
     categorySlug: 'first-aid',
     title: '伤情判断优先级：先处理最要命的',
     aliases: ['检伤分类', '伤情评估', '急救优先级'],
-    summary: '按“大量出血—呼吸—意识—其余”的顺序快速扫查伤情，用休克与危险信号识别危重伤员，把有限时间用在能救命的处置上。',
+    summary:
+      '按“大量出血—呼吸—意识—其余”的顺序快速扫查伤情，用休克与危险信号识别危重伤员，把有限时间用在能救命的处置上。',
     environment: ['事故现场', '灾害现场', '野外'],
     scenarios: ['多伤员现场', '单人重伤初步评估', '等待救援时的持续评估'],
     sections: [
@@ -1033,7 +1111,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['伤情判断', '检伤', '休克识别', '急救优先级'],
     difficulty: 3,
-    relatedIds: ['fa-trauma-primary-survey', 'fa-chest-abdominal-injury', 'fa-allergic-reaction', 'art-first-aid-01'],
+    relatedIds: [
+      'fa-trauma-primary-survey',
+      'fa-chest-abdominal-injury',
+      'fa-allergic-reaction',
+      'art-first-aid-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L2', sources: pick('rc_firstaid', 'who_firstaid', 'nhc') }),
   },
@@ -1042,7 +1125,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'first-aid',
     title: '急救物品打包：分层、标签与可取用',
     aliases: ['急救包配置', '急救物品清单', '随身急救包'],
-    summary: '按“止血覆盖—固定包扎—消毒防护—工具记录”四层分装急救物品，明确标签与取用顺序，并定期检查补充、配套学习使用方法。',
+    summary:
+      '按“止血覆盖—固定包扎—消毒防护—工具记录”四层分装急救物品，明确标签与取用顺序，并定期检查补充、配套学习使用方法。',
     environment: ['家庭', '户外', '车辆', '应急包'],
     scenarios: ['配置家庭急救包', '徒步与车载急救包', '灾害应急储备'],
     sections: [
@@ -1080,7 +1164,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['急救包', '物品打包', '止血用品', '定期检查'],
     difficulty: 2,
-    relatedIds: ['fa-tourniquet', 'sup-med-gauze', 'fa-bleeding-direct-pressure', 'art-first-aid-01'],
+    relatedIds: [
+      'fa-tourniquet',
+      'sup-med-gauze',
+      'fa-bleeding-direct-pressure',
+      'art-first-aid-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L2', sources: pick('rc_firstaid', 'fema', 'who_firstaid') }),
   },
@@ -1091,7 +1180,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'tools',
     title: '刀具的选择、使用安全与割伤处置',
     aliases: ['求生刀', '户外刀具', '刀具安全'],
-    summary: '按任务选刀、优先固定刃与全龙骨结构，使用中牢记“刃口朝外、钝侧施力、远离身体”，割伤后直接按压包扎并判断是否需要就医。',
+    summary:
+      '按任务选刀、优先固定刃与全龙骨结构，使用中牢记“刃口朝外、钝侧施力、远离身体”，割伤后直接按压包扎并判断是否需要就医。',
     environment: ['野外', '营地', '家庭'],
     scenarios: ['户外取材与开路', '营地食物处理', '工具保养'],
     sections: [
@@ -1131,14 +1221,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 2,
     relatedIds: ['skill-tools-knife-safety', 'sup-tool-knife', 'sup-tool-shovel', 'art-crafts-02'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('survival_manual_military', 'fema', 'rc_firstaid') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('survival_manual_military', 'fema', 'rc_firstaid'),
+    }),
   },
   {
     id: 'art-tools-02',
     categorySlug: 'tools',
     title: '绳索基础：材质、规格与检查保管',
     aliases: ['户外绳索', '登山绳', '绳子选择'],
-    summary: '按用途区分天然与合成绳索，理解绳结会降低强度、动态与静态承重差异，坚持使用前检查磨损、避开紫外线与化学品，建立报废标准。',
+    summary:
+      '按用途区分天然与合成绳索，理解绳结会降低强度、动态与静态承重差异，坚持使用前检查磨损、避开紫外线与化学品，建立报废标准。',
     environment: ['野外', '营地', '救援'],
     scenarios: ['搭建庇护所', '捆绑与拖拽', '临时固定'],
     sections: [
@@ -1176,7 +1270,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['绳索', '装备检查', '承重', '保管'],
     difficulty: 2,
-    relatedIds: ['skill-knots-sheetbend', 'sup-tool-paracord', 'scn-infra-collapse', 'art-crafts-01'],
+    relatedIds: [
+      'skill-knots-sheetbend',
+      'sup-tool-paracord',
+      'scn-infra-collapse',
+      'art-crafts-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('survival_manual_military', 'fema') }),
   },
@@ -1185,7 +1284,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'tools',
     title: '指南针与导航工具的使用基础',
     aliases: ['指南针使用', '野外导航', '方向判断'],
-    summary: '掌握方位角测定与地图对照两大基本功，配合离线地图与 GPS 交叉验证，管理好电量与备份，任何时候都能回答“我在哪、往哪走”。',
+    summary:
+      '掌握方位角测定与地图对照两大基本功，配合离线地图与 GPS 交叉验证，管理好电量与备份，任何时候都能回答“我在哪、往哪走”。',
     environment: ['野外', '山区', '城市'],
     scenarios: ['无信号区域行进', '地图与实地对照', '导航设备故障'],
     sections: [
@@ -1225,7 +1325,10 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['sup-tool-compass', 'skill-nav-watch', 'skill-nav-sun-compass', 'art-crafts-02'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L1', sources: pick('survival_manual_military', 'fema', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L1',
+      sources: pick('survival_manual_military', 'fema', 'mem_gov_cn'),
+    }),
   },
 
   /* ============ crafts 制作工艺 ============ */
@@ -1234,7 +1337,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'crafts',
     title: '绳结基础：五个实用结的打法与用途',
     aliases: ['打绳结', '实用绳结', '结绳入门'],
-    summary: '掌握单结、八字结、双套结、平结与抓结五个基础结，理解“结会吃掉强度”的常识，用练习木棒与闲置绳反复练到闭眼能打。',
+    summary:
+      '掌握单结、八字结、双套结、平结与抓结五个基础结，理解“结会吃掉强度”的常识，用练习木棒与闲置绳反复练到闭眼能打。',
     environment: ['野外', '营地', '日常'],
     scenarios: ['捆绑物品', '连接两根绳', '临时固定与悬挂'],
     sections: [
@@ -1272,7 +1376,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['绳结', '八字结', '平结', '捆扎'],
     difficulty: 2,
-    relatedIds: ['skill-knots-sheetbend', 'skill-knots-bowline', 'skill-knots-tautline', 'art-tools-02'],
+    relatedIds: [
+      'skill-knots-sheetbend',
+      'skill-knots-bowline',
+      'skill-knots-tautline',
+      'art-tools-02',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('survival_manual_military', 'fema') }),
   },
@@ -1281,7 +1390,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'crafts',
     title: '简易工具制作：石片、木槌与尖桩',
     aliases: ['简易工具', '原始工具', '野外制工具'],
-    summary: '用石片做切割刃、硬木做木槌与尖桩、藤蔓做捆绑，遵循“选材—加工—试用—包裹”四步，把锋刃与尖端妥善包裹防止自伤。',
+    summary:
+      '用石片做切割刃、硬木做木槌与尖桩、藤蔓做捆绑，遵循“选材—加工—试用—包裹”四步，把锋刃与尖端妥善包裹防止自伤。',
     environment: ['野外', '营地', '灾害无工具环境'],
     scenarios: ['失去随身工具', '就地取材制作', '临时搭建与加工'],
     sections: [
@@ -1319,7 +1429,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['简易工具', '石器', '木工', '就地取材'],
     difficulty: 3,
-    relatedIds: ['skill-containers-bark', 'sup-tool-saw', 'skill-warmth-rain-barrier', 'art-geology-01'],
+    relatedIds: [
+      'skill-containers-bark',
+      'sup-tool-saw',
+      'skill-warmth-rain-barrier',
+      'art-geology-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('survival_manual_military', 'mem_gov_cn') }),
   },
@@ -1328,7 +1443,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'crafts',
     title: '天然材料利用：纤维、容器与庇护辅材',
     aliases: ['天然材料', '就地取材', '植物纤维利用'],
-    summary: '识别可剥取的树皮纤维与藤蔓搓绳，用大叶与竹筒做临时容器，用干草木屑做隔潮与引火铺垫，采集前先排除刺激性与可疑物种。',
+    summary:
+      '识别可剥取的树皮纤维与藤蔓搓绳，用大叶与竹筒做临时容器，用干草木屑做隔潮与引火铺垫，采集前先排除刺激性与可疑物种。',
     environment: ['林地', '河边', '野外'],
     scenarios: ['缺绳缺容器时取材', '搭建庇护所铺垫', '应急取水盛物'],
     sections: [
@@ -1366,7 +1482,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['天然材料', '植物纤维', '搓绳', '临时容器'],
     difficulty: 3,
-    relatedIds: ['skill-containers-bark', 'skill-shelter-ridge-tarp', 'skill-knots-sheetbend', 'art-agriculture-03'],
+    relatedIds: [
+      'skill-containers-bark',
+      'skill-shelter-ridge-tarp',
+      'skill-knots-sheetbend',
+      'art-agriculture-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('survival_manual_military', 'flora_china') }),
   },
@@ -1377,7 +1498,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'food-preservation',
     title: '食物变质识别：色、形、味与危险信号',
     aliases: ['食物变质', '坏了还能吃吗', '腐败识别'],
-    summary: '发黏、发霉、胀袋、酸臭与变色是变质的直观信号；但部分有害产物无味无形且加热不掉，原则是“拿不准就丢弃”，绝不品尝变质食物。',
+    summary:
+      '发黏、发霉、胀袋、酸臭与变色是变质的直观信号；但部分有害产物无味无形且加热不掉，原则是“拿不准就丢弃”，绝不品尝变质食物。',
     environment: ['家庭', '灾害储备', '野外'],
     scenarios: ['储备食品检查', '剩饭剩菜判断', '停电后食品评估'],
     sections: [
@@ -1415,7 +1537,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['变质识别', '食品安全', '剩饭处理', '霉变'],
     difficulty: 2,
-    relatedIds: ['hz-food-poisoning', 'sup-comm-signal-mirror', 'sup-food-selfheat-rice', 'art-hazards-02'],
+    relatedIds: [
+      'hz-food-poisoning',
+      'sup-comm-signal-mirror',
+      'sup-food-selfheat-rice',
+      'art-hazards-02',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L2', sources: pick('usda_food', 'cdc', 'who_water') }),
   },
@@ -1424,7 +1551,8 @@ export const articles: KnowledgeArticle[] = [
     categorySlug: 'food-preservation',
     title: '干燥保存法：降水活度、控温与防回潮',
     aliases: ['风干食物', '晒干保存', '脱水储存'],
-    summary: '干燥的核心是把水分降到微生物难以繁殖的水平：日晒、阴干、风干与锅烘四法可选，判断标准是干脆无心、冷却不回潮，储存环节防潮决定成败。',
+    summary:
+      '干燥的核心是把水分降到微生物难以繁殖的水平：日晒、阴干、风干与锅烘四法可选，判断标准是干脆无心、冷却不回潮，储存环节防潮决定成败。',
     environment: ['家庭', '乡村', '野外', '灾害储备'],
     scenarios: ['蔬果旺季保存', '肉类与鱼的风干', '应急口粮制备'],
     sections: [
@@ -1464,14 +1592,18 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['skill-food-keep-sun-dry', 'hz-typhoon', 'hz-hypothermia', 'art-weather-03'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L1', sources: pick('usda_food', 'fema', 'survival_manual_military') }),
+    meta: meta({
+      dangerLevel: 'L1',
+      sources: pick('usda_food', 'fema', 'survival_manual_military'),
+    }),
   },
   {
     id: 'art-food-preservation-03',
     categorySlug: 'food-preservation',
     title: '应急储存与先进先出的周转管理',
     aliases: ['应急食物储备', '先进先出', '食品周转'],
-    summary: '阴凉干燥避光、离地离墙分区存放，标注日期按先进先出轮换，家庭日常消耗与储备互换，定期检查虫害与效期，让储备始终处于可用状态。',
+    summary:
+      '阴凉干燥避光、离地离墙分区存放，标注日期按先进先出轮换，家庭日常消耗与储备互换，定期检查虫害与效期，让储备始终处于可用状态。',
     environment: ['家庭', '仓库', '灾害储备'],
     scenarios: ['建立家庭储备粮', '长期仓储管理', '灾后物资分配'],
     sections: [
@@ -1509,7 +1641,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['应急储备', '先进先出', '仓储管理', '轮换'],
     difficulty: 2,
-    relatedIds: ['skill-containers-store-water', 'sup-water-bottled', 'sup-water-storage-jar', 'art-water-03'],
+    relatedIds: [
+      'skill-containers-store-water',
+      'sup-water-bottled',
+      'sup-water-storage-jar',
+      'art-water-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('usda_food', 'fema', 'cdc') }),
   },
@@ -1555,9 +1692,17 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['找水', '水源识别', '饮水安全', '污染判断'],
     difficulty: 2,
-    relatedIds: ['skill-containers-store-water', 'hz-water-outage', 'hz-infection', 'art-disasters-02'],
+    relatedIds: [
+      'skill-containers-store-water',
+      'hz-water-outage',
+      'hz-infection',
+      'art-disasters-02',
+    ],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('who_water', 'fema', 'survival_manual_military') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('who_water', 'fema', 'survival_manual_military'),
+    }),
   },
   {
     id: 'art-water-02',
@@ -1601,7 +1746,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['净水', '煮沸', '过滤', '饮水安全'],
     difficulty: 2,
-    relatedIds: ['skill-water-treat-boil', 'sup-water-filter-straw', 'skill-water-treat-diy-filter', 'art-water-01'],
+    relatedIds: [
+      'skill-water-treat-boil',
+      'sup-water-filter-straw',
+      'skill-water-treat-diy-filter',
+      'art-water-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('who_water', 'cdc') }),
   },
@@ -1647,7 +1797,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['储水', '应急储备', '水质管理', '容器卫生'],
     difficulty: 1,
-    relatedIds: ['sup-water-storage-jar', 'skill-containers-store-water', 'hz-water-outage', 'art-food-preservation-03'],
+    relatedIds: [
+      'sup-water-storage-jar',
+      'skill-containers-store-water',
+      'hz-water-outage',
+      'art-food-preservation-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L2', sources: pick('who_water', 'fema') }),
   },
@@ -1831,9 +1986,17 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['营地选择', '地形判断', '选址', '避险'],
     difficulty: 3,
-    relatedIds: ['skill-shelter-site-select', 'sup-light-camping-lantern', 'scn-earthquake', 'art-geology-02'],
+    relatedIds: [
+      'skill-shelter-site-select',
+      'sup-light-camping-lantern',
+      'scn-earthquake',
+      'art-geology-02',
+    ],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('survival_manual_military', 'mem_gov_cn', 'fema') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('survival_manual_military', 'mem_gov_cn', 'fema'),
+    }),
   },
   {
     id: 'art-geology-02',
@@ -1969,7 +2132,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['环境排查', '危险识别', '有限空间', '安全巡视'],
     difficulty: 4,
-    relatedIds: ['skill-shelter-site-select', 'sup-protect-helmet', 'hz-power-facility', 'art-hazards-02'],
+    relatedIds: [
+      'skill-shelter-site-select',
+      'sup-protect-helmet',
+      'hz-power-facility',
+      'art-hazards-02',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L3', sources: pick('mem_gov_cn', 'fema', 'cdc') }),
   },
@@ -2017,7 +2185,10 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['fa-snakebite', 'hz-snake-insect', 'animal-cobra', 'art-plants-03'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('field_guide_cn', 'flora_china', 'who_firstaid') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('field_guide_cn', 'flora_china', 'who_firstaid'),
+    }),
   },
   {
     id: 'art-hazards-03',
@@ -2061,9 +2232,17 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['夜间行动', '迷路防范', '失温预防', '夜行'],
     difficulty: 3,
-    relatedIds: ['hz-hypothermia', 'skill-warmth-hypothermia', 'fa-hypothermia', 'art-wilderness-04'],
+    relatedIds: [
+      'hz-hypothermia',
+      'skill-warmth-hypothermia',
+      'fa-hypothermia',
+      'art-wilderness-04',
+    ],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('survival_manual_military', 'wilderness_society', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('survival_manual_military', 'wilderness_society', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'art-agriculture-01',
@@ -2107,7 +2286,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['应急种植', '短周期作物', '免耕', '种子储备'],
     difficulty: 2,
-    relatedIds: ['sup-agri-seeds', 'skill-farming-container', 'scn-food-shortage', 'art-food-preservation-03'],
+    relatedIds: [
+      'sup-agri-seeds',
+      'skill-farming-container',
+      'scn-food-shortage',
+      'art-food-preservation-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('usda_food', 'fema', 'community') }),
   },
@@ -2153,7 +2337,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['育苗', '移栽', '炼苗', '苗期管理'],
     difficulty: 2,
-    relatedIds: ['sup-agri-seedling-tray', 'skill-farming-sprout', 'skill-power-fire-safety', 'art-medicines-01'],
+    relatedIds: [
+      'sup-agri-seedling-tray',
+      'skill-farming-sprout',
+      'skill-power-fire-safety',
+      'art-medicines-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('usda_food', 'community') }),
   },
@@ -2199,7 +2388,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['容器种植', '阳台种菜', '基质配制', '城市农业'],
     difficulty: 1,
-    relatedIds: ['skill-farming-container', 'scn-urban-blackout', 'sup-agri-soil', 'art-agriculture-01'],
+    relatedIds: [
+      'skill-farming-container',
+      'scn-urban-blackout',
+      'sup-agri-soil',
+      'art-agriculture-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('usda_food', 'community') }),
   },
@@ -2245,9 +2439,17 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['生火', '用火安全', '灭火', '野外用火'],
     difficulty: 2,
-    relatedIds: ['skill-power-fire-safety', 'hz-wildfire', 'skill-tools-firesteel', 'art-mechanics-03'],
+    relatedIds: [
+      'skill-power-fire-safety',
+      'hz-wildfire',
+      'skill-tools-firesteel',
+      'art-mechanics-03',
+    ],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L3', sources: pick('survival_manual_military', 'fema', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L3',
+      sources: pick('survival_manual_military', 'fema', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'art-energy-02',
@@ -2291,7 +2493,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['太阳能', '风能', '离网供电', '光伏'],
     difficulty: 4,
-    relatedIds: ['skill-power-battery-solar', 'sup-energy-solar-panel', 'sup-light-solar-lamp', 'art-energy-03'],
+    relatedIds: [
+      'skill-power-battery-solar',
+      'sup-energy-solar-panel',
+      'sup-light-solar-lamp',
+      'art-energy-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L3', sources: pick('fema', 'community') }),
   },
@@ -2337,7 +2544,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['电池', '充电安全', '蓄电池', '储能'],
     difficulty: 3,
-    relatedIds: ['skill-power-battery-solar', 'sup-energy-aaa-battery', 'sup-energy-aa-battery', 'art-energy-02'],
+    relatedIds: [
+      'skill-power-battery-solar',
+      'sup-energy-aaa-battery',
+      'sup-energy-aa-battery',
+      'art-energy-02',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L3', sources: pick('fema', 'cdc') }),
   },
@@ -2383,9 +2595,17 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['故障排查', '维修思路', '诊断方法', '设备维护'],
     difficulty: 3,
-    relatedIds: ['sup-repair-sewing-kit', 'sup-repair-glue', 'sup-repair-patch-tape', 'art-mechanics-03'],
+    relatedIds: [
+      'sup-repair-sewing-kit',
+      'sup-repair-glue',
+      'sup-repair-patch-tape',
+      'art-mechanics-03',
+    ],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L1', sources: pick('fema', 'survival_manual_military', 'community') }),
+    meta: meta({
+      dangerLevel: 'L1',
+      sources: pick('fema', 'survival_manual_military', 'community'),
+    }),
   },
   {
     id: 'art-mechanics-02',
@@ -2429,9 +2649,17 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['临时修复', '应急加固', '替代方案', '结构支撑'],
     difficulty: 3,
-    relatedIds: ['skill-knots-sheetbend', 'skill-repair-fabric', 'sup-repair-glue', 'art-crafts-01'],
+    relatedIds: [
+      'skill-knots-sheetbend',
+      'skill-repair-fabric',
+      'sup-repair-glue',
+      'art-crafts-01',
+    ],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('survival_manual_military', 'fema', 'community') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('survival_manual_military', 'fema', 'community'),
+    }),
   },
   {
     id: 'art-mechanics-03',
@@ -2475,7 +2703,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['燃油设备', '发电机', '用火安全', '排放中毒'],
     difficulty: 3,
-    relatedIds: ['hz-co-poisoning', 'skill-power-fire-safety', 'hz-electric-shock', 'art-energy-01'],
+    relatedIds: [
+      'hz-co-poisoning',
+      'skill-power-fire-safety',
+      'hz-electric-shock',
+      'art-energy-01',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L3', sources: pick('fema', 'mem_gov_cn', 'cdc') }),
   },
@@ -2613,7 +2846,12 @@ export const articles: KnowledgeArticle[] = [
     ],
     tags: ['心理调适', '隔离', '情绪管理', '求助'],
     difficulty: 2,
-    relatedIds: ['scn-long-water-outage', 'hz-water-outage', 'skill-power-fire-safety', 'art-food-preservation-03'],
+    relatedIds: [
+      'scn-long-water-outage',
+      'hz-water-outage',
+      'skill-power-fire-safety',
+      'art-food-preservation-03',
+    ],
     offlineReady: true,
     meta: meta({ dangerLevel: 'L1', sources: pick('cdc', 'who_firstaid', 'fema') }),
   },
@@ -2753,7 +2991,10 @@ export const articles: KnowledgeArticle[] = [
     difficulty: 3,
     relatedIds: ['hz-typhoon', 'hz-tsunami', 'skill-shelter-site-select', 'art-geology-02'],
     offlineReady: true,
-    meta: meta({ dangerLevel: 'L2', sources: pick('china_meteorology_typhoon', 'cma_weather', 'mem_gov_cn') }),
+    meta: meta({
+      dangerLevel: 'L2',
+      sources: pick('china_meteorology_typhoon', 'cma_weather', 'mem_gov_cn'),
+    }),
   },
   {
     id: 'art-disasters-04',

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Post } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 import { AuthUser, CurrentUser, Public } from '../common/decorators';
 import { AuthService, PublicUser, TokenPair } from './auth.service';

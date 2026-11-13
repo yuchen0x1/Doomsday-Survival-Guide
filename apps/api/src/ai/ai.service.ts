@@ -2,8 +2,8 @@ import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config';
 import type { Response } from 'express';
 import { PrismaService } from '../prisma/prisma.service';
-import { describeError, forwardChat, joinUrl, type ChatMessageLike } from './openai';
-import { SSE_DONE, formatSSE } from './sse';
+import { type ChatMessageLike, describeError, forwardChat, joinUrl } from './openai';
+import { formatSSE, SSE_DONE } from './sse';
 
 export interface IdentifyCandidate {
   name: string;
@@ -23,8 +23,7 @@ export interface IdentifyResult {
   error?: string;
 }
 
-const IDENTIFY_WARNING =
-  '识别结果由 AI 生成，置信度仅供参考；身份未确认前禁止食用、药用或触碰。';
+const IDENTIFY_WARNING = '识别结果由 AI 生成，置信度仅供参考；身份未确认前禁止食用、药用或触碰。';
 
 @Injectable()
 export class AIService {
@@ -55,20 +54,14 @@ export class AIService {
   }
 
   health(): { available: boolean; model?: string } {
-    return this.isAvailable()
-      ? { available: true, model: this.model }
-      : { available: false };
+    return this.isAvailable() ? { available: true, model: this.model } : { available: false };
   }
 
   /**
    * SSE 流式对话：把上游 OpenAI 兼容流转换为前端契约。
    * 未配置密钥时返回 error 事件（而不是假装成功）。
    */
-  async chat(
-    messages: ChatMessageLike[],
-    res: Response,
-    userId?: string,
-  ): Promise<void> {
+  async chat(messages: ChatMessageLike[], res: Response, userId?: string): Promise<void> {
     res.status(200);
     res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
     res.setHeader('Cache-Control', 'no-cache, no-transform');
@@ -294,9 +287,7 @@ function clampConfidence(value: unknown): number {
 }
 
 function toStringArray(value: unknown): string[] {
-  return Array.isArray(value)
-    ? value.map((v) => String(v)).filter((v) => v.trim().length > 0)
-    : [];
+  return Array.isArray(value) ? value.map((v) => String(v)).filter((v) => v.trim().length > 0) : [];
 }
 
 /** 从模型输出中提取 JSON 对象（容忍 ```json 围栏与前后废话） */

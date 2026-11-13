@@ -22,24 +22,46 @@ jobs:
       pages: write
       id-token: write
     env:
+      # GitHub Pages 项目站点默认位于 /<repository-name>/。
+      # 如果以后绑定自定义域名，将这里改为 /。
       VITE_BASE_PATH: /${{ github.event.repository.name }}/
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 11.20.0
-      - uses: actions/setup-node@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22.13.0
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter @apocalypse/web typecheck
-      - run: pnpm test
-      - run: pnpm build
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate API types
+        run: pnpm --filter @apocalypse/api prisma:generate
+      - name: Validate
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+
+      - name: Build web PWA
+        run: pnpm build
+
       - name: Add SPA fallback for GitHub Pages
         run: cp apps/web/dist/index.html apps/web/dist/404.html
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
           path: apps/web/dist
 
@@ -53,5 +75,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - id: deployment
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4

@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { ROLES_KEY } from '../decorators';
 import type { AuthUser } from '../decorators';
+import { ROLES_KEY } from '../decorators';
 
 /** 角色守卫：路由声明 @Roles('ADMIN') 时校验登录用户角色 */
 @Injectable()

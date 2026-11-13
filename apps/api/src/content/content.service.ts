@@ -1,11 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import {
-  KIND_DEFS,
-  type ContentKind,
-  type SourceRow,
-} from '../common/kinds';
+import { type ContentKind, KIND_DEFS, type SourceRow } from '../common/kinds';
 import { isVisibleTo, type ViewerRole } from '../common/visibility';
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface ListQuery {
   page?: number;
@@ -103,7 +99,9 @@ export class ContentService {
       delegate.count({ where }) as Promise<number>,
     ]);
 
-    const sourceIds = rows.flatMap((r) => (Array.isArray(r.sourceIds) ? (r.sourceIds as string[]) : []));
+    const sourceIds = rows.flatMap((r) =>
+      Array.isArray(r.sourceIds) ? (r.sourceIds as string[]) : [],
+    );
     const sources = await this.loadSources(sourceIds);
     const byId = new Map(sources.map((s) => [s.id, s]));
     const rowSources = (r: Record<string, unknown>): SourceRow[] =>
@@ -149,7 +147,9 @@ export class ContentService {
         sources,
         confidence: typeof row.confidence === 'string' ? row.confidence : undefined,
         identificationConfidence:
-          typeof row.identificationConfidence === 'string' ? row.identificationConfidence : undefined,
+          typeof row.identificationConfidence === 'string'
+            ? row.identificationConfidence
+            : undefined,
       },
       role,
     );
@@ -275,9 +275,7 @@ export class ContentService {
       count('hazards'),
       count('quizzes'),
       userId ? this.prisma.bookmark.count({ where: { userId } }) : 0,
-      userId
-        ? this.prisma.offlinePackage.count({ where: { userId, status: 'downloaded' } })
-        : 0,
+      userId ? this.prisma.offlinePackage.count({ where: { userId, status: 'downloaded' } }) : 0,
     ]);
 
     return {
@@ -292,7 +290,18 @@ export class ContentService {
       scenarios,
       hazards,
       quizzes,
-      total: articles + plants + animals + insects + skills + medicines + firstAid + supplies + scenarios + hazards + quizzes,
+      total:
+        articles +
+        plants +
+        animals +
+        insects +
+        skills +
+        medicines +
+        firstAid +
+        supplies +
+        scenarios +
+        hazards +
+        quizzes,
       bookmarks,
       offlineDownloaded,
     };

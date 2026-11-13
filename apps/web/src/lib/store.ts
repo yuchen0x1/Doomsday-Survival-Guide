@@ -1,8 +1,13 @@
-import { create } from 'zustand';
 import type {
-  Bookmark, BookmarkKind, InventoryEntry, InventoryTransaction, ReadingHistoryItem,
-  UserNote, DangerLevel,
+  Bookmark,
+  BookmarkKind,
+  DangerLevel,
+  InventoryEntry,
+  InventoryTransaction,
+  ReadingHistoryItem,
+  UserNote,
 } from '@apocalypse/core';
+import { create } from 'zustand';
 import * as db from './db';
 
 export interface Toast {
@@ -13,6 +18,7 @@ export interface Toast {
 
 interface AppState {
   hydrated: boolean;
+  loadError: boolean;
   online: boolean;
   bookmarks: Bookmark[];
   history: ReadingHistoryItem[];
@@ -51,6 +57,7 @@ let toastSeq = 1;
 
 export const useApp = create<AppState>((set, get) => ({
   hydrated: false,
+  loadError: false,
   online: typeof navigator !== 'undefined' ? navigator.onLine : true,
   bookmarks: [],
   history: [],
@@ -63,12 +70,16 @@ export const useApp = create<AppState>((set, get) => ({
   hydrate: async () => {
     try {
       const [bookmarks, history, inventory, transactions, notes] = await Promise.all([
-        db.listBookmarks(), db.listHistory(), db.listInventory(), db.listTransactions(), db.listNotes(),
+        db.listBookmarks(),
+        db.listHistory(),
+        db.listInventory(),
+        db.listTransactions(),
+        db.listNotes(),
       ]);
-      set({ bookmarks, history, inventory, transactions, notes, hydrated: true });
+      set({ bookmarks, history, inventory, transactions, notes, hydrated: true, loadError: false });
     } catch (err) {
       console.error('本地数据加载失败', err);
-      set({ hydrated: true });
+      set({ hydrated: true, loadError: true });
     }
   },
 
@@ -107,6 +118,8 @@ export const useApp = create<AppState>((set, get) => ({
   },
 
   addHistory: async (item) => {
+    const prefs = await db.getSetting('prefs', { autoHistory: true });
+    if (prefs.autoHistory === false) return;
     await db.pushHistory(item);
     const history = await db.listHistory();
     set({ history });
@@ -121,16 +134,12 @@ export const useApp = create<AppState>((set, get) => ({
     set({ inventory: await db.listInventory() });
   },
   changeInventoryQty: async (id, delta, reason) => {
-    const entry = get().inventory.find((i) => i.id === id);
-    if (!entry) return;
-    const next = Math.max(0, entry.quantity + delta);
-    await db.updateInventory(id, { quantity: next });
-    await db.pushTransaction(id, delta, reason);
+    await db.changeInventoryQuantity(id, delta, reason);
     set({ inventory: await db.listInventory(), transactions: await db.listTransactions() });
   },
   editInventory: async (id, patch) => {
     await db.updateInventory(id, patch);
-    set({ inventory: await db.listInventory() });
+    set({ inventory: await db.listInventory(), transactions: await db.listTransactions() });
   },
   removeInventory: async (id) => {
     await db.removeInventory(id);
@@ -154,9 +163,14 @@ export const useApp = create<AppState>((set, get) => ({
 /** 危险等级 → 徽章配色 class */
 export function dangerClass(level: DangerLevel): string {
   switch (level) {
-    case 'L0': return 'text-[var(--color-info)]';
-    case 'L1': return 'text-[var(--color-sand)]';
-    case 'L2': return 'text-[var(--color-warn)]';
-    case 'L3': case 'L4': return 'text-[var(--color-danger)]';
+    case 'L0':
+      return 'text-[var(--color-info)]';
+    case 'L1':
+      return 'text-[var(--color-sand)]';
+    case 'L2':
+      return 'text-[var(--color-warn)]';
+    case 'L3':
+    case 'L4':
+      return 'text-[var(--color-danger)]';
   }
 }

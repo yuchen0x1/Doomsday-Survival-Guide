@@ -17,14 +17,14 @@ pnpm --filter @apocalypse/desktop build
 
 ## 配置要点（`src-tauri/tauri.conf.json`）
 
-| 项 | 值 |
-| --- | --- |
-| identifier | `local.survival.apocalypse` |
-| 窗口 | 1280×800，最小 900×600，标题 `APOCALYPSE SURVIVAL` |
-| devUrl | `http://localhost:5173`（web dev server） |
-| frontendDist | `../web/dist`（web 构建产物） |
-| trayIcon | `id: main-tray`，左键弹菜单 |
-| beforeDev / beforeBuild | `pnpm --filter @apocalypse/web dev` / `build` |
+| 项                      | 值                                                 |
+| ----------------------- | -------------------------------------------------- |
+| identifier              | `local.survival.apocalypse`                        |
+| 窗口                    | 1280×800，最小 900×600，标题 `APOCALYPSE SURVIVAL` |
+| devUrl                  | `http://localhost:5173`（web dev server）          |
+| frontendDist            | `../web/dist`（web 构建产物）                      |
+| trayIcon                | `id: main-tray`，左键弹菜单                        |
+| beforeDev / beforeBuild | `pnpm --filter @apocalypse/web dev` / `build`      |
 
 `capabilities/default.json`：`core:default` + `core:tray:default` + `dialog:default`。
 

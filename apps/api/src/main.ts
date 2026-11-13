@@ -1,11 +1,10 @@
 import 'reflect-metadata';
-import { json, urlencoded } from 'express';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { json, urlencoded } from 'express';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
-import { ValidationPipe } from '@nestjs/common';
 import { envInt, loadEnvFiles } from './config/load-env';
 
 loadEnvFiles();
@@ -23,7 +22,10 @@ async function bootstrap(): Promise<void> {
   app.enableCors({
     origin:
       process.env.ENABLE_CORS_WHITELIST === 'true'
-        ? (process.env.CORS_ORIGINS ?? '').split(',').map((s) => s.trim()).filter(Boolean)
+        ? (process.env.CORS_ORIGINS ?? '')
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
         : true,
     credentials: true,
   });

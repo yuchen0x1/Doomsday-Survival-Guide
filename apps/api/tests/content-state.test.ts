@@ -1,16 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import {
-  REVIEW_STATUS_LIST,
-  REVIEW_TRANSITIONS,
   allowedTargets,
   canTransition,
   isReviewStatus,
+  REVIEW_STATUS_LIST,
+  REVIEW_TRANSITIONS,
 } from '../src/common/content-state';
 
 // 纯函数测试：不依赖数据库 / Nest 容器。
 // 状态为字符串字面量，运行时直接比较即可；用 any 断言避开跨包类型导入。
-const t = (from: string, to: string): boolean =>
-  canTransition(from as never, to as never);
+const t = (from: string, to: string): boolean => canTransition(from as never, to as never);
 const targets = (from: string): string[] => allowedTargets(from as never) as string[];
 
 describe('内容审核状态机', () => {

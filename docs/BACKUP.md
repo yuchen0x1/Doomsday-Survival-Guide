@@ -1,16 +1,18 @@
 # 备份与恢复（BACKUP）
 
+> 2026-11-13：当前工作区缺少 API 与 Tauri 源码，PostgreSQL / Tauri 章节仅作历史参考。本次验证范围为第 3 节的 IndexedDB 备份。
+
 > 覆盖三类数据：服务端 PostgreSQL（内容/用户/审核/审计）、Web 端 IndexedDB 个人数据、前端离线知识包。部署架构见 [DEPLOYMENT.md](./DEPLOYMENT.md)，接口见 [API.md](./API.md)。
 
 ## 1. 备份对象总览
 
-| 数据 | 存放位置 | 备份方式 | 是否随应用内置 |
-| --- | --- | --- | --- |
-| 内容、用户、审核记录、审计日志、AI 用量 | PostgreSQL（35 张表） | `pg_dump` / `pg_restore` | 否，需定期备份 |
-| 收藏、历史、物资、笔记、档案、学习记录、离线包、AI 会话、地图标记 | 浏览器 IndexedDB（库 `apocalypse-survival`） | Web 设置页「导出全量备份 / 恢复备份」 | 否，用户个人数据 |
-| 桌面端本地文件 / 备份 | Tauri `app_data_dir` | Rust 命令 `export_backup` / `read_backup` | 否 |
-| 离线知识包 | IndexedDB `settings`(键 `pkgdata:*`) + `offlinePackages` | 随 IndexedDB 全量备份一起导出 | 可重建（知识已编译进 bundle） |
-| 知识数据集本体 | `packages/knowledge-data/src/`（编译进 bundle） | 随代码仓库版本管理 | 是，无需单独备份 |
+| 数据                                                              | 存放位置                                                 | 备份方式                                  | 是否随应用内置                |
+| ----------------------------------------------------------------- | -------------------------------------------------------- | ----------------------------------------- | ----------------------------- |
+| 内容、用户、审核记录、审计日志、AI 用量                           | PostgreSQL（35 张表）                                    | `pg_dump` / `pg_restore`                  | 否，需定期备份                |
+| 收藏、历史、物资、笔记、档案、学习记录、离线包、AI 会话、地图标记 | 浏览器 IndexedDB（库 `apocalypse-survival`）             | Web 设置页「导出全量备份 / 恢复备份」     | 否，用户个人数据              |
+| 桌面端本地文件 / 备份                                             | Tauri `app_data_dir`                                     | Rust 命令 `export_backup` / `read_backup` | 否                            |
+| 离线知识包                                                        | IndexedDB `settings`(键 `pkgdata:*`) + `offlinePackages` | 随 IndexedDB 全量备份一起导出             | 可重建（知识已编译进 bundle） |
+| 知识数据集本体                                                    | `packages/knowledge-data/src/`（编译进 bundle）          | 随代码仓库版本管理                        | 是，无需单独备份              |
 
 > 核心知识已编译进前端 bundle 并由 Service Worker 预缓存，**天然离线可用**；离线包只是按分类拆分的本地副本，删除后可重新「下载」重建，不是不可替代数据。
 
@@ -95,11 +97,11 @@ curl -s http://localhost:3000/api/health
 
 ### 3.1 操作入口
 
-| 按钮 | 行为 |
-| --- | --- |
-| **导出全量备份** | 调用 `exportAllData()`，生成 `apocalypse-survival-backup-YYYY-MM-DD.json` 并下载 |
-| **恢复备份** | 选择 `.json` 文件，调用 `importAllData()`，提示「已恢复 N 条记录」后自动刷新页面 |
-| **清除本地数据** | 二次确认后清空 `localStorage` 并删除所有 IndexedDB 数据库（不可恢复，建议先导出） |
+| 按钮             | 行为                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------ |
+| **导出全量备份** | 调用 `exportAllData()`，生成 `survival-backup-YYYY-MM-DD.json` 并下载                |
+| **恢复备份**     | 选择 `.json` 文件，完成结构预检并展示各表数量，确认合并后原子恢复并刷新页面          |
+| **清除本地数据** | 二次确认后在事务中清空本应用的 11 个 store；保留其他数据库、localStorage 和 PWA 缓存 |
 
 ### 3.2 备份文件格式
 
@@ -107,9 +109,17 @@ curl -s http://localhost:3000/api/health
 {
   "version": 1,
   "exportedAt": "2026-11-08T02:30:00.000Z",
-  "bookmarks": [], "history": [], "inventory": [], "transactions": [],
-  "notes": [], "settings": [], "quizRecords": [], "offlinePackages": [],
-  "conversations": [], "mapMarkers": [], "mapRoutes": []
+  "bookmarks": [],
+  "history": [],
+  "inventory": [],
+  "transactions": [],
+  "notes": [],
+  "settings": [],
+  "quizRecords": [],
+  "offlinePackages": [],
+  "conversations": [],
+  "mapMarkers": [],
+  "mapRoutes": []
 }
 ```
 
@@ -117,10 +127,14 @@ curl -s http://localhost:3000/api/health
 
 ### 3.3 导入语义（重要）
 
-- `importAllData()` 校验 `version === 1`，否则抛「备份文件格式不正确」→ UI 提示。
-- 逐 store 用 `put()` 按主键 **upsert 合并写入**，**不会清空**目标库中未出现在备份里的现有记录。
-- 返回写入记录数 `count`，UI 显示「已恢复 N 条记录」并在 600ms 后 `location.reload()`。
-- **若要完全还原到备份时点状态**：先点「清除本地数据」，再「恢复备份」；否则是合并而非覆盖。
+- `parseBackup()` 先检查版本、数据结构、主键重复、日期/坐标/数量及嵌套字段。最大 25 MiB / 100000 条；格式错误不写入任何数据。
+- v1 备份继续有效，缺失的数据表保持不变；非法数据表类型不再被悄悄跳过。
+- 所有表在一个 readwrite 事务内按主键 upsert；同一 ID 被备份记录覆盖，未出现的本地记录保留。
+- 写入失败会回滚整个恢复事务；提交成功后才显示写入记录数并刷新。
+- 导出使用一个 readonly 事务读取所有表，避免库存与流水取自不同时间点。
+- 三个入口（设置、档案、物资）共用 `BackupControls`。预览可取消；这不会写入数据库。
+- 若确实需要完全还原，先单独保存当前备份，再在确认后清除本应用数据并恢复；常规恢复不会删除额外记录。
+- JSON 未加密，包含联系人和笔记等个人资料，请妥善保管。
 
 ### 3.4 范围说明
 
@@ -130,11 +144,11 @@ curl -s http://localhost:3000/api/health
 
 `apps/desktop/src-tauri/src/lib.rs` 暴露三个 Rust 命令（经 `invoke_handler` 注册）：
 
-| 命令 | 作用 |
-| --- | --- |
-| `app_data_dir` | 返回/创建应用数据目录（供 SQLite、本地备份文件存放） |
+| 命令                         | 作用                                                                                                                       |
+| ---------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `app_data_dir`               | 返回/创建应用数据目录（供 SQLite、本地备份文件存放）                                                                       |
 | `export_backup(json, path?)` | 把 JSON 备份写到指定路径；`path` 为空时弹系统「另存为」对话框（默认文件名 `apocalypse-backup.json`）；用户取消返回空字符串 |
-| `read_backup()` | 弹系统「打开文件」对话框，返回备份文件文本内容 |
+| `read_backup()`              | 弹系统「打开文件」对话框，返回备份文件文本内容                                                                             |
 
 > 桌面端复用 Web 的 `exportAllData()` 生成 JSON，再由 `export_backup` 落到系统目录；恢复时 `read_backup()` 读回文本交给 `importAllData()`。完整 `tauri build` release 打包未执行，见 [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)。
 
@@ -154,12 +168,14 @@ curl -s http://localhost:3000/api/health
 1. **准备**：在测试环境准备一份最近的 PostgreSQL `.dump` 与一份 Web 导出的 `.json` 备份。
 2. **隔离**：用独立数据库/端口或临时浏览器配置文件演练，避免覆盖生产数据。
 3. **恢复 PostgreSQL**：
+
    ```bash
    pg_restore --clean --if-exists --no-owner --no-privileges \
      -d "$DATABASE_URL" apocalypse_YYYYMMDD_HHMMSS.dump
    pnpm --filter @apocalypse/api prisma:generate && pnpm db:migrate
    ```
 4. **起服务自检**：
+
    ```bash
    pnpm api:start:dev
    curl -s http://localhost:3000/api/health

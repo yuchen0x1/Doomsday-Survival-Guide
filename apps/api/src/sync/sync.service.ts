@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 interface ResourceDef {
@@ -82,11 +78,7 @@ const RESOURCES: Record<string, ResourceDef> = {
   },
 };
 
-export const SYNC_RESOURCES = [
-  ...Object.keys(RESOURCES),
-  'profile',
-  'conversations',
-];
+export const SYNC_RESOURCES = [...Object.keys(RESOURCES), 'profile', 'conversations'];
 
 @Injectable()
 export class SyncService {
@@ -197,9 +189,7 @@ export class SyncService {
           const value = item[field];
           if (value === undefined) continue;
           data[field] =
-            def.dateFields?.includes(field) && value !== null
-              ? new Date(String(value))
-              : value;
+            def.dateFields?.includes(field) && value !== null ? new Date(String(value)) : value;
         }
         if (typeof item.id === 'string' && item.id) data.id = item.id;
         if (resource === 'transactions' && validEntryIds && typeof data.entryId === 'string') {
@@ -213,17 +203,18 @@ export class SyncService {
     return { resource, count };
   }
 
-  private async replaceConversations(
-    userId: string,
-    items: unknown[],
-  ): Promise<number> {
-    const conversations = items.map((raw) => toObject(raw)).filter((v): v is Record<string, unknown> => Boolean(v));
+  private async replaceConversations(userId: string, items: unknown[]): Promise<number> {
+    const conversations = items
+      .map((raw) => toObject(raw))
+      .filter((v): v is Record<string, unknown> => Boolean(v));
     await this.prisma.$transaction(async (tx) => {
       await tx.aIMessage.deleteMany({ where: { conversation: { userId } } });
       await tx.aIConversation.deleteMany({ where: { userId } });
       for (const item of conversations) {
         const messages = Array.isArray(item.messages)
-          ? (item.messages as unknown[]).map((m) => toObject(m)).filter((m): m is Record<string, unknown> => Boolean(m))
+          ? (item.messages as unknown[])
+              .map((m) => toObject(m))
+              .filter((m): m is Record<string, unknown> => Boolean(m))
           : [];
         await tx.aIConversation.create({
           data: {
@@ -267,10 +258,7 @@ function toObject(value: unknown): Record<string, unknown> | null {
   return null;
 }
 
-function sanitize(
-  payload: unknown,
-  fields: string[],
-): Record<string, unknown> {
+function sanitize(payload: unknown, fields: string[]): Record<string, unknown> {
   const obj = toObject(payload) ?? {};
   const out: Record<string, unknown> = {};
   for (const field of fields) {

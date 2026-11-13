@@ -1,7 +1,11 @@
 import type { DangerLevel, ReviewRule } from './types';
 
 export const DANGER_ORDER: Record<DangerLevel, number> = {
-  L0: 0, L1: 1, L2: 2, L3: 3, L4: 4,
+  L0: 0,
+  L1: 1,
+  L2: 2,
+  L3: 3,
+  L4: 4,
 };
 
 export const DANGER_LABELS: Record<DangerLevel, string> = {

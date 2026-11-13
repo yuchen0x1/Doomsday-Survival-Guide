@@ -1,12 +1,48 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { SearchIndex } from '../src/search';
 import type { SearchDocument } from '../src/types';
 
 const docs: SearchDocument[] = [
-  { id: 'a1', kind: 'article', title: '暴雨洪涝应对', subtitle: '城市内涝自救', tags: ['洪水', '暴雨'], dangerLevel: 'L2', category: 'disaster', body: '洪水来临时向高处转移，不要涉水行走' },
-  { id: 'p1', kind: 'plant', title: '夹竹桃', subtitle: 'Oleander · 剧毒观赏植物', tags: ['有毒', '植物'], dangerLevel: 'L3', category: 'toxic', body: '全株含强心苷，误食可致死' },
-  { id: 's1', kind: 'skill', title: '绳结技巧', subtitle: '常用绳结打法', tags: ['绳结', '工具'], dangerLevel: 'L0', category: 'tools', body: '方形结、八字结、称人结的打法' },
-  { id: 'f1', kind: 'first_aid', title: '心肺复苏', subtitle: 'CPR 操作步骤', tags: ['急救', 'CPR'], dangerLevel: 'L2', category: 'first-aid', body: '胸外按压与人工呼吸的比例' },
+  {
+    id: 'a1',
+    kind: 'article',
+    title: '暴雨洪涝应对',
+    subtitle: '城市内涝自救',
+    tags: ['洪水', '暴雨'],
+    dangerLevel: 'L2',
+    category: 'disaster',
+    body: '洪水来临时向高处转移，不要涉水行走',
+  },
+  {
+    id: 'p1',
+    kind: 'plant',
+    title: '夹竹桃',
+    subtitle: 'Oleander · 剧毒观赏植物',
+    tags: ['有毒', '植物'],
+    dangerLevel: 'L3',
+    category: 'toxic',
+    body: '全株含强心苷，误食可致死',
+  },
+  {
+    id: 's1',
+    kind: 'skill',
+    title: '绳结技巧',
+    subtitle: '常用绳结打法',
+    tags: ['绳结', '工具'],
+    dangerLevel: 'L0',
+    category: 'tools',
+    body: '方形结、八字结、称人结的打法',
+  },
+  {
+    id: 'f1',
+    kind: 'first_aid',
+    title: '心肺复苏',
+    subtitle: 'CPR 操作步骤',
+    tags: ['急救', 'CPR'],
+    dangerLevel: 'L2',
+    category: 'first-aid',
+    body: '胸外按压与人工呼吸的比例',
+  },
 ];
 
 const idx = new SearchIndex().build(docs);
@@ -48,6 +84,19 @@ describe('SearchIndex 中文检索', () => {
     expect(r.every((x) => x.document.category === 'first-aid')).toBe(true);
   });
 
+  it('maxDanger 过滤掉高于上限的内容', () => {
+    const r = idx.search('植物', { maxDanger: 'L2' });
+    expect(
+      r.every(
+        (x) =>
+          x.document.dangerLevel === 'L0' ||
+          x.document.dangerLevel === 'L1' ||
+          x.document.dangerLevel === 'L2',
+      ),
+    ).toBe(true);
+    expect(r.some((x) => x.document.id === 'p1')).toBe(false);
+  });
+
   it('limit 生效', () => {
     expect(idx.search('的', { limit: 2 }).length).toBeLessThanOrEqual(2);
   });
@@ -59,7 +108,16 @@ describe('SearchIndex 中文检索', () => {
 
   it('add/remove 动态更新', () => {
     const i2 = new SearchIndex().build(docs);
-    i2.add({ id: 'x1', kind: 'article', title: '雪崩逃生', subtitle: '', tags: [], dangerLevel: 'L3', category: 'disaster', body: '雪崩时弃包侧向逃离' });
+    i2.add({
+      id: 'x1',
+      kind: 'article',
+      title: '雪崩逃生',
+      subtitle: '',
+      tags: [],
+      dangerLevel: 'L3',
+      category: 'disaster',
+      body: '雪崩时弃包侧向逃离',
+    });
     expect(i2.size).toBe(5);
     expect(i2.search('雪崩').some((x) => x.document.id === 'x1')).toBe(true);
     i2.remove('x1');

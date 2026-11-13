@@ -57,7 +57,8 @@ export class AuditInterceptor implements NestInterceptor {
           path,
           status,
           ip: req.ip ?? null,
-          userAgent: typeof req.headers['user-agent'] === 'string' ? req.headers['user-agent'] : null,
+          userAgent:
+            typeof req.headers['user-agent'] === 'string' ? req.headers['user-agent'] : null,
           payload: payload === null ? undefined : (payload as object),
         },
       })

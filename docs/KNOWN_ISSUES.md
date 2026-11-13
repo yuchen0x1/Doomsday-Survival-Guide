@@ -4,16 +4,17 @@
 
 ## 总览
 
-| # | 问题 | 类别 | 影响 | 规避建议 |
-| ---: | --- | --- | --- | --- |
-| 1 | AI 识别为候选匹配，非确定性结论 | 安全 | 误把候选当确认物种可能导致误食/误触 | 身份未确认前禁止食用、药用或触碰；以权威图鉴/专业人员复核 |
-| 2 | 地图瓦片依赖外部 OSM，离线不可用 | 离线 | 断网看不到底图；未核实地点可能被误当安全点 | 离线改用地形/纸质图与已核实坐标；`verified=false` 不得标为避难点 |
-| 3 | 场景模拟为教学推演，非真实预测 | 认知 | 把推演结果当真实灾情判断 | 明确标注 `isSimulation`；以官方应急指令为准 |
-| 4 | 医疗内容仅供参考 | 安全 | 替代专业救治造成延误 | 高危先拨打 120/119；用药前咨询专业人员 |
-| 5 | Tauri release 完整打包未执行 | 发布 | 桌面端尚无已验证的安装包 | 以 `cargo check` + `tauri dev` 为当前交付边界；待签名环境补齐后打包 |
-| 6 | iOS 需 macOS + CocoaPods | 构建 | Windows 无法构建 iOS 真机包 | 在 macOS 上 `pod install` 并用 Xcode 构建 |
-| 7 | AI 需自备 API Key | 功能 | 未配置时无 AI 能力 | 服务端 `.env` 填 `AI_API_KEY`；离线自动降级本地检索 |
-| 8 | `relatedIds` 跨条目接线尚不完整 | 内容 | 部分「相关知识」跳转缺失 | 通过全局搜索/分类浏览补足；后续完善数据关联 |
+|   # | 问题                                  | 类别 | 影响                                       | 规避建议                                                            |
+| --: | ------------------------------------- | ---- | ------------------------------------------ | ------------------------------------------------------------------- |
+|   1 | AI 识别为候选匹配，非确定性结论       | 安全 | 误把候选当确认物种可能导致误食/误触        | 身份未确认前禁止食用、药用或触碰；以权威图鉴/专业人员复核           |
+|   2 | 地图瓦片依赖外部 OSM，离线不可用      | 离线 | 断网看不到底图；未核实地点可能被误当安全点 | 离线改用地形/纸质图与已核实坐标；`verified=false` 不得标为避难点    |
+|   3 | 场景模拟为教学推演，非真实预测        | 认知 | 把推演结果当真实灾情判断                   | 明确标注 `isSimulation`；以官方应急指令为准                         |
+|   4 | 医疗内容仅供参考                      | 安全 | 替代专业救治造成延误                       | 高危先拨打 120/119；用药前咨询专业人员                              |
+|   5 | Tauri release 完整打包未执行          | 发布 | 桌面端尚无已验证的安装包                   | 以 `cargo check` + `tauri dev` 为当前交付边界；待签名环境补齐后打包 |
+|   6 | iOS 需 macOS + CocoaPods              | 构建 | Windows 无法构建 iOS 真机包                | 在 macOS 上 `pod install` 并用 Xcode 构建                           |
+|   7 | AI 需自备 API Key                     | 功能 | 未配置时无 AI 能力                         | 服务端 `.env` 填 `AI_API_KEY`；离线自动降级本地检索                 |
+|   8 | `relatedIds` 跨条目接线尚不完整       | 内容 | 部分「相关知识」跳转缺失                   | 通过全局搜索/分类浏览补足；后续完善数据关联                         |
+|   9 | Prisma 6 / Capacitor 6 暂留次新大版本 | 依赖 | 落后 1–2 个大版本，暂无强制安全升级压力    | 见下方第 9 条迁移清单；在独立变更中升级并全量回归                   |
 
 ---
 
@@ -83,8 +84,26 @@
   - 内容维护时在 `admin` 后台逐步补齐关联并走审核状态机（见 [API.md](./API.md)）。
   - 后续版本按数据集批量补全关联并纳入 `validateDataset` 质量校验。
 
+## 9. Prisma 6 / Capacitor 6 暂留次新大版本
+
+- **影响**：2026-11 升级批次已把 Vite 6→8、vitest 3→5、@types/node 22→24、TypeScript 5.9 等升级到位；`@prisma/client`/`prisma`（6.19→7.x）与 `@capacitor/*`（6.x→8.x）**有意暂缓**：Prisma 7 为 ESM 优先 + 强制 driver adapter（`@prisma/adapter-pg`）+ `prisma.config.ts`，与本项目 NestJS CommonJS（`emitDecoratorMetadata`）构建链的互操作需要专门回归（DI 元数据、seed、迁移 CLI、运行时适配器全部受影响）；Capacitor 大版本升级需要原生工程迁移（`cap migrate`/`cap sync`），本机 Windows 环境无法构建 Android/iOS 做真实验证。
+- **规避建议**：
+  - 当前 6.x 均为各自大版本内的最新维护版，无已知强制安全升级；锁文件固定，可复现构建。
+  - Prisma 7 迁移清单：generator 换 `prisma-client`（指定 `output`）→ 新增 `prisma.config.ts`（schema/migrations/seed/datasource.url）→ 安装 `@prisma/adapter-pg` + `pg` 并改造 `PrismaService`（`new PrismaClient({ adapter })`）→ 6 个文件的 `@prisma/client` import 改为生成产物路径 → 全量跑 7.7 节的 Docker 冒烟回归。
+  - Capacitor 8 迁移清单：`npx cap migrate` → `cap sync` → macOS/Android SDK 环境真实构建验证后回填 [TEST_REPORT.md](./TEST_REPORT.md)。
+  - 升级务必走独立变更 + 全量回归（`pnpm lint && pnpm typecheck && pnpm test && pnpm build`），不要与功能改动混在一起。
+
 ---
 
 ## 相关文档
 
 - [../README.md](../README.md) · [INSTALL.md](./INSTALL.md) · [DEPLOYMENT.md](./DEPLOYMENT.md) · [BACKUP.md](./BACKUP.md) · [API.md](./API.md) · [TEST_REPORT.md](./TEST_REPORT.md)
+
+## 2026-11-13 当前限制补充
+
+- API 与 Tauri 源码在工作区中缺失，未擅自恢复已删除文件；无法验收后端、原生安装/签名或真实客户端升级。
+- L4 列表隐藏、全局删除确认偏好尚未接入，设置页已禁用这两个开关并说明状态；阅读历史与紧凑布局已接通。
+- 备份最多 25 MiB / 100000 条，采用同 ID 合并覆盖，无加密与逐条冲突选择。旧畸形备份会明确报错，需先修复副本再恢复。
+- 库存修改已在数据库事务内防止并发丢失，但其他标签页的界面不会自动刷新。
+- 地图瓦片仍依赖网络；PWA 离线浏览需要事先成功缓存；首次完全离线访问无法加载未安装的网页。
+- 全仓 Lint 有历史警告，且尚无低端机压测、真机测试或完整安全审计；测试通过不等于可发布认证。

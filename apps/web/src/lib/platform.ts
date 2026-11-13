@@ -12,7 +12,8 @@ declare global {
 
 export function detectPlatform(): Platform {
   // Tauri 2 注入 __TAURI_INTERNALS__，旧版注入 __TAURI__
-  if (typeof window !== 'undefined' && (window.__TAURI__ || window.__TAURI_INTERNALS__)) return 'desktop';
+  if (typeof window !== 'undefined' && (window.__TAURI__ || window.__TAURI_INTERNALS__))
+    return 'desktop';
   // Capacitor 以全局 window.Capacitor 暴露，无需安装 @capacitor/core 也能检测（web 构建不依赖该包）
   if (typeof window !== 'undefined' && window.Capacitor?.isNativePlatform?.()) return 'mobile';
   return 'web';

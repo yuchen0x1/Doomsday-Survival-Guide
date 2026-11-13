@@ -9,12 +9,11 @@ vi.mock('../src/prisma/prisma.service', () => ({
 
 import { AIService } from '../src/ai/ai.service';
 import { describeError, forwardChat, joinUrl } from '../src/ai/openai';
-import { SSE_DONE, formatSSE } from '../src/ai/sse';
+import { formatSSE, SSE_DONE } from '../src/ai/sse';
 
 function makeService(apiKey?: string): AIService {
   const config = {
-    get: (key: string): string | undefined =>
-      key === 'AI_API_KEY' ? apiKey : undefined,
+    get: (key: string): string | undefined => (key === 'AI_API_KEY' ? apiKey : undefined),
   };
   const prisma = {
     // chat() 的 finally 会异步落一条 AIUsageLog，mock 掉即可（不连库）
@@ -62,10 +61,7 @@ describe('AIService 无 API Key 降级（明确报错，绝不伪造成功）', 
 
   it('chat 未配置 key：只发 error + DONE，绝无 delta / tool_call', async () => {
     const { res, writes } = makeRes();
-    await makeService(undefined).chat(
-      [{ role: 'user', content: '你好' }],
-      res as never,
-    );
+    await makeService(undefined).chat([{ role: 'user', content: '你好' }], res as never);
 
     expect(writes).toHaveLength(2);
     expect(writes[0]).toBe(

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Icon } from '../../components/Icon';
-import { PageHeader, DangerBadge, EmptyState, Tag } from '../../components/ui';
+import { DangerBadge, EmptyState, PageHeader, Tag } from '../../components/ui';
 import { scenarios } from '../../lib/knowledge';
 
 /** 末日灾害模拟器场景列表（全部为学习模拟） */
@@ -25,22 +25,42 @@ export default function SimulatorList() {
       ) : (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {scenarios.map((s, i) => (
-            <Link key={s.id} to={`/simulator/${s.id}`} className="panel group flex flex-col p-4 transition-all hover:-translate-y-0.5 hover:border-[var(--color-edge-hi)]">
+            <Link
+              key={s.id}
+              to={`/simulator/${s.id}`}
+              className="panel group flex flex-col p-4 transition-all hover:-translate-y-0.5 hover:border-[var(--color-edge-hi)]"
+            >
               <div className="flex items-center justify-between">
-                <span className="micro-label">场景 {String(i + 1).padStart(2, '0')} · SIMULATION</span>
+                <span className="micro-label">
+                  场景 {String(i + 1).padStart(2, '0')} · SIMULATION
+                </span>
                 <DangerBadge level={s.meta.dangerLevel} small />
               </div>
               <div className="mt-3 flex h-16 items-center justify-center rounded-[3px] border border-[var(--color-edge)] bg-gradient-to-br from-[var(--color-danger-dim)]/40 to-[var(--color-pit)]">
                 <Icon name="flame" size={26} className="text-[var(--color-danger)] opacity-70" />
               </div>
-              <h3 className="mt-3 text-[15px] font-semibold group-hover:text-[var(--color-sand)]">{s.title}</h3>
-              <p className="mt-1.5 line-clamp-2 flex-1 text-[12.5px] leading-relaxed text-[var(--color-ink-dim)]">{s.summary}</p>
+              <h3 className="mt-3 text-[15px] font-semibold group-hover:text-[var(--color-sand)]">
+                {s.title}
+              </h3>
+              <p className="mt-1.5 line-clamp-2 flex-1 text-[12.5px] leading-relaxed text-[var(--color-ink-dim)]">
+                {s.summary}
+              </p>
               <div className="mt-3 flex items-center gap-3 text-[11px] text-[var(--color-ink-faint)]">
-                <span>难度 {'●'.repeat(s.difficulty)}{'○'.repeat(5 - s.difficulty)}</span>
-                <span className="flex items-center gap-1"><Icon name="list" size={11} />{s.steps.length} 幕</span>
+                <span>
+                  难度 {'●'.repeat(s.difficulty)}
+                  {'○'.repeat(5 - s.difficulty)}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Icon name="list" size={11} />
+                  {s.steps.length} 幕
+                </span>
                 <span className="ml-auto text-[var(--color-warn)]">模拟</span>
               </div>
-              <div className="mt-2 flex flex-wrap gap-1">{s.tags.slice(0, 3).map((t) => <Tag key={t}>{t}</Tag>)}</div>
+              <div className="mt-2 flex flex-wrap gap-1">
+                {s.tags.slice(0, 3).map((t) => (
+                  <Tag key={t}>{t}</Tag>
+                ))}
+              </div>
             </Link>
           ))}
         </div>

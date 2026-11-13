@@ -71,18 +71,25 @@ export async function streamChat(
       if (!line.startsWith('data:')) continue;
       const payload = line.slice(5).trim();
       if (payload === '[DONE]') continue;
+      let obj: { type: string; text?: string; toolCall?: AIToolCall; error?: string };
       try {
-        const obj = JSON.parse(payload) as { type: string; text?: string; toolCall?: AIToolCall; error?: string };
-        if (obj.type === 'delta' && obj.text) {
-          full += obj.text;
-          handlers.onDelta(obj.text);
-        } else if (obj.type === 'tool_call' && obj.toolCall) {
-          handlers.onToolCall?.(obj.toolCall);
-        } else if (obj.type === 'error') {
-          throw new Error(obj.error ?? '流式响应错误');
-        }
+        obj = JSON.parse(payload) as typeof obj;
       } catch {
         /* 忽略不完整帧 */
+        continue;
+      }
+      if (obj.type === 'delta' && obj.text) {
+        full += obj.text;
+        handlers.onDelta(obj.text);
+      } else if (obj.type === 'tool_call' && obj.toolCall) {
+        handlers.onToolCall?.(obj.toolCall);
+      } else if (obj.type === 'error') {
+        await reader.cancel().catch(() => undefined);
+        if (handlers.onError) {
+          handlers.onError(obj.error ?? '流式响应错误', false);
+          return;
+        }
+        throw new Error(obj.error ?? '流式响应错误');
       }
     }
   }
@@ -115,7 +122,11 @@ export function localFallbackAnswer(question: string): string {
     results.forEach((r, i) => {
       lines.push(`${i + 1}. **${r.document.title}**（${r.document.subtitle}）`);
     });
-    lines.push('', '**建议行动**：打开上述条目阅读完整内容；高危情况请优先远离危险源并拨打 120/119。', '**不确定性说明**：以上为关键词匹配结果，非 AI 分析，未做语义理解。');
+    lines.push(
+      '',
+      '**建议行动**：打开上述条目阅读完整内容；高危情况请优先远离危险源并拨打 120/119。',
+      '**不确定性说明**：以上为关键词匹配结果，非 AI 分析，未做语义理解。',
+    );
   }
   return lines.join('\n');
 }
@@ -135,7 +146,8 @@ export interface IdentifyResult {
 
 /** 图片质量检查（客户端预检） */
 export function checkImageQuality(file: File): { ok: boolean; reason?: string } {
-  if (!file.type.startsWith('image/')) return { ok: false, reason: '仅支持图片文件（JPG/PNG/WebP）' };
+  if (!file.type.startsWith('image/'))
+    return { ok: false, reason: '仅支持图片文件（JPG/PNG/WebP）' };
   if (file.size > 5 * 1024 * 1024) return { ok: false, reason: '图片超过 5MB，请压缩后重试' };
   if (file.size < 5 * 1024) return { ok: false, reason: '图片过小，可能不是有效照片' };
   return { ok: true };
@@ -145,15 +157,18 @@ export function checkImageQuality(file: File): { ok: boolean; reason?: string } 
  * 调用服务端识别接口。
  * 无法确定时返回低置信度 candidates 与明确的"身份未确认"警告。
  */
-export async function identifyImage(
-  file: File,
-  kind: 'plant' | 'animal',
-): Promise<IdentifyResult> {
+export async function identifyImage(file: File, kind: 'plant' | 'animal'): Promise<IdentifyResult> {
   const quality = checkImageQuality(file);
   if (!quality.ok) {
     return {
-      ok: false, kind, candidates: [], features: [], warning: '', uncertainty: '',
-      needMoreFeatures: [], error: quality.reason ?? '图片质量不合格',
+      ok: false,
+      kind,
+      candidates: [],
+      features: [],
+      warning: '',
+      uncertainty: '',
+      needMoreFeatures: [],
+      error: quality.reason ?? '图片质量不合格',
     };
   }
   const base64 = await fileToBase64(file);
@@ -167,8 +182,14 @@ export async function identifyImage(
     return (await res.json()) as IdentifyResult;
   } catch (e) {
     return {
-      ok: false, kind, candidates: [], features: [], warning: '', uncertainty: '',
-      needMoreFeatures: [], error: e instanceof Error ? e.message : '识别服务不可用（离线或服务端未配置）',
+      ok: false,
+      kind,
+      candidates: [],
+      features: [],
+      warning: '',
+      uncertainty: '',
+      needMoreFeatures: [],
+      error: e instanceof Error ? e.message : '识别服务不可用（离线或服务端未配置）',
     };
   }
 }
@@ -183,7 +204,10 @@ function fileToBase64(file: File): Promise<string> {
 }
 
 /** 用识别候选在本地库中比对相似物种（步骤6-7：检索与比对） */
-export function matchLocalSpecies(candidates: { name: string; confidence: number }[], kind: 'plant' | 'animal') {
+export function matchLocalSpecies(
+  candidates: { name: string; confidence: number }[],
+  kind: 'plant' | 'animal',
+) {
   const idx = getLocalIndex();
   return candidates.map((c) => {
     const hits = idx.search(c.name, { limit: 3, kind: kind === 'plant' ? 'plant' : 'animal' });
@@ -194,7 +218,13 @@ export function matchLocalSpecies(candidates: { name: string; confidence: number
 /** 结构化回答骨架（服务端不可用时的格式占位） */
 export function emptyStructure(uncertainty: string): AIAnswerStructure {
   return {
-    analysis: '', risks: [], priority: '', recommended: [], discouraged: [],
-    relatedKnowledge: [], sources: [], uncertainty,
+    analysis: '',
+    risks: [],
+    priority: '',
+    recommended: [],
+    discouraged: [],
+    relatedKnowledge: [],
+    sources: [],
+    uncertainty,
   };
 }

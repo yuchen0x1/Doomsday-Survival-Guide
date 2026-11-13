@@ -1,11 +1,11 @@
 {
   "name": "apocalypse-survival",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "APOCALYPSE SURVIVAL - 末日生存指南：跨平台末日生存百科全书",
   "license": "MIT",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.13.0"
   },
   "packageManager": "pnpm@11.20.0",
   "scripts": {
@@ -15,12 +15,16 @@
     "build:desktop": "pnpm --filter @apocalypse/desktop build",
     "build:mobile": "pnpm --filter @apocalypse/mobile build",
     "test": "pnpm -r test",
-    "lint": "pnpm -r lint",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
     "typecheck": "pnpm -r typecheck",
     "api:start": "pnpm --filter @apocalypse/api start",
     "api:start:dev": "pnpm --filter @apocalypse/api start:dev",
     "db:migrate": "pnpm --filter @apocalypse/api prisma:migrate",
     "db:seed": "pnpm --filter @apocalypse/api prisma:seed",
     "db:studio": "pnpm --filter @apocalypse/api prisma:studio"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.5"
   }
 }

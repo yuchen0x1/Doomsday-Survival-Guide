@@ -4,15 +4,15 @@
 
 ## 1. 环境要求总表
 
-| 组件 | 版本 | 是否必需 | 用途 |
-| --- | --- | --- | --- |
-| Node.js | >= 20（推荐 22 LTS） | 必需 | 前端构建、API 运行 |
-| pnpm | 11（仓库声明 `pnpm@11.20.0`） | 必需 | workspace 依赖管理 |
-| Docker + Docker Compose | 近期稳定版 | 后端必需 | 运行 PostgreSQL（也可用本机 PostgreSQL） |
-| Rust（stable）+ Tauri 系统依赖 | 近期稳定版 | 桌面端可选 | `apps/desktop` 的 `tauri dev` / `cargo check` |
-| Android SDK + JDK 17 | 近期稳定版 | Android 可选 | Capacitor `android/` 构建 |
-| Xcode + CocoaPods | 近期稳定版 | iOS 可选（仅 macOS） | Capacitor `ios/` 构建 / `pod install` |
-| Git | 任意近期版本 | 必需 | 获取仓库 |
+| 组件                           | 版本                          | 是否必需             | 用途                                          |
+| ------------------------------ | ----------------------------- | -------------------- | --------------------------------------------- |
+| Node.js                        | >= 20（推荐 22 LTS）          | 必需                 | 前端构建、API 运行                            |
+| pnpm                           | 11（仓库声明 `pnpm@11.20.0`） | 必需                 | workspace 依赖管理                            |
+| Docker + Docker Compose        | 近期稳定版                    | 后端必需             | 运行 PostgreSQL（也可用本机 PostgreSQL）      |
+| Rust（stable）+ Tauri 系统依赖 | 近期稳定版                    | 桌面端可选           | `apps/desktop` 的 `tauri dev` / `cargo check` |
+| Android SDK + JDK 17           | 近期稳定版                    | Android 可选         | Capacitor `android/` 构建                     |
+| Xcode + CocoaPods              | 近期稳定版                    | iOS 可选（仅 macOS） | Capacitor `ios/` 构建 / `pod install`         |
+| Git                            | 任意近期版本                  | 必需                 | 获取仓库                                      |
 
 > 只跑 Web 前端（离线知识浏览、搜索、练习、计算器等）**只需 Node + pnpm**，不需要 Docker / Rust / Android SDK。
 
@@ -209,25 +209,25 @@ pnpm build          # packages/* + web
 
 ## 6. 常见安装故障排查
 
-| 症状 | 可能原因 | 处理 |
-| --- | --- | --- |
-| `corepack: command not found` | Node 版本过旧或未带 corepack | 升级到 Node 22，或 `npm i -g corepack` 后再 `corepack enable` |
-| `pnpm` 版本不是 11 | 全局装了其他版本 | `corepack prepare pnpm@11.20.0 --activate`，确保 `packageManager` 生效 |
-| `ERR_PNPM_UNSUPPORTED_ENGINE` | Node < 20 | `node -v` 确认 >= 20，推荐 22 LTS |
-| `pnpm install` 卡在 esbuild / sharp 构建 | pnpm 11 默认拦截构建脚本 | 仓库 `pnpm-workspace.yaml` 已用 `allowBuilds` 放行所需原生依赖，确认未被覆盖 |
-| Vite dev 打开空白 / 资源 404 | 未先 `pnpm install` 或端口占用 | 重装依赖；`5173` 被占用时改 `apps/web/vite.config.ts` 的 `server.port` |
-| `/api/*` 返回 502/404 | 后端未启动，dev 代理目标 :3000 无服务 | 先 `docker compose up -d postgres` + `pnpm api:start:dev`；仅浏览知识则无需后端 |
-| `prisma migrate dev` / `prisma db seed` 报 P1001 | PostgreSQL 未起或 `DATABASE_URL` 不匹配 | `docker compose ps` 确认 `postgres` 为 healthy；核对 `.env` 的 `DATABASE_URL`（默认 `postgresql://survival:survival@localhost:5432/apocalypse_survival`） |
-| `docker compose up -d postgres` 报 `failed to connect to the docker API ... npipe:////./pipe/dockerDesktopLinuxEngine` | Docker Desktop daemon 未运行 | 启动 Docker Desktop 后再试；若 `docker desktop start` 依赖的 `wsl.exe` / `sc.exe` 被安全策略拦截，需由管理员放开策略或改用本机独立 PostgreSQL（当前环境见 [TEST_REPORT.md](./TEST_REPORT.md)「真实 PostgreSQL 集成验证受阻」） |
-| `start:dev` 路由 Mapped 后崩溃、未进入 listen | `PrismaService.onModuleInit` 的 `$connect()` 报 P1001（数据库连不上） | 同上，先让 PostgreSQL 可达；路由表已打印说明 Nest 路由注册本身正常 |
-| 所有受保护请求返回 `INTERNAL_ERROR: Cannot read properties of undefined (reading 'getAllAndOverride')` | 用 `tsx watch src/main.ts` 直接跑源码：`tsx`(esbuild) 不 emit 装饰器元数据，NestJS DI 失效 | 必须用 `pnpm api:start`（tsc 产物 + tsx 加载）或 `pnpm api:start:dev`，不要把 `start` 改回纯 `tsx watch`；详见 TEST_REPORT.md 第 7.4 节 |
-| `prisma: command not found` | 用根命令直接调 Prisma | 用 `pnpm --filter @apocalypse/api prisma:xxx` 或根封装 `pnpm db:xxx` |
-| `tauri dev` 报 WebView2 / 系统库缺失 | 缺 Tauri 系统依赖 | Windows 装 WebView2 Runtime + C++ Build Tools；Linux 装 `libwebkit2gtk-4.1-dev` 等（见 3.3） |
-| `cargo check` 失败 | Rust 工具链或缓存问题 | `rustup default stable`、`cargo update`，重跑；完整 `tauri build` 未执行属已知项 |
-| `cap add ios` / `pod install` 失败 | 在 Windows 上无 CocoaPods | 属预期；iOS 构建需 macOS + Xcode + CocoaPods（见 [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)） |
-| Android 构建找不到 SDK | 未配置 `ANDROID_HOME` / JDK | 安装 Android SDK + JDK 17，设置 `ANDROID_HOME` 并把 `platform-tools` 加入 PATH |
-| PWA 不出现「安装」 | 非 HTTPS / 非 localhost | Service Worker 仅安全上下文生效，见 [DEPLOYMENT.md](./DEPLOYMENT.md) |
-| 前端报 AI 服务不可用 | 未配置 `AI_API_KEY` | 属设计内降级；填好服务端 `.env` 的 `AI_API_KEY` 后重启 API |
+| 症状                                                                                                                   | 可能原因                                                                                   | 处理                                                                                                                                                                                                                           |
+| ---------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `corepack: command not found`                                                                                          | Node 版本过旧或未带 corepack                                                               | 升级到 Node 22，或 `npm i -g corepack` 后再 `corepack enable`                                                                                                                                                                  |
+| `pnpm` 版本不是 11                                                                                                     | 全局装了其他版本                                                                           | `corepack prepare pnpm@11.20.0 --activate`，确保 `packageManager` 生效                                                                                                                                                         |
+| `ERR_PNPM_UNSUPPORTED_ENGINE`                                                                                          | Node < 20                                                                                  | `node -v` 确认 >= 20，推荐 22 LTS                                                                                                                                                                                              |
+| `pnpm install` 卡在 esbuild / sharp 构建                                                                               | pnpm 11 默认拦截构建脚本                                                                   | 仓库 `pnpm-workspace.yaml` 已用 `allowBuilds` 放行所需原生依赖，确认未被覆盖                                                                                                                                                   |
+| Vite dev 打开空白 / 资源 404                                                                                           | 未先 `pnpm install` 或端口占用                                                             | 重装依赖；`5173` 被占用时改 `apps/web/vite.config.ts` 的 `server.port`                                                                                                                                                         |
+| `/api/*` 返回 502/404                                                                                                  | 后端未启动，dev 代理目标 :3000 无服务                                                      | 先 `docker compose up -d postgres` + `pnpm api:start:dev`；仅浏览知识则无需后端                                                                                                                                                |
+| `prisma migrate dev` / `prisma db seed` 报 P1001                                                                       | PostgreSQL 未起或 `DATABASE_URL` 不匹配                                                    | `docker compose ps` 确认 `postgres` 为 healthy；核对 `.env` 的 `DATABASE_URL`（默认 `postgresql://survival:survival@localhost:5432/apocalypse_survival`）                                                                      |
+| `docker compose up -d postgres` 报 `failed to connect to the docker API ... npipe:////./pipe/dockerDesktopLinuxEngine` | Docker Desktop daemon 未运行                                                               | 启动 Docker Desktop 后再试；若 `docker desktop start` 依赖的 `wsl.exe` / `sc.exe` 被安全策略拦截，需由管理员放开策略或改用本机独立 PostgreSQL（当前环境见 [TEST_REPORT.md](./TEST_REPORT.md)「真实 PostgreSQL 集成验证受阻」） |
+| `start:dev` 路由 Mapped 后崩溃、未进入 listen                                                                          | `PrismaService.onModuleInit` 的 `$connect()` 报 P1001（数据库连不上）                      | 同上，先让 PostgreSQL 可达；路由表已打印说明 Nest 路由注册本身正常                                                                                                                                                             |
+| 所有受保护请求返回 `INTERNAL_ERROR: Cannot read properties of undefined (reading 'getAllAndOverride')`                 | 用 `tsx watch src/main.ts` 直接跑源码：`tsx`(esbuild) 不 emit 装饰器元数据，NestJS DI 失效 | 必须用 `pnpm api:start`（tsc 产物 + tsx 加载）或 `pnpm api:start:dev`，不要把 `start` 改回纯 `tsx watch`；详见 TEST_REPORT.md 第 7.4 节                                                                                        |
+| `prisma: command not found`                                                                                            | 用根命令直接调 Prisma                                                                      | 用 `pnpm --filter @apocalypse/api prisma:xxx` 或根封装 `pnpm db:xxx`                                                                                                                                                           |
+| `tauri dev` 报 WebView2 / 系统库缺失                                                                                   | 缺 Tauri 系统依赖                                                                          | Windows 装 WebView2 Runtime + C++ Build Tools；Linux 装 `libwebkit2gtk-4.1-dev` 等（见 3.3）                                                                                                                                   |
+| `cargo check` 失败                                                                                                     | Rust 工具链或缓存问题                                                                      | `rustup default stable`、`cargo update`，重跑；完整 `tauri build` 未执行属已知项                                                                                                                                               |
+| `cap add ios` / `pod install` 失败                                                                                     | 在 Windows 上无 CocoaPods                                                                  | 属预期；iOS 构建需 macOS + Xcode + CocoaPods（见 [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)）                                                                                                                                        |
+| Android 构建找不到 SDK                                                                                                 | 未配置 `ANDROID_HOME` / JDK                                                                | 安装 Android SDK + JDK 17，设置 `ANDROID_HOME` 并把 `platform-tools` 加入 PATH                                                                                                                                                 |
+| PWA 不出现「安装」                                                                                                     | 非 HTTPS / 非 localhost                                                                    | Service Worker 仅安全上下文生效，见 [DEPLOYMENT.md](./DEPLOYMENT.md)                                                                                                                                                           |
+| 前端报 AI 服务不可用                                                                                                   | 未配置 `AI_API_KEY`                                                                        | 属设计内降级；填好服务端 `.env` 的 `AI_API_KEY` 后重启 API                                                                                                                                                                     |
 
 ## 7. 相关文档
 

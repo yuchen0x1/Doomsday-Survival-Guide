@@ -202,3 +202,11 @@ select.field option { background: var(--color-panel); }
   .print-only { display: block !important; }
   .panel { border-color: #ccc !important; background: #fff !important; }
 }
+
+/* Compact preference applies to reusable content panels while preserving touch controls. */
+html[data-compact="true"] main .panel { padding: 0.65rem; }
+.btn:focus-visible, .field:focus-visible { outline: 2px solid var(--color-sand); outline-offset: 3px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+@media (prefers-reduced-motion: reduce) {
+  .fade-in { animation: none; }
+}

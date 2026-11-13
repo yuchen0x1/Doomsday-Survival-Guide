@@ -1,18 +1,18 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { JwtModule } from '@nestjs/jwt';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { AdminModule } from './admin/admin.module';
 import { AIModule } from './ai/ai.module';
 import { AuthModule } from './auth/auth.module';
+import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
+import { RolesGuard } from './common/guards/roles.guard';
+import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 import { ContentModule } from './content/content.module';
 import { HealthModule } from './health/health.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { SyncModule } from './sync/sync.module';
-import { RolesGuard } from './common/guards/roles.guard';
-import { JwtAuthGuard } from './common/guards/jwt-auth.guard';
-import { AuditInterceptor } from './common/interceptors/audit.interceptor';
 
 function int(value: unknown, fallback: number): number {
   const n = Number(value);

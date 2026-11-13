@@ -1,9 +1,9 @@
 import {
+  type AIStreamEvent,
+  formatSSE,
   OpenAITransformer,
   SSE_DONE,
-  formatSSE,
   transformUpstreamLine,
-  type AIStreamEvent,
 } from './sse';
 
 export interface ChatMessageLike {
@@ -131,4 +131,4 @@ async function safeText(response: Response): Promise<string> {
   }
 }
 
-export { SSE_DONE, formatSSE };
+export { formatSSE, SSE_DONE };

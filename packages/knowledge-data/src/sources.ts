@@ -89,15 +89,27 @@ export const SOURCES = {
     url: 'https://www.fao.org/',
     publisher: '联合国粮农组织（FAO）',
   }),
-  wilderness_society: src('wilderness_society', '野外医学与求生专业文献（Wilderness Medical Society）', 'academic', 'A', {
-    url: 'https://www.wildernessmedicalmedicine.org/',
-    publisher: 'Wilderness Medical Society',
-  }),
-  survival_manual_military: src('survival_manual_military', '美军野外生存手册 FM 3-05.70（公开版）', 'manual', 'B', {
-    url: 'https://www.fas.org/irp/dod/dir101/fm3_05-70.pdf',
-    publisher: 'U.S. Department of Defense',
-    publishedAt: '2006',
-  }),
+  wilderness_society: src(
+    'wilderness_society',
+    '野外医学与求生专业文献（Wilderness Medical Society）',
+    'academic',
+    'A',
+    {
+      url: 'https://www.wildernessmedicalmedicine.org/',
+      publisher: 'Wilderness Medical Society',
+    },
+  ),
+  survival_manual_military: src(
+    'survival_manual_military',
+    '美军野外生存手册 FM 3-05.70（公开版）',
+    'manual',
+    'B',
+    {
+      url: 'https://www.fas.org/irp/dod/dir101/fm3_05-70.pdf',
+      publisher: 'U.S. Department of Defense',
+      publishedAt: '2006',
+    },
+  ),
   who_traditional: src('who_traditional', 'WHO 传统药用植物评估资料', 'medical', 'B', {
     url: 'https://www.who.int/health-topics/traditional-complementary-and-integrative-medicine',
     publisher: 'WHO',
@@ -108,10 +120,16 @@ export const SOURCES = {
     verifiedAt: undefined,
     verifiedBy: undefined,
   }),
-  pending_verification: src('pending_verification', '证据不足，待研究（仅作线索）', 'community', 'D', {
-    verifiedAt: undefined,
-    verifiedBy: undefined,
-  }),
+  pending_verification: src(
+    'pending_verification',
+    '证据不足，待研究（仅作线索）',
+    'community',
+    'D',
+    {
+      verifiedAt: undefined,
+      verifiedBy: undefined,
+    },
+  ),
   ai_draft: src('ai_draft', 'AI 起草草稿（须人工审核）', 'ai_generated', 'D', {
     verifiedAt: undefined,
     verifiedBy: undefined,

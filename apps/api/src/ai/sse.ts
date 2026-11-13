@@ -66,10 +66,7 @@ export function parseSSEData(payload: string): unknown | null {
  * - usage 累计到 usage 快照（供 AIUsageLog 落库）
  */
 export class OpenAITransformer {
-  private readonly pending = new Map<
-    number,
-    { id?: string; name: string; args: string }
-  >();
+  private readonly pending = new Map<number, { id?: string; name: string; args: string }>();
   private snapshot: UsageSnapshot = {};
 
   push(chunk: unknown): AIStreamEvent[] {

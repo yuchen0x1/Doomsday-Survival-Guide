@@ -12,16 +12,6 @@
 
 版本由根 `package.json` 的 `version` 在 Vite 构建时注入 `VITE_APP_VERSION`。发布标签统一使用 `vMAJOR.MINOR.PATCH`，例如 `v1.0.1`。
 
-## GitHub Pages 首次启用
-
-在 GitHub 仓库的 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。之后推送到 `main` 或推送 `vMAJOR.MINOR.PATCH` 标签，`pages.yml` 会自动部署项目站点。默认地址为：
-
-```text
-https://yuchen0x1.github.io/Doomsday-Survival-Guide/
-```
-
-当前仓库 README 中的 WorkBuddy Demo 是另一套静态托管地址；GitHub Pages 部署不会自动替换 WorkBuddy 上的文件。若继续让用户访问 WorkBuddy 地址，必须在 WorkBuddy 的发布入口重新发布同一份 `apps/web/dist`。
-
 ## GitHub Actions
 
 ## GitHub Pages 首次启用
@@ -56,6 +46,7 @@ git push origin main v1.0.1
 - PWA 静态资源必须从 HTTPS 或 localhost 同源提供；部署时请让 `index.html`、`sw.js` 和 manifest 使用短缓存或 `no-cache`。
 - GitHub Actions 生成的 SHA-256 只用于发布工件校验；浏览器 PWA 不会把压缩包下载到本机再安装，因此不伪造桌面安装包签名、下载进度或静默安装能力。
 - 当前没有桌面安装包、代码签名证书或自定义更新服务器；Tauri/Capacitor 原生应用仍需分别通过其平台分发渠道更新。GitHub Pages 只负责 Web/PWA 静态站点。
+- 本地 Git 元数据已经恢复；发布时保留远程 API/桌面源码，本次可下载产物为 Web/PWA。
 
 ## 故障处理
 
@@ -64,3 +55,7 @@ git push origin main v1.0.1
 ## 外部验证
 
 本地可以验证 TypeScript、构建和工作流文件内容；GitHub Actions 实际运行、Release 创建、HTTPS 缓存头、浏览器 Service Worker 接管和 Capacitor 商店更新，需要在远程仓库和真实部署环境中验证。
+
+## v1.1.0 发布说明
+
+2026-11-13 发布使用 Node 22.13+ / pnpm 11。GitHub Release 提供根路径 Web/PWA 压缩包，GitHub Pages 构建使用仓库子路径。API 与 Tauri 源码保留在远程，不包含新的原生安装器；同步盘本地缺失这些目录不代表新版本删除它们。

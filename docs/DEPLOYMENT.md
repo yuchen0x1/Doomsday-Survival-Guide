@@ -29,16 +29,16 @@
 
 仓库根提供 `docker-compose.yml`。**以该文件实际内容为准**；其参数与根 `.env.example` 一致：
 
-| 项 | 值 |
-| --- | --- |
-| 服务名 / 容器名 | `postgres` / `apocalypse-postgres` |
-| 镜像 | `postgres:16-alpine` |
-| 用户 / 密码 | `survival` / `survival` |
-| 数据库 | `apocalypse_survival` |
-| 端口映射 | `5432:5432` |
-| 数据卷 | `postgres-data`（Compose 项目名由目录推导，实际卷名可能为 `doomsdaysurvivalguide_postgres-data`，以 `docker volume ls` / compose 为准） |
-| `DATABASE_URL` | `postgresql://survival:survival@localhost:5432/apocalypse_survival` |
-| 可选管理界面 | `adminer`（`tools` profile，`http://localhost:8080`） |
+| 项              | 值                                                                                                                                      |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 服务名 / 容器名 | `postgres` / `apocalypse-postgres`                                                                                                      |
+| 镜像            | `postgres:16-alpine`                                                                                                                    |
+| 用户 / 密码     | `survival` / `survival`                                                                                                                 |
+| 数据库          | `apocalypse_survival`                                                                                                                   |
+| 端口映射        | `5432:5432`                                                                                                                             |
+| 数据卷          | `postgres-data`（Compose 项目名由目录推导，实际卷名可能为 `doomsdaysurvivalguide_postgres-data`，以 `docker volume ls` / compose 为准） |
+| `DATABASE_URL`  | `postgresql://survival:survival@localhost:5432/apocalypse_survival`                                                                     |
+| 可选管理界面    | `adminer`（`tools` profile，`http://localhost:8080`）                                                                                   |
 
 启动与检查：
 
@@ -76,7 +76,7 @@ services:
       timeout: 5s
       retries: 10
       start_period: 10s
-  adminer:                        # 可选，profiles: ["tools"]
+  adminer: # 可选，profiles: ["tools"]
     image: adminer:latest
     profiles: ["tools"]
     ports:
@@ -96,15 +96,15 @@ volumes:
 
 完整清单见根 `.env.example`（复制为 `.env` 后填写）。**严禁把真实密钥提交到仓库或打包进前端 bundle**。
 
-| 分组 | 变量 | 说明 |
-| --- | --- | --- |
-| 服务 | `API_PORT`、`NODE_ENV` | 默认 `3000` / `development` |
-| 数据库 | `DATABASE_URL`、`SQLITE_PATH` | PostgreSQL 连接串；SQLite 为桌面端/开发回退 |
-| 认证 | `JWT_SECRET`、`JWT_EXPIRES_IN`、`ADMIN_EMAIL`、`ADMIN_PASSWORD` | 生产必须替换 `JWT_SECRET`（>= 32 字节强随机）、改掉初始管理员密码 |
-| AI | `AI_BASE_URL`、`AI_MODEL`、`AI_API_KEY`、`AI_TIMEOUT_MS`、`AI_RATE_LIMIT_PER_MIN` | 密钥仅服务端 |
-| 存储 | `S3_ENDPOINT`、`S3_REGION`、`S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY`、`S3_PUBLIC_BASE_URL` | 可选，图片与离线包托管 |
-| 地图 | `MAP_TILE_URL`、`MAP_ATTRIBUTION` | OSM 兼容瓦片服务 |
-| 限流/安全 | `API_RATE_LIMIT_PER_MIN`、`UPLOAD_MAX_BYTES`、`ENABLE_CORS_WHITELIST`、`CORS_ORIGINS` | 生产建议 `ENABLE_CORS_WHITELIST=true` 并收紧来源 |
+| 分组      | 变量                                                                                                      | 说明                                                              |
+| --------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 服务      | `API_PORT`、`NODE_ENV`                                                                                    | 默认 `3000` / `development`                                       |
+| 数据库    | `DATABASE_URL`、`SQLITE_PATH`                                                                             | PostgreSQL 连接串；SQLite 为桌面端/开发回退                       |
+| 认证      | `JWT_SECRET`、`JWT_EXPIRES_IN`、`ADMIN_EMAIL`、`ADMIN_PASSWORD`                                           | 生产必须替换 `JWT_SECRET`（>= 32 字节强随机）、改掉初始管理员密码 |
+| AI        | `AI_BASE_URL`、`AI_MODEL`、`AI_API_KEY`、`AI_TIMEOUT_MS`、`AI_RATE_LIMIT_PER_MIN`                         | 密钥仅服务端                                                      |
+| 存储      | `S3_ENDPOINT`、`S3_REGION`、`S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY`、`S3_PUBLIC_BASE_URL` | 可选，图片与离线包托管                                            |
+| 地图      | `MAP_TILE_URL`、`MAP_ATTRIBUTION`                                                                         | OSM 兼容瓦片服务                                                  |
+| 限流/安全 | `API_RATE_LIMIT_PER_MIN`、`UPLOAD_MAX_BYTES`、`ENABLE_CORS_WHITELIST`、`CORS_ORIGINS`                     | 生产建议 `ENABLE_CORS_WHITELIST=true` 并收紧来源                  |
 
 安全红线：
 
@@ -115,14 +115,14 @@ volumes:
 
 ### AI 服务参数
 
-| 项 | 值 |
-| --- | --- |
-| Base URL | `https://api.xiaomimimo.com/v1` |
-| 模型 | `mimo-v2.6-Flash` |
-| 协议 | OpenAI 兼容 `/chat/completions`（流式） |
-| 密钥 | `AI_API_KEY`，只存服务端 `.env` |
-| 超时 | `AI_TIMEOUT_MS`（默认 `60000`） |
-| AI 限流 | `AI_RATE_LIMIT_PER_MIN`（默认 `20`） |
+| 项       | 值                                                                                    |
+| -------- | ------------------------------------------------------------------------------------- |
+| Base URL | `https://api.xiaomimimo.com/v1`                                                       |
+| 模型     | `mimo-v2.6-Flash`                                                                     |
+| 协议     | OpenAI 兼容 `/chat/completions`（流式）                                               |
+| 密钥     | `AI_API_KEY`，只存服务端 `.env`                                                       |
+| 超时     | `AI_TIMEOUT_MS`（默认 `60000`）                                                       |
+| AI 限流  | `AI_RATE_LIMIT_PER_MIN`（默认 `20`）                                                  |
 | 前端入口 | `POST /api/ai/chat`（SSE）、`POST /api/ai/identify`、`GET /api/ai/health`（健康检查） |
 
 **无 Key 或离线**：`POST /api/ai/chat` 返回 `{"type":"error"}` 事件（不假装成功），前端 `apps/web/src/lib/ai.ts` 检测到不可用后调用 `localFallbackAnswer()`，输出明确标注「来自本地离线知识库检索」，**禁止伪造 AI 输出**。详见 [API.md](./API.md) 与 [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)。
@@ -247,7 +247,7 @@ server {
 - Service Worker 与「添加到主屏幕 / 安装」仅在**安全上下文**生效：`https://` 或 `http://localhost`。用 IP/HTTP 部署到局域网时 PWA 安装不可用。
 - 证书可用 Let's Encrypt 自动签发；确保 `sw.js` 与 `manifest` 通过 HTTPS 同源提供。
 - 跨源 `/api` 请求在 Workbox 中配置为 `NetworkOnly`，不缓存；生产 CORS 用 `CORS_ORIGINS` 白名单。
-- 升级部署后注意 SW 更新策略为 `autoUpdate`（`vite-plugin-pwa` `registerType: 'autoUpdate'`），`index.html` 不缓存以便前端感知新版本。
+- 升级部署后注意 SW 更新策略为 `prompt`（`vite-plugin-pwa` `registerType: 'prompt'`）。应用会在设置页和全局提示中提供「检查更新 / 立即更新 / 稍后处理」，`index.html` 不缓存以便前端感知新版本。
 
 ## 9. 部署后自检清单
 

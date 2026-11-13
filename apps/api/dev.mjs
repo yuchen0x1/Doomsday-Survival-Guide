@@ -10,8 +10,8 @@
 // （根脚本 `pnpm api:start:dev` 已指向它）。
 
 import { spawn } from 'node:child_process';
+import { delimiter, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { dirname, join, delimiter } from 'node:path';
 
 const appDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = join(appDir, '..', '..');
@@ -52,8 +52,12 @@ initial.on('exit', (code) => {
   const cleanup = () => {
     if (stopping) return;
     stopping = true;
-    try { tsc.kill('SIGTERM'); } catch {}
-    try { serve.kill('SIGTERM'); } catch {}
+    try {
+      tsc.kill('SIGTERM');
+    } catch {}
+    try {
+      serve.kill('SIGTERM');
+    } catch {}
     process.exit(0);
   };
 

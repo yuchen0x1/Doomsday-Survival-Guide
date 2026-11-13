@@ -1,6 +1,19 @@
 import type { OfflinePackage } from '@apocalypse/core';
 import * as db from './db';
-import { articles, firstAidGuides, plants, animals, skills } from './knowledge';
+import {
+  animals,
+  animalTracks,
+  articles,
+  firstAidGuides,
+  hazards,
+  insects,
+  medicines,
+  plants,
+  quizQuestions,
+  scenarios,
+  skills,
+  supplies,
+} from './knowledge';
 
 /**
  * 离线生存模式。
@@ -34,25 +47,120 @@ export interface PackageDef {
   version: string;
 }
 
+/**
+ * 构造离线包的真实内容。
+ * 体积估算与下载写入必须复用同一份 payload，避免“显示已下载但实际只保存文章”的错配。
+ */
+export function buildPackagePayload(def: PackageDef): Record<string, unknown[]> {
+  const payload: Record<string, unknown[]> = {};
+  const articleRows = articles.filter((a) => def.categorySlugs.includes(a.categorySlug));
+  if (articleRows.length > 0) payload.articles = articleRows;
+
+  switch (def.id) {
+    case 'pkg-plants':
+      payload.plants = plants;
+      break;
+    case 'pkg-animals':
+      payload.animals = animals;
+      payload.animalTracks = animalTracks;
+      payload.insects = insects;
+      break;
+    case 'pkg-skills':
+      payload.skills = skills;
+      break;
+    case 'pkg-first-aid-full':
+      payload.firstAid = firstAidGuides;
+      payload.medicines = medicines;
+      break;
+    case 'pkg-disasters':
+      payload.scenarios = scenarios;
+      payload.hazards = hazards;
+      break;
+    case 'pkg-wilderness':
+      payload.supplies = supplies;
+      break;
+    case 'pkg-tech':
+      payload.supplies = supplies.filter((s) =>
+        ['energy', 'mechanics', 'tools', 'crafts'].includes(s.category),
+      );
+      break;
+    default:
+      break;
+  }
+
+  const includedIds = new Set(
+    Object.values(payload).flatMap((rows) =>
+      rows.flatMap((row) => {
+        if (!row || typeof row !== 'object' || !('id' in row)) return [];
+        const id = (row as { id?: unknown }).id;
+        return typeof id === 'string' ? [id] : [];
+      }),
+    ),
+  );
+  const relatedQuizzes = quizQuestions.filter((question) => {
+    const sourceId = question.sourceRefId.split(':').at(-1);
+    return sourceId !== undefined && includedIds.has(sourceId);
+  });
+  if (relatedQuizzes.length > 0) payload.quizQuestions = relatedQuizzes;
+
+  return payload;
+}
+
 export const PACKAGE_DEFS: PackageDef[] = [
-  { id: 'pkg-plants', name: '植物图鉴包', description: '42+ 种植物识别、毒性与易混淆物种', categorySlugs: ['plants'], version: '1.0.0' },
-  { id: 'pkg-animals', name: '动物图鉴包', description: '野生动物识别、足迹痕迹与安全应对', categorySlugs: ['animals', 'insects'], version: '1.0.0' },
-  { id: 'pkg-skills', name: '生存技能包', description: '庇护所、净水、绳结、方向判断等教程', categorySlugs: ['crafts'], version: '1.0.0' },
-  { id: 'pkg-first-aid-full', name: '完整急救包', description: '全部急救指南与常见药物知识', categorySlugs: ['first-aid', 'medicines'], version: '1.0.0' },
-  { id: 'pkg-disasters', name: '灾害应对包', description: '灾害场景模拟与危险预警记录', categorySlugs: ['disasters', 'hazards', 'geology'], version: '1.0.0' },
-  { id: 'pkg-wilderness', name: '野外求生包', description: '野外求生、食物保存、农业种植', categorySlugs: ['wilderness', 'food-preservation', 'agriculture'], version: '1.0.0' },
-  { id: 'pkg-tech', name: '技术维保包', description: '能源技术、机械维修、工具与制作', categorySlugs: ['energy', 'mechanics', 'tools', 'crafts'], version: '1.0.0' },
+  {
+    id: 'pkg-plants',
+    name: '植物图鉴包',
+    description: '42+ 种植物识别、毒性与易混淆物种',
+    categorySlugs: ['plants'],
+    version: '1.0.0',
+  },
+  {
+    id: 'pkg-animals',
+    name: '动物图鉴包',
+    description: '野生动物识别、足迹痕迹与安全应对',
+    categorySlugs: ['animals', 'insects'],
+    version: '1.0.0',
+  },
+  {
+    id: 'pkg-skills',
+    name: '生存技能包',
+    description: '庇护所、净水、绳结、方向判断等教程',
+    categorySlugs: ['crafts'],
+    version: '1.0.0',
+  },
+  {
+    id: 'pkg-first-aid-full',
+    name: '完整急救包',
+    description: '全部急救指南与常见药物知识',
+    categorySlugs: ['first-aid', 'medicines'],
+    version: '1.0.0',
+  },
+  {
+    id: 'pkg-disasters',
+    name: '灾害应对包',
+    description: '灾害场景模拟与危险预警记录',
+    categorySlugs: ['disasters', 'hazards', 'geology'],
+    version: '1.0.0',
+  },
+  {
+    id: 'pkg-wilderness',
+    name: '野外求生包',
+    description: '野外求生、食物保存、农业种植',
+    categorySlugs: ['wilderness', 'food-preservation', 'agriculture'],
+    version: '1.0.0',
+  },
+  {
+    id: 'pkg-tech',
+    name: '技术维保包',
+    description: '能源技术、机械维修、工具与制作',
+    categorySlugs: ['energy', 'mechanics', 'tools', 'crafts'],
+    version: '1.0.0',
+  },
 ];
 
 /** 计算某个包的真实序列化体积（字节） */
 export function computePackageSize(def: PackageDef): number {
-  const relevant = articles.filter((a) => def.categorySlugs.includes(a.categorySlug));
-  const aid = firstAidGuides.filter((f) => def.categorySlugs.includes(f.categorySlug));
-  const extra =
-    def.id === 'pkg-plants' ? plants :
-    def.id === 'pkg-animals' ? animals :
-    def.id === 'pkg-skills' ? skills : [];
-  const json = JSON.stringify({ relevant, aid, extra });
+  const json = JSON.stringify(buildPackagePayload(def));
   return new TextEncoder().encode(json).length;
 }
 
@@ -65,7 +173,17 @@ const KEY_PREFIX = 'pkgdata:';
 export async function loadPackageStates(): Promise<PackageState[]> {
   const stored = await db.listOfflinePackages();
   const storedMap = new Map(stored.map((p) => [p.id, p]));
-  const base: PackageState = { ...BASE_PACKAGE, def: { ...BASE_PACKAGE, categorySlugs: BASE_PACKAGE.categorySlugs, version: BASE_PACKAGE.version, description: BASE_PACKAGE.description, id: BASE_PACKAGE.id, name: BASE_PACKAGE.name } as unknown as PackageDef };
+  const base: PackageState = {
+    ...BASE_PACKAGE,
+    def: {
+      ...BASE_PACKAGE,
+      categorySlugs: BASE_PACKAGE.categorySlugs,
+      version: BASE_PACKAGE.version,
+      description: BASE_PACKAGE.description,
+      id: BASE_PACKAGE.id,
+      name: BASE_PACKAGE.name,
+    } as unknown as PackageDef,
+  };
   const rest = PACKAGE_DEFS.map((def) => {
     const existing = storedMap.get(def.id);
     const sizeBytes = computePackageSize(def);
@@ -74,7 +192,11 @@ export async function loadPackageStates(): Promise<PackageState[]> {
     }
     // 版本比较 → 可更新
     const status: OfflinePackage['status'] =
-      existing.version !== def.version ? 'update_available' : existing.status === 'downloading' ? 'not_downloaded' : existing.status;
+      existing.version !== def.version
+        ? 'update_available'
+        : existing.status === 'downloading'
+          ? 'not_downloaded'
+          : existing.status;
     return { ...existing, sizeBytes, status, def };
   });
   return [base as PackageState, ...rest];
@@ -85,7 +207,7 @@ export async function downloadPackage(
   def: PackageDef,
   onProgress: (pct: number) => void,
 ): Promise<void> {
-  const data = JSON.stringify(articles.filter((a) => def.categorySlugs.includes(a.categorySlug)));
+  const data = JSON.stringify(buildPackagePayload(def));
   const steps = 8;
   for (let i = 1; i <= steps; i++) {
     await new Promise((r) => setTimeout(r, 90 + Math.random() * 120));
@@ -93,10 +215,15 @@ export async function downloadPackage(
   }
   await db.setSetting(KEY_PREFIX + def.id, data);
   const pkg: OfflinePackage = {
-    id: def.id, name: def.name, description: def.description,
-    categorySlugs: def.categorySlugs, sizeBytes: computePackageSize(def),
-    version: def.version, downloadedAt: new Date().toISOString(),
-    status: 'downloaded', progress: 100,
+    id: def.id,
+    name: def.name,
+    description: def.description,
+    categorySlugs: def.categorySlugs,
+    sizeBytes: computePackageSize(def),
+    version: def.version,
+    downloadedAt: new Date().toISOString(),
+    status: 'downloaded',
+    progress: 100,
   };
   await db.saveOfflinePackage(pkg);
 }
@@ -106,11 +233,19 @@ export async function deletePackage(id: string): Promise<void> {
   const all = await db.listOfflinePackages();
   const pkg = all.find((p) => p.id === id);
   if (pkg) {
-    await db.saveOfflinePackage({ ...pkg, status: 'not_downloaded', downloadedAt: undefined, progress: 0 });
+    await db.saveOfflinePackage({
+      ...pkg,
+      status: 'not_downloaded',
+      downloadedAt: undefined,
+      progress: 0,
+    });
   }
 }
 
-export async function updatePackage(def: PackageDef, onProgress: (pct: number) => void): Promise<void> {
+export async function updatePackage(
+  def: PackageDef,
+  onProgress: (pct: number) => void,
+): Promise<void> {
   await deletePackage(def.id);
   await downloadPackage(def, onProgress);
 }

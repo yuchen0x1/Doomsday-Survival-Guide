@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import react from '@vitejs/plugin-react';
+import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 const configDir = path.dirname(fileURLToPath(import.meta.url));
@@ -11,7 +11,9 @@ const configuredBase = process.env.VITE_BASE_PATH?.trim() || '/';
 const basePath = configuredBase.endsWith('/') ? configuredBase : `${configuredBase}/`;
 const rootPackage = JSON.parse(
   fs.readFileSync(path.resolve(configDir, '../../package.json'), 'utf8'),
-) as { version?: string };
+) as {
+  version?: string;
+};
 
 export default defineConfig({
   base: basePath,
@@ -19,6 +21,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      // 由界面提示用户更新，避免在阅读过程中强制重载页面。
       registerType: 'prompt',
       includeAssets: ['favicon.svg'],
       manifest: {
@@ -37,13 +40,14 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // 核心知识全部预缓存，保证离线可用
         globPatterns: ['**/*.{js,css,html,svg,png,woff2,json}'],
         maximumFileSizeToCacheInBytes: 8 * 1024 * 1024,
         navigateFallback: `${basePath}index.html`,
         runtimeCaching: [
           {
             urlPattern: ({ url }) =>
-              url.origin !== self.location.origin && url.pathname.includes('/api/'),
+              url.origin !== location.origin && url.pathname.includes('/api/'),
             handler: 'NetworkOnly',
           },
         ],

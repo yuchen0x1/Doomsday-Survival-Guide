@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { validateDataset, computeRequiredDanger, DANGER_ORDER } from '@apocalypse/core';
-import { getDataset, getSearchDocuments, getHomeCounts } from '../src/index';
+import { computeRequiredDanger, DANGER_ORDER, validateDataset } from '@apocalypse/core';
+import { describe, expect, it } from 'vitest';
+import { getDataset, getHomeCounts, getSearchDocuments } from '../src/index';
 
 /**
  * 全量知识数据质量闸门：
@@ -27,10 +27,17 @@ describe('数据集完整性', () => {
 
   it('id 全局唯一（按库内）', () => {
     for (const [name, list] of Object.entries({
-      articles: ds.articles, plants: ds.plants, animals: ds.animals,
-      firstAid: ds.firstAid, skills: ds.skills, medicines: ds.medicines,
-      hazards: ds.hazards, quizzes: ds.quizQuestions, supplies: ds.supplies,
-      scenarios: ds.scenarios, insects: ds.insects,
+      articles: ds.articles,
+      plants: ds.plants,
+      animals: ds.animals,
+      firstAid: ds.firstAid,
+      skills: ds.skills,
+      medicines: ds.medicines,
+      hazards: ds.hazards,
+      quizzes: ds.quizQuestions,
+      supplies: ds.supplies,
+      scenarios: ds.scenarios,
+      insects: ds.insects,
     })) {
       const ids = (list as { id: string }[]).map((x) => x.id);
       expect(new Set(ids).size, `${name} id 重复`).toBe(ids.length);
@@ -49,8 +56,12 @@ describe('数据集完整性', () => {
 describe('审核规则闸门（AI 知识质量控制）', () => {
   it('validateDataset 无 error 级问题', () => {
     const issues = validateDataset({
-      articles: ds.articles, plants: ds.plants, animals: ds.animals,
-      firstAid: ds.firstAid, skills: ds.skills, medicines: ds.medicines,
+      articles: ds.articles,
+      plants: ds.plants,
+      animals: ds.animals,
+      firstAid: ds.firstAid,
+      skills: ds.skills,
+      medicines: ds.medicines,
     });
     const errors = issues.filter((i) => i.level === 'error');
     // 打印便于定位（不阻断 warning）
@@ -61,16 +72,33 @@ describe('审核规则闸门（AI 知识质量控制）', () => {
   });
 
   it('AI 生成内容无一标 A 级', () => {
-    const all = [...ds.articles, ...ds.plants, ...ds.animals, ...ds.firstAid, ...ds.skills, ...ds.medicines];
+    const all = [
+      ...ds.articles,
+      ...ds.plants,
+      ...ds.animals,
+      ...ds.firstAid,
+      ...ds.skills,
+      ...ds.medicines,
+    ];
     for (const x of all) {
       if (x.meta.aiGenerated) {
-        expect(x.meta.sources.some((s) => s.credibility === 'A'), `${x.id} AI 内容标了 A 级`).toBe(false);
+        expect(
+          x.meta.sources.some((s) => s.credibility === 'A'),
+          `${x.id} AI 内容标了 A 级`,
+        ).toBe(false);
       }
     }
   });
 
   it('已发布内容均有来源与审核记录', () => {
-    const all = [...ds.articles, ...ds.plants, ...ds.animals, ...ds.firstAid, ...ds.skills, ...ds.medicines];
+    const all = [
+      ...ds.articles,
+      ...ds.plants,
+      ...ds.animals,
+      ...ds.firstAid,
+      ...ds.skills,
+      ...ds.medicines,
+    ];
     for (const x of all) {
       if (x.meta.reviewStatus === 'published') {
         expect(x.meta.sources.length, `${x.id} 发布但无来源`).toBeGreaterThan(0);
@@ -82,7 +110,11 @@ describe('审核规则闸门（AI 知识质量控制）', () => {
 
   it('危险等级不低于审核规则要求', () => {
     const samples: { id: string; text: string; level: string }[] = [
-      ...ds.articles.map((a) => ({ id: a.id, text: `${a.title} ${a.summary}`, level: a.meta.dangerLevel })),
+      ...ds.articles.map((a) => ({
+        id: a.id,
+        text: `${a.title} ${a.summary}`,
+        level: a.meta.dangerLevel,
+      })),
       ...ds.firstAid.map((f) => ({ id: f.id, text: f.title, level: f.meta.dangerLevel })),
       ...ds.hazards.map((h) => ({ id: h.id, text: h.title, level: h.meta.dangerLevel })),
     ];
@@ -110,7 +142,8 @@ describe('审核规则闸门（AI 知识质量控制）', () => {
     for (const f of ds.firstAid) {
       expect(f.meta.reviewStatus, `${f.id} 急救未发布`).toBe('published');
       const auth = f.meta.sources.find((s) =>
-        ['government', 'medical', 'academic', 'ngo'].includes(s.type));
+        ['government', 'medical', 'academic', 'ngo'].includes(s.type),
+      );
       expect(auth, `${f.id} 急救缺权威来源`).toBeTruthy();
     }
   });

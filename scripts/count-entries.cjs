@@ -2,10 +2,18 @@ const fs = require('fs');
 const path = require('path');
 const dir = path.join(__dirname, '..', 'packages', 'knowledge-data', 'src');
 const specs = [
-  ['plants', 'plant-'], ['articles', 'art-'], ['skills', 'skill-'],
-  ['supplies', 'sup-'], ['animals', 'animal-'], ['animals', 'track-'],
-  ['firstAid', 'fa-'], ['medicines', 'med-'], ['scenarios', 'scn-'],
-  ['hazards', 'hz-'], ['insects', 'insect-'], ['quizzes', 'qz-'],
+  ['plants', 'plant-'],
+  ['articles', 'art-'],
+  ['skills', 'skill-'],
+  ['supplies', 'sup-'],
+  ['animals', 'animal-'],
+  ['animals', 'track-'],
+  ['firstAid', 'fa-'],
+  ['medicines', 'med-'],
+  ['scenarios', 'scn-'],
+  ['hazards', 'hz-'],
+  ['insects', 'insect-'],
+  ['quizzes', 'qz-'],
 ];
 for (const [f, pre] of specs) {
   try {

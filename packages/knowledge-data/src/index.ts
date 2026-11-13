@@ -1,26 +1,35 @@
 import type {
-  AnimalSpecies, AnimalTrack, DisasterScenario, FirstAidGuide, HazardRecord,
-  InsectSpecies, KnowledgeArticle, MedicineEntry, PlantSpecies, QuizQuestion,
-  SearchDocument, SurvivalSkill, SupplyItem,
+  AnimalSpecies,
+  AnimalTrack,
+  DisasterScenario,
+  FirstAidGuide,
+  HazardRecord,
+  InsectSpecies,
+  KnowledgeArticle,
+  MedicineEntry,
+  PlantSpecies,
+  QuizQuestion,
+  SearchDocument,
+  SupplyItem,
+  SurvivalSkill,
 } from '@apocalypse/core';
 import { buildSearchDocuments } from '@apocalypse/core';
-
-import { articles } from './articles';
-import { plants } from './plants';
 import { animals, animalTracks } from './animals';
+import { articles } from './articles';
+import { firstAidGuides } from './firstAid';
+import { hazards } from './hazards';
 import { insects } from './insects';
 import { medicines } from './medicines';
-import { firstAidGuides } from './firstAid';
-import { skills } from './skills';
-import { supplies } from './supplies';
-import { scenarios } from './scenarios';
-import { hazards } from './hazards';
-import { quizQuestions } from './quizzes';
-import { SOURCES, pick } from './sources';
 import { normalizeDatasetDanger } from './normalize';
+import { plants } from './plants';
+import { quizQuestions } from './quizzes';
+import { scenarios } from './scenarios';
+import { skills } from './skills';
+import { pick, SOURCES } from './sources';
+import { supplies } from './supplies';
 
-export * from './sources';
 export * from './helpers';
+export * from './sources';
 
 export interface KnowledgeDataset {
   articles: KnowledgeArticle[];
@@ -44,8 +53,18 @@ let cachedDocs: SearchDocument[] | null = null;
 export function getDataset(): KnowledgeDataset {
   if (!cached) {
     cached = {
-      articles, plants, animals, animalTracks, insects, medicines,
-      firstAid: firstAidGuides, skills, supplies, scenarios, hazards, quizQuestions,
+      articles,
+      plants,
+      animals,
+      animalTracks,
+      insects,
+      medicines,
+      firstAid: firstAidGuides,
+      skills,
+      supplies,
+      scenarios,
+      hazards,
+      quizQuestions,
     };
     // 危险等级由审核规则强制确定（规则优先于人工/AI 标注，只升不降）
     normalizeDatasetDanger(cached);
@@ -90,4 +109,19 @@ export function getHomeCounts() {
   };
 }
 
-export { articles, plants, animals, animalTracks, insects, medicines, firstAidGuides, skills, supplies, scenarios, hazards, quizQuestions, SOURCES, pick };
+export {
+  animals,
+  animalTracks,
+  articles,
+  firstAidGuides,
+  hazards,
+  insects,
+  medicines,
+  pick,
+  plants,
+  quizQuestions,
+  SOURCES,
+  scenarios,
+  skills,
+  supplies,
+};

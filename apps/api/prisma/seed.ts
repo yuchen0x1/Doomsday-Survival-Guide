@@ -10,10 +10,10 @@ import { loadEnvFiles } from '../src/config/load-env';
 
 loadEnvFiles();
 
-import * as bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-import { SOURCES, getDataset } from '@apocalypse/knowledge-data';
 import type { ContentMeta, SourceReference } from '@apocalypse/core';
+import { getDataset, SOURCES } from '@apocalypse/knowledge-data';
+import { PrismaClient } from '@prisma/client';
+import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 

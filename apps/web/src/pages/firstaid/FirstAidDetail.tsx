@@ -1,11 +1,18 @@
-import { useParams } from 'react-router-dom';
 import { getCategory } from '@apocalypse/core';
-import { Icon } from '../../components/Icon';
-import { Panel, EmptyState, Tag } from '../../components/ui';
+import { Link, useParams } from 'react-router-dom';
 import {
-  BackButton, BookmarkButton, HazardBanner, MetaBar, RelatedLinks, SourceList,
-  StepList, TipList, useHistory,
+  BackButton,
+  BookmarkButton,
+  HazardBanner,
+  MetaBar,
+  RelatedLinks,
+  SourceList,
+  StepList,
+  TipList,
+  useHistory,
 } from '../../components/detail';
+import { Icon } from '../../components/Icon';
+import { EmptyState, Panel, Tag } from '../../components/ui';
 import { getFirstAid, resolveRefs } from '../../lib/knowledge';
 
 /** 急救详情：危险信号 / 正确步骤 / 错误做法 / 何时就医 */
@@ -18,7 +25,15 @@ export default function FirstAidDetail() {
     return (
       <div className="fade-in">
         <BackButton fallback="/first-aid" />
-        <EmptyState icon="firstaid" title="未找到该急救指南" action={<a className="btn btn-primary" href="/first-aid">返回急救百科</a>} />
+        <EmptyState
+          icon="firstaid"
+          title="未找到该急救指南"
+          action={
+            <Link className="btn btn-primary" to="/first-aid">
+              返回急救百科
+            </Link>
+          }
+        />
       </div>
     );
   }
@@ -28,12 +43,17 @@ export default function FirstAidDetail() {
   return (
     <div className="fade-in">
       <BackButton fallback="/first-aid" />
-      <HazardBanner level={guide.meta.dangerLevel} text="医疗急救操作存在风险。本指南不能替代专业医疗培训与诊断；危及生命的情况立即拨打 120。" />
+      <HazardBanner
+        level={guide.meta.dangerLevel}
+        text="医疗急救操作存在风险。本指南不能替代专业医疗培训与诊断；危及生命的情况立即拨打 120。"
+      />
 
       <div className="grid gap-5 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-2 text-[12px] text-[var(--color-ink-dim)]">
-            <a href="/first-aid" className="hover:text-[var(--color-ink)]">急救百科</a>
+            <Link to="/first-aid" className="hover:text-[var(--color-ink)]">
+              急救百科
+            </Link>
             <Icon name="chevron" size={11} />
             <span>{getCategory(guide.categorySlug)?.name ?? guide.categorySlug}</span>
           </div>
@@ -42,17 +62,23 @@ export default function FirstAidDetail() {
             <h1 className="text-[22px] font-bold leading-snug">{guide.title}</h1>
             <div className="flex gap-2">
               <BookmarkButton kind="first_aid" refId={guide.id} title={guide.title} />
-              <button className="btn" onClick={() => window.print()}><Icon name="print" size={14} /> 打印</button>
+              <button type="button" className="btn" onClick={() => window.print()}>
+                <Icon name="print" size={14} /> 打印
+              </button>
             </div>
           </div>
 
-          <div className="mt-3"><MetaBar meta={guide.meta} /></div>
+          <div className="mt-3">
+            <MetaBar meta={guide.meta} />
+          </div>
 
           <Panel className="mt-4 p-4">
             <p className="text-[14px] leading-[1.9] text-[var(--color-ink)]">{guide.summary}</p>
             <div className="mt-3 flex flex-wrap gap-1.5">
               <span className="micro-label mr-1">适用情况</span>
-              {guide.applicable.map((a) => <Tag key={a}>{a}</Tag>)}
+              {guide.applicable.map((a) => (
+                <Tag key={a}>{a}</Tag>
+              ))}
             </div>
           </Panel>
 
@@ -63,7 +89,10 @@ export default function FirstAidDetail() {
             </div>
             <ul className="grid gap-1.5 sm:grid-cols-2">
               {guide.dangerSignals.map((s, i) => (
-                <li key={i} className="flex gap-2 text-[13px] text-[var(--color-ink)]"><span className="text-[var(--color-danger)]">●</span>{s}</li>
+                <li key={i} className="flex gap-2 text-[13px] text-[var(--color-ink)]">
+                  <span className="text-[var(--color-danger)]">●</span>
+                  {s}
+                </li>
               ))}
             </ul>
           </div>
@@ -76,7 +105,9 @@ export default function FirstAidDetail() {
           {/* 正确急救步骤 */}
           <Panel className="mt-4 p-4">
             <span className="micro-label">正确的急救步骤 · PROCEDURE</span>
-            <div className="mt-3.5"><StepList steps={guide.steps} /></div>
+            <div className="mt-3.5">
+              <StepList steps={guide.steps} />
+            </div>
           </Panel>
 
           {/* 需要避免的错误 */}
@@ -91,12 +122,19 @@ export default function FirstAidDetail() {
             </div>
             <ul className="flex flex-col gap-1.5">
               {guide.whenToSeekHelp.map((w, i) => (
-                <li key={i} className="flex gap-2 text-[13px] text-[var(--color-ink-dim)]"><span className="text-[var(--color-info)]">▸</span>{w}</li>
+                <li key={i} className="flex gap-2 text-[13px] text-[var(--color-ink-dim)]">
+                  <span className="text-[var(--color-info)]">▸</span>
+                  {w}
+                </li>
               ))}
             </ul>
           </div>
 
-          <div className="mt-4 flex flex-wrap gap-1.5">{guide.tags.map((t) => <Tag key={t}># {t}</Tag>)}</div>
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {guide.tags.map((t) => (
+              <Tag key={t}># {t}</Tag>
+            ))}
+          </div>
         </div>
 
         <div className="flex flex-col gap-4">

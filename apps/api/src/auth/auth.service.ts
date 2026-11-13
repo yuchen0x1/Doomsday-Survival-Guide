@@ -1,14 +1,10 @@
-import {
-  ConflictException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
-import { PrismaService } from '../prisma/prisma.service';
 import type { AuthUser } from '../common/decorators';
 import type { JwtPayload } from '../common/guards/jwt-auth.guard';
+import { PrismaService } from '../prisma/prisma.service';
 
 export interface PublicUser {
   id: string;
@@ -111,7 +107,8 @@ export class AuthService {
     name: string | null,
     previousRefresh?: string,
   ): Promise<TokenPair> {
-    const accessTtl = (this.config.get<string>('JWT_EXPIRES_IN') ?? '7d') as JwtSignOptions['expiresIn'];
+    const accessTtl = (this.config.get<string>('JWT_EXPIRES_IN') ??
+      '7d') as JwtSignOptions['expiresIn'];
     const accessToken = await this.jwt.signAsync(
       { sub: userId, email, role, name: name ?? undefined, type: 'access' },
       { expiresIn: accessTtl },

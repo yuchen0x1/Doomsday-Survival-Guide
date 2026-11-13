@@ -1,11 +1,18 @@
-import { Controller, DefaultValuePipe, Get, Param, ParseIntPipe, Query } from '@nestjs/common';
-import { SkipThrottle } from '@nestjs/throttler';
+import {
+  BadRequestException,
+  Controller,
+  DefaultValuePipe,
+  Get,
+  Param,
+  ParseIntPipe,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { SkipThrottle } from '@nestjs/throttler';
 import { AuthUser, CurrentUser, Public } from '../common/decorators';
-import { isContentKind, type ContentKind } from '../common/kinds';
+import { type ContentKind, isContentKind } from '../common/kinds';
 import type { ViewerRole } from '../common/visibility';
 import { ContentService, type ListQuery } from './content.service';
-import { BadRequestException } from '@nestjs/common';
 
 @ApiTags('content')
 @SkipThrottle({ ai: true })

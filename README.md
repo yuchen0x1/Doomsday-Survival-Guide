@@ -1,5 +1,20 @@
 # APOCALYPSE SURVIVAL · 末日生存指南
 
+## 最新更新
+
+### v1.1.0 · 2026-11-13
+
+- 物资清单支持表单编辑、搜索排序和补货差额导出，盘点与消耗记录保持一致。
+- 恢复备份前可预览内容；损坏文件会被拒绝，恢复失败保留原有数据。
+- 清除个人数据只影响本应用；阅读历史开关、紧凑排版和手机弹窗体验得到完善。
+- 离线检索、知识筛选和页面导航得到修复，断网后仍可管理本地物资。
+
+[完整更新历史](docs/releases/release-notes.md) · [下载 v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
+
+> **当前工作区验收（2026-11-13）**：可用源码为 Web/PWA、core、knowledge-data 与 Capacitor 配置。此前同步盘工作区缺失 API 与 Tauri 源码，本次发布保留远程对应源码；原生安装器、后端数据库联调仍未交付验收。在线 Demo 未重新部署。
+>
+> 本次升级：物资表单编辑、搜索/排序、补货差额 CSV；备份结构校验、恢复前预览与原子回滚；库存/流水原子保存；仅清除本应用数据。详见 [升级与竞品研究报告](docs/EVOLUTION_2026-11-13.md)、[本次测试](docs/TEST_REPORT.md#2026-11-13-个人数据与物资升级验收)。
+
 **一份可离线运行、跨平台的末日生存百科全书。** 全部知识随应用打包，断网照样能查；AI 只做辅助，绝不替代审核结论。
 
 [![在线 Demo](https://img.shields.io/badge/在线%20Demo-立即体验-0B8A5F?style=flat-square)](https://doomsday-survival-05439.app.workbuddy.host/?sharecode=ED7TUWRYKI)
@@ -32,14 +47,14 @@ APOCALYPSE SURVIVAL 是一套「离线优先」的生存知识系统，覆盖 We
 
 ### 数据集实测规模（`scripts/count-entries.cjs`）
 
-| 数据集 | 条目数 | 数据集 | 条目数 |
-| --- | ---: | --- | ---: |
-| plants 植物 | 44 | articles 知识文章 | 60 |
-| skills 生存技能 | 31 | supplies 物资 | 65 |
-| animals 动物 | 36 | animalTracks 动物足迹 | 29 |
-| firstAid 急救 | 26 | medicines 药物 | 17 |
-| scenarios 灾害场景 | 12 | hazards 危险预警 | 40 |
-| insects 昆虫 | 17 | quizzes 练习题 | 60 |
+| 数据集             | 条目数 | 数据集                | 条目数 |
+| ------------------ | -----: | --------------------- | -----: |
+| plants 植物        |     44 | articles 知识文章     |     60 |
+| skills 生存技能    |     31 | supplies 物资         |     65 |
+| animals 动物       |     36 | animalTracks 动物足迹 |     29 |
+| firstAid 急救      |     26 | medicines 药物        |     17 |
+| scenarios 灾害场景 |     12 | hazards 危险预警      |     40 |
+| insects 昆虫       |     17 | quizzes 练习题        |     60 |
 
 ---
 
@@ -75,24 +90,24 @@ APOCALYPSE SURVIVAL 是一套「离线优先」的生存知识系统，覆盖 We
 
 以下为面向用户的核心功能模块，均可在 Web / 桌面 / 移动三端通过同一套路由访问（路由级 lazy 加载，共 38 条）。
 
-| # | 模块 | 主要路由 | 内容与能力 |
-| ---: | --- | --- | --- |
-| 1 | 生存指挥中心 | `/` | 真实数据统计卡片、快捷入口、今日知识、危险提醒、系统状态 |
-| 2 | 全局搜索 | `/search` | 自研中文 bigram `SearchIndex`，分类筛选、相关性排序 |
-| 3 | AI 生存助手 | `/ai` | SSE 流式对话（服务端持有密钥）+ 离线本地检索降级 |
-| 4 | 生存知识图鉴 | `/knowledge`、`/article/:id` | 60 篇文章、19 个一级分类、分步图文 |
-| 5 | 植物图鉴与识别 | `/plants`、`/plants/identify`、`/plants/:id` | 44 种植物，毒性/易混淆种，10 步拍照识别流程 |
-| 6 | 动物图鉴 | `/animals`、`/animals/:id` | 36 种动物 + 29 条足迹，危险等级与咬伤急救 |
-| 7 | 昆虫图鉴 | `/insects`、`/insects/:id` | 17 种昆虫/节肢动物，蛰咬风险与处理 |
-| 8 | 药物图鉴 | `/medicines`、`/medicines/:id` | 17 种药物通用说明、禁忌与免责声明 |
-| 9 | 急救医疗百科 | `/first-aid`、`/first-aid/:id` | 26 篇急救指南，权威来源溯源 |
-| 10 | 生存技能工坊 | `/skills`、`/skills/:id` | 31 个分步教程、安全清单、失败原因 |
-| 11 | 物资百宝箱 | `/supplies`、`/supplies/:id` | 65 项物资用途、储存、保质期、替代品 |
-| 12 | 我的物资清单 | `/inventory` | 库存、有效期、缺货提醒、消耗流水 |
-| 13 | 生存计算器 | `/calculators`、`/calculator/:slug` | 8 个计算器（饮水/食物/物资/电池/能源/有效期/库存/优先级） |
-| 14 | 灾害模拟器 | `/simulator`、`/simulator/:id` | 12 个互动情境推演，带决策树与复盘（教学推演，非预测） |
-| 15 | 生存地图 | `/map` | OSM 瓦片、标记与路线、核实状态 |
-| 16 | 知识学习 / 练习系统 | `/learn` | 60 道练习题、选项锁定、来源溯源链接、错题本 |
+|   # | 模块                | 主要路由                                     | 内容与能力                                                |
+| --: | ------------------- | -------------------------------------------- | --------------------------------------------------------- |
+|   1 | 生存指挥中心        | `/`                                          | 真实数据统计卡片、快捷入口、今日知识、危险提醒、系统状态  |
+|   2 | 全局搜索            | `/search`                                    | 自研中文 bigram `SearchIndex`，分类筛选、相关性排序       |
+|   3 | AI 生存助手         | `/ai`                                        | SSE 流式对话（服务端持有密钥）+ 离线本地检索降级          |
+|   4 | 生存知识图鉴        | `/knowledge`、`/article/:id`                 | 60 篇文章、19 个一级分类、分步图文                        |
+|   5 | 植物图鉴与识别      | `/plants`、`/plants/identify`、`/plants/:id` | 44 种植物，毒性/易混淆种，10 步拍照识别流程               |
+|   6 | 动物图鉴            | `/animals`、`/animals/:id`                   | 36 种动物 + 29 条足迹，危险等级与咬伤急救                 |
+|   7 | 昆虫图鉴            | `/insects`、`/insects/:id`                   | 17 种昆虫/节肢动物，蛰咬风险与处理                        |
+|   8 | 药物图鉴            | `/medicines`、`/medicines/:id`               | 17 种药物通用说明、禁忌与免责声明                         |
+|   9 | 急救医疗百科        | `/first-aid`、`/first-aid/:id`               | 26 篇急救指南，权威来源溯源                               |
+|  10 | 生存技能工坊        | `/skills`、`/skills/:id`                     | 31 个分步教程、安全清单、失败原因                         |
+|  11 | 物资百宝箱          | `/supplies`、`/supplies/:id`                 | 65 项物资用途、储存、保质期、替代品                       |
+|  12 | 我的物资清单        | `/inventory`                                 | 库存、有效期、缺货提醒、消耗流水                          |
+|  13 | 生存计算器          | `/calculators`、`/calculator/:slug`          | 8 个计算器（饮水/食物/物资/电池/能源/有效期/库存/优先级） |
+|  14 | 灾害模拟器          | `/simulator`、`/simulator/:id`               | 12 个互动情境推演，带决策树与复盘（教学推演，非预测）     |
+|  15 | 生存地图            | `/map`                                       | OSM 瓦片、标记与路线、核实状态                            |
+|  16 | 知识学习 / 练习系统 | `/learn`                                     | 60 道练习题、选项锁定、来源溯源链接、错题本               |
 
 **其余支撑模块**（同属应用能力，但未计入上表 16 项）：`/hazards` 危险预警（40 条）、`/bookmarks` 收藏与手册、`/profile` 个人生存档案、`/offline` 离线模式、`/admin` 内容管理后台、`/settings` 设置与数据管理（导出/恢复备份）。
 
@@ -100,7 +115,7 @@ APOCALYPSE SURVIVAL 是一套「离线优先」的生存知识系统，覆盖 We
 
 ## 快速开始
 
-环境要求：Node >= 20（推荐 22 LTS）、pnpm 11（仓库声明 `pnpm@11.20.0`）。后端与桌面端另需 Docker、Rust、Android SDK，详见 [docs/INSTALL.md](docs/INSTALL.md)。
+环境要求：Node >= 22.13（推荐 22 LTS）、pnpm 11（仓库声明 `pnpm@11.20.0`）。后端与桌面端另需 Docker、Rust、Android SDK，详见 [docs/INSTALL.md](docs/INSTALL.md)。
 
 ```bash
 # 1. 启用 pnpm 11（corepack 随 Node 提供）
@@ -162,17 +177,18 @@ Doomsday Survival Guide/
 
 ## 技术栈表
 
-| 层 | 技术 | 版本 / 说明 |
-| --- | --- | --- |
-| 仓库 | pnpm workspaces | pnpm 11（`pnpm@11.20.0`），Node >= 20 |
-| 语言 | TypeScript | `^5.7` / API `^5.9` |
-| `packages/core` | 纯 TS | 类型契约（DangerLevel L0–L4、Credibility A–D、ReviewStatus 状态机）、中文 bigram `SearchIndex`、8 个计算器、`computeRequiredDanger`、`validateDataset` |
-| `packages/knowledge-data` | 纯 TS | 离线数据集，`normalize.ts` 加载时按规则强制提升危险等级（只升不降） |
-| `apps/web` | React 19 + react-router-dom 7 | Vite 6、Tailwind CSS v4、`vite-plugin-pwa`/Workbox、zustand 5、idb 8（IndexedDB） |
-| `apps/desktop` | Tauri 2（Rust） | Windows 托盘中文菜单、`tauri-plugin-dialog`、三个 Rust 命令、capabilities |
-| `apps/mobile` | Capacitor 6 | `@capacitor/android` / `@capacitor/ios`，`webDir: ../web/dist`，静态打包离线可用 |
-| `apps/api` | NestJS 11 + Prisma 6 | PostgreSQL（35 张表 / 956 行 migration.sql）、`@nestjs/jwt`、`@nestjs/throttler`、`@nestjs/swagger`、bcryptjs、AI SSE 代理 |
-| AI | MiMo-V2.6-Flash | Base URL `https://api.xiaomimimo.com/v1`，OpenAI 兼容，密钥仅存服务端 |
+| 层                        | 技术                            | 版本 / 说明                                                                                                                                            |
+| ------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 仓库                      | pnpm workspaces                 | pnpm 11（`pnpm@11.20.0`），Node >= 22.13                                                                                                               |
+| 语言                      | TypeScript                      | `^5.9`（全仓统一）                                                                                                                                     |
+| `packages/core`           | 纯 TS                           | 类型契约（DangerLevel L0–L4、Credibility A–D、ReviewStatus 状态机）、中文 bigram `SearchIndex`、8 个计算器、`computeRequiredDanger`、`validateDataset` |
+| `packages/knowledge-data` | 纯 TS                           | 离线数据集，`normalize.ts` 加载时按规则强制提升危险等级（只升不降）                                                                                    |
+| `apps/web`                | React 19 + react-router-dom 7   | Vite 8、Tailwind CSS v4、`vite-plugin-pwa`/Workbox、zustand 5、idb 8（IndexedDB）                                                                      |
+| `apps/desktop`            | Tauri 2（Rust）                 | Windows 托盘中文菜单、`tauri-plugin-dialog`、三个 Rust 命令、capabilities                                                                              |
+| `apps/mobile`             | Capacitor 6                     | `@capacitor/android` / `@capacitor/ios`，`webDir: ../web/dist`，静态打包离线可用                                                                       |
+| `apps/api`                | NestJS 11 + Prisma 6            | PostgreSQL（35 张表 / 956 行 migration.sql）、`@nestjs/jwt`、`@nestjs/throttler`、`@nestjs/swagger`、bcryptjs、AI SSE 代理                             |
+| AI                        | MiMo-V2.6-Flash                 | Base URL `https://api.xiaomimimo.com/v1`，OpenAI 兼容，密钥仅存服务端                                                                                  |
+| 工程护栏                  | Biome + vitest + GitHub Actions | Biome 2.6（lint + 格式化，`pnpm lint`）、vitest 5（本次测试数见测试报告）、CI 跑 lint/typecheck/test/build                                             |
 
 ---
 
@@ -182,22 +198,23 @@ Doomsday Survival Guide/
 
 ### 根命令
 
-| 命令 | 作用 |
-| --- | --- |
-| `pnpm install` | 安装全部 workspace 依赖 |
-| `pnpm dev` | 启动 Web dev（等价 `pnpm --filter @apocalypse/web dev`，Vite :5173） |
-| `pnpm build` | 构建 `packages/*`（tsc）后构建 `apps/web`（vite build） |
-| `pnpm build:api` | 构建 API（`tsc -p tsconfig.json`） |
-| `pnpm build:desktop` | Tauri 打包（`tauri build`） |
-| `pnpm build:mobile` | 构建 Web 产物供 Capacitor 使用 |
-| `pnpm test` | `pnpm -r test`，运行各包 vitest |
-| `pnpm lint` | `pnpm -r lint` |
-| `pnpm typecheck` | `pnpm -r typecheck` |
-| `pnpm api:start` | 启动已构建的 API（`node dist/src/main.js`） |
-| `pnpm api:start:dev` | API 开发热重载（`tsx watch src/main.ts`） |
-| `pnpm db:migrate` | Prisma 迁移（`prisma migrate dev`） |
-| `pnpm db:seed` | 种子数据（`prisma db seed`） |
-| `pnpm db:studio` | Prisma Studio |
+| 命令                 | 作用                                                                 |
+| -------------------- | -------------------------------------------------------------------- |
+| `pnpm install`       | 安装全部 workspace 依赖                                              |
+| `pnpm dev`           | 启动 Web dev（等价 `pnpm --filter @apocalypse/web dev`，Vite :5173） |
+| `pnpm build`         | 构建 `packages/*`（tsc）后构建 `apps/web`（vite build）              |
+| `pnpm build:api`     | 构建 API（`tsc -p tsconfig.json`）                                   |
+| `pnpm build:desktop` | Tauri 打包（`tauri build`）                                          |
+| `pnpm build:mobile`  | 构建 Web 产物供 Capacitor 使用                                       |
+| `pnpm test`          | `pnpm -r test`，运行各包 vitest                                      |
+| `pnpm lint`          | Biome 检查（lint + 格式化，`biome check .`）                         |
+| `pnpm lint:fix`      | Biome 自动修复（`biome check --write .`）                            |
+| `pnpm typecheck`     | `pnpm -r typecheck`                                                  |
+| `pnpm api:start`     | 启动已构建的 API（`node dist/src/main.js`）                          |
+| `pnpm api:start:dev` | API 开发热重载（`tsx watch src/main.ts`）                            |
+| `pnpm db:migrate`    | Prisma 迁移（`prisma migrate dev`）                                  |
+| `pnpm db:seed`       | 种子数据（`prisma db seed`）                                         |
+| `pnpm db:studio`     | Prisma Studio                                                        |
 
 ### 各端命令（在对应目录或加 `--filter`）
 
@@ -245,22 +262,22 @@ cd apps/mobile && pnpm exec cap add android   # 首次生成平台目录
 4. **能力降级而非伪造**：离线或服务端不可用时，AI 助手调用 `localFallbackAnswer()`，输出明确标注「来自本地离线知识库检索」，不伪装成 AI 分析。
 5. **桌面/移动同一套 Web 资产**：Tauri 与 Capacitor 复用 `@apocalypse/web` 构建产物，平台差异由 `platform.ts` 在 Web 层处理，不复制页面。
 
-PWA 安装与 Service Worker 仅在 **HTTPS 或 localhost** 下生效（见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)）。
+PWA 安装与 Service Worker 仅在 **HTTPS 或 localhost** 下生效（见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)）。在线更新采用可确认的 Service Worker 更新提示，发布与验证流程见 [docs/AUTO_UPDATE.md](docs/AUTO_UPDATE.md)。
 
 ---
 
 ## AI 知识质量控制红线
 
-| 红线 | 落地方式 |
-| --- | --- |
-| 危险等级不得由 AI/作者自行降级 | `computeRequiredDanger` + `normalize.ts`：规则命中即强制提升（只升不降） |
-| 审核状态机不可逆跳过 | `draft → pending_review → reviewed → published → retired`，`admin` 状态迁移接口校验 |
-| AI 生成内容不得直接发布 | 默认 `pending_review`；5 个未验证技能显式标注 `pending_review` |
-| 高危问题先给避险建议 | `AI_SYSTEM_PROMPT` 要求中毒/外伤/火灾/触电先建议拨打 120/119 并远离危险源 |
-| 身份未确认禁止食用/药用 | 识别结果仅返回候选 + 置信度 + 不确定性，低置信度明确写「身份未确认」 |
-| 结果必须可追溯 | 回答结构含「信息来源 / 不确定性说明」；练习题带来源溯源链接 |
-| 无依据不得编造 | `validateDataset` 质量闸门；无 Key/离线时降级本地检索并标注来源，禁止伪造 AI 输出 |
-| 密钥不出服务端 | `AI_API_KEY` 仅存服务端 `.env`；前端只调 `/api/ai/chat`（SSE）与 `/api/ai/identify` |
+| 红线                           | 落地方式                                                                            |
+| ------------------------------ | ----------------------------------------------------------------------------------- |
+| 危险等级不得由 AI/作者自行降级 | `computeRequiredDanger` + `normalize.ts`：规则命中即强制提升（只升不降）            |
+| 审核状态机不可逆跳过           | `draft → pending_review → reviewed → published → retired`，`admin` 状态迁移接口校验 |
+| AI 生成内容不得直接发布        | 默认 `pending_review`；5 个未验证技能显式标注 `pending_review`                      |
+| 高危问题先给避险建议           | `AI_SYSTEM_PROMPT` 要求中毒/外伤/火灾/触电先建议拨打 120/119 并远离危险源           |
+| 身份未确认禁止食用/药用        | 识别结果仅返回候选 + 置信度 + 不确定性，低置信度明确写「身份未确认」                |
+| 结果必须可追溯                 | 回答结构含「信息来源 / 不确定性说明」；练习题带来源溯源链接                         |
+| 无依据不得编造                 | `validateDataset` 质量闸门；无 Key/离线时降级本地检索并标注来源，禁止伪造 AI 输出   |
+| 密钥不出服务端                 | `AI_API_KEY` 仅存服务端 `.env`；前端只调 `/api/ai/chat`（SSE）与 `/api/ai/identify` |
 
 AI 服务参数、环境变量清单见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) 与根 `.env.example`。
 
@@ -268,14 +285,15 @@ AI 服务参数、环境变量清单见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 
 ## 文档索引
 
-| 文档 | 内容 |
-| --- | --- |
-| [docs/INSTALL.md](docs/INSTALL.md) | 三平台安装、各端 dev 启动、故障排查 |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) | Docker Compose、迁移与 seed、静态托管、Nginx、环境变量、PWA HTTPS |
-| [docs/BACKUP.md](docs/BACKUP.md) | PostgreSQL 定时备份、IndexedDB 导出/导入、离线包管理、恢复演练 |
-| [docs/API.md](docs/API.md) | REST 接口清单、JWT、限流、错误码、SSE 事件格式 |
-| [docs/TEST_REPORT.md](docs/TEST_REPORT.md) | 阶段验证结果、用例数量、发现并修复的问题、未跑项 |
-| [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md) | 已知限制与规避建议 |
+| 文档                                                                   | 内容                                                                                                                 |
+| ---------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| [docs/INSTALL.md](docs/INSTALL.md)                                     | 三平台安装、各端 dev 启动、故障排查                                                                                  |
+| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)                               | Docker Compose、迁移与 seed、静态托管、Nginx、环境变量、PWA HTTPS                                                    |
+| [docs/AUTO_UPDATE.md](docs/AUTO_UPDATE.md)                             | PWA 在线更新、main 发布工作流、GitHub Actions、校验与已知限制                                                        |
+| [docs/BACKUP.md](docs/BACKUP.md)                                       | PostgreSQL 定时备份、IndexedDB 导出/导入、离线包管理、恢复演练                                                       |
+| [docs/API.md](docs/API.md)                                             | REST 接口清单、JWT、限流、错误码、SSE 事件格式                                                                       |
+| [docs/TEST_REPORT.md](docs/TEST_REPORT.md)                             | 阶段验证结果、用例数量、发现并修复的问题、未跑项                                                                     |
+| [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md)                           | 已知限制与规避建议                                                                                                   |
 | [docs/OFFLINE_SURVIVAL_MANUAL.html](docs/OFFLINE_SURVIVAL_MANUAL.html) | 极寒 / 远古断网场景离线生存手册：单文件 HTML、零外部请求、手机与电脑直接打开，含设备省电与离线资料策略、可打印速查页 |
 
 ---
@@ -287,3 +305,18 @@ AI 服务参数、环境变量清单见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)
 - 代码可自由使用、修改、分发，须保留版权与许可声明。
 - **内容免责**：知识、急救、医疗、植物/动物识别与灾害推演内容仅供参考，不替代专业医疗救治、专业鉴定或官方应急指令；详见 [docs/KNOWN_ISSUES.md](docs/KNOWN_ISSUES.md)。
 - 第三方地图瓦片（OSM 等）、字体与 AI 服务各自遵循其原始许可与条款；AI 服务需自备 API Key。
+
+## 物资与个人数据工作流（2026-11-13）
+
+- `/inventory` 可登记、编辑和筛选物资，按优先级、名称或最早到期排序；库存严格低于最低值才提示缺货。
+- 「导出补货清单」按实际库存差额生成 CSV。不同单位不自动折算，过期项不自动扣减。
+- 物资页、档案页、设置页使用同一全量备份流程。恢复前展示时间和各类记录数；相同 ID 被备份覆盖，其他记录保留。数据写入失败会回滚。
+- 备份兼容版本 1，最大 25 MiB / 100000 条。备份含个人资料且未加密，请妥善保存。
+- 「清除本地数据」只清空本应用 IndexedDB 记录，保留其他应用数据库和 localStorage。
+- 设置中的阅读历史与紧凑排版已生效；两个尚未接入的全局选项保持禁用，并注明原因。
+
+以下是隔离浏览器的真实验收截图，“验收用饮水”是测试输入，并非产品内置数据。
+
+![物资补货工作区](docs/assets/screenshots/inventory-20261113-desktop.png)
+
+[手机清单](docs/assets/screenshots/inventory-20261113-mobile.png) · [手机编辑表单](docs/assets/screenshots/inventory-20261113-editor.png)
