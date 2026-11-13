@@ -2,18 +2,21 @@
 
 ## 最新更新
 
-### v1.1.0 · 2026-11-13
+### v1.1.1 · 2026-11-13
 
-- 物资清单支持表单编辑、搜索排序和补货差额导出，盘点与消耗记录保持一致。
-- 恢复备份前可预览内容；损坏文件会被拒绝，恢复失败保留原有数据。
-- 清除个人数据只影响本应用；阅读历史开关、紧凑排版和手机弹窗体验得到完善。
-- 离线检索、知识筛选和页面导航得到修复，断网后仍可管理本地物资。
+- 同时提供网页版、Windows x64 安装程序和 Android APK，三端使用相同版本的知识与物资管理功能。
+- Windows 和 Android 可通过系统保存窗口导出备份与补货 CSV；取消保存不会误报成功。
+- 原生应用内置离线资源，设置页明确显示安装包版本和覆盖安装的更新方式。
 
-[完整更新历史](docs/releases/release-notes.md) · [下载 v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
+[完整更新历史](docs/releases/release-notes.md) · [三端下载 v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
 
-> **当前工作区验收（2026-11-13）**：可用源码为 Web/PWA、core、knowledge-data 与 Capacitor 配置。此前同步盘工作区缺失 API 与 Tauri 源码，本次发布保留远程对应源码；原生安装器、后端数据库联调仍未交付验收。在线 Demo 未重新部署。
->
-> 本次升级：物资表单编辑、搜索/排序、补货差额 CSV；备份结构校验、恢复前预览与原子回滚；库存/流水原子保存；仅清除本应用数据。详见 [升级与竞品研究报告](docs/EVOLUTION_2026-11-13.md)、[本次测试](docs/TEST_REPORT.md#2026-11-13-个人数据与物资升级验收)。
+| 使用方式          | 入口 / 文件                                                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 网页版 / PWA      | [直接打开](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)，支持浏览器「安装应用」；自行托管下载 `apocalypse-survival-web-v1.1.1.tar.gz` |
+| Windows 10/11 x64 | `apocalypse-survival-windows-x64-v1.1.1-setup.exe`，包含 WebView2 离线安装组件                                                                 |
+| Android           | `apocalypse-survival-android-v1.1.1.apk`，正式发布密钥签名                                                                                     |
+
+安装说明、校验方法及测试范围见 [三端发布说明](docs/releases/v1.1.1-platforms.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。
 
 **一份可离线运行、跨平台的末日生存百科全书。** 全部知识随应用打包，断网照样能查；AI 只做辅助，绝不替代审核结论。
 

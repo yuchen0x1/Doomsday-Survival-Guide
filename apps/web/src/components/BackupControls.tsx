@@ -1,18 +1,10 @@
 import { useRef, useState } from 'react';
 import { BACKUP_STORES, MAX_BACKUP_BYTES, parseBackup, STORE_LABELS } from '../lib/backup';
 import { exportAllData, importAllData } from '../lib/db';
+import { downloadText } from '../lib/files';
 import { useApp } from '../lib/store';
 import { Icon } from './Icon';
 import { Modal } from './ui';
-
-export function downloadText(content: string, filename: string, type: string) {
-  const url = URL.createObjectURL(new Blob([content], { type }));
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = filename;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
 
 export function BackupControls() {
   const toast = useApp((s) => s.toast);
@@ -44,12 +36,12 @@ export function BackupControls() {
         disabled={busy}
         onClick={() =>
           run(async () => {
-            downloadText(
+            const saved = await downloadText(
               await exportAllData(),
               `survival-backup-${new Date().toISOString().slice(0, 10)}.json`,
               'application/json',
             );
-            toast('全量备份已导出，请妥善保管其中的个人资料', 'success');
+            if (saved) toast('全量备份已导出，请妥善保管其中的个人资料', 'success');
           })
         }
       >

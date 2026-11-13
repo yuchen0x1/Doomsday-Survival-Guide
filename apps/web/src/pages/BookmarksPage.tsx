@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { Confirm, EmptyState, Modal, PageHeader, Panel, Tabs, Tag } from '../components/ui';
 import { exportAllData } from '../lib/db';
+import { downloadText } from '../lib/files';
 import { resolveRef, resolveRefs } from '../lib/knowledge';
 import { useApp } from '../lib/store';
 
@@ -68,14 +69,16 @@ export default function BookmarksPage() {
   };
 
   const exportData = async () => {
-    const json = await exportAllData();
-    const blob = new Blob([json], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `survival-data-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-    toast('数据已导出', 'success');
+    try {
+      const saved = await downloadText(
+        await exportAllData(),
+        `survival-data-${new Date().toISOString().slice(0, 10)}.json`,
+        'application/json',
+      );
+      if (saved) toast('数据已导出', 'success');
+    } catch (error) {
+      toast(error instanceof Error ? error.message : '导出失败，请重试', 'error');
+    }
   };
 
   return (

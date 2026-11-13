@@ -8,6 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
+import { detectPlatform } from './platform';
 import { getInitialUpdateStatus, type UpdateStatus } from './update-helpers';
 
 const LAST_CHECK_KEY = 'apocalypse-survival:last-update-check';
@@ -37,7 +38,25 @@ function saveLastCheckedAt(value: string): void {
   window.localStorage.setItem(LAST_CHECK_KEY, value);
 }
 
+const nativeUpdateState: AppUpdateContextValue = {
+  needRefresh: false,
+  offlineReady: true,
+  status: 'ready',
+  error: null,
+  lastCheckedAt: null,
+  checkForUpdate: async () => {},
+  updateNow: async () => {},
+  dismissUpdate: () => {},
+};
+
 export function PwaUpdateProvider({ children }: { children: ReactNode }) {
+  if (detectPlatform() !== 'web') {
+    return <UpdateContext.Provider value={nativeUpdateState}>{children}</UpdateContext.Provider>;
+  }
+  return <WebUpdateProvider>{children}</WebUpdateProvider>;
+}
+
+function WebUpdateProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<UpdateStatus>(() => {
     return getInitialUpdateStatus({
       isDev: import.meta.env.DEV,

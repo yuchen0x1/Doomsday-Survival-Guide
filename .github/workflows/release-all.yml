@@ -1,0 +1,175 @@
+name: Three-platform release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: "版本标签，例如 v1.1.1"
+        required: true
+        type: string
+      publish_release:
+        description: "三个平台全部构建成功后正式创建 Release"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+env:
+  RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref_name }}
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+      - run: node scripts/verify-release-versions.cjs
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @apocalypse/api prisma:generate
+      - name: Validate shared application
+        run: |
+          pnpm lint
+          pnpm typecheck
+          pnpm test
+          node --test scripts/verify-capacitor-template.cjs
+      - run: pnpm build
+      - name: Package Web/PWA
+        run: |
+          mkdir release
+          tar -czf "release/apocalypse-survival-web-${RELEASE_TAG}.tar.gz" -C apps/web/dist .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web-${{ env.RELEASE_TAG }}
+          path: release/*
+          if-no-files-found: error
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+      - run: node scripts/verify-release-versions.cjs
+      - run: pnpm install --frozen-lockfile
+      - name: Build Windows x64 installer
+        run: pnpm --filter @apocalypse/desktop exec tauri build --ci --bundles nsis -- --locked
+      - name: Collect installer
+        shell: pwsh
+        run: |
+          $installers = @(Get-ChildItem apps/desktop/src-tauri/target/release/bundle/nsis/*-setup.exe)
+          if ($installers.Count -ne 1) { throw 'Expected one Windows installer' }
+          New-Item -ItemType Directory release | Out-Null
+          Copy-Item -LiteralPath $installers[0].FullName -Destination "release/apocalypse-survival-windows-x64-$env:RELEASE_TAG-setup.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows-${{ env.RELEASE_TAG }}
+          path: release/*
+          if-no-files-found: error
+
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref }}
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.20.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - run: node scripts/verify-release-versions.cjs
+      - run: pnpm install --frozen-lockfile
+      - name: Build bundled frontend
+        run: node scripts/build-native-web.cjs
+      - run: pnpm --filter @apocalypse/mobile exec cap sync android
+      - name: Build release APK
+        run: |
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
+          cd apps/mobile/android
+          bash gradlew --no-daemon assembleRelease
+      - name: Sign and verify release APK
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          test -n "$ANDROID_KEYSTORE_BASE64" && test -n "$ANDROID_KEYSTORE_PASSWORD" && test -n "$ANDROID_KEY_ALIAS"
+          trap 'rm -f "$RUNNER_TEMP/apocalypse-release.p12"' EXIT
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 --decode > "$RUNNER_TEMP/apocalypse-release.p12"
+          mkdir release
+          APK="release/apocalypse-survival-android-${RELEASE_TAG}.apk"
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" sign --ks "$RUNNER_TEMP/apocalypse-release.p12" --ks-key-alias "$ANDROID_KEY_ALIAS" --ks-pass env:ANDROID_KEYSTORE_PASSWORD --key-pass env:ANDROID_KEYSTORE_PASSWORD --out "$APK" apps/mobile/android/app/build/outputs/apk/release/app-release-unsigned.apk
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --verbose --print-certs "$APK"
+          "$ANDROID_HOME/build-tools/34.0.0/zipalign" -c 4 "$APK"
+          "$ANDROID_HOME/build-tools/34.0.0/aapt" dump badging "$APK" > "$RUNNER_TEMP/android-badging.txt"
+          if grep -q 'application-debuggable' "$RUNNER_TEMP/android-badging.txt"; then exit 1; fi
+          grep "versionName='${RELEASE_TAG#v}'" "$RUNNER_TEMP/android-badging.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ env.RELEASE_TAG }}
+          path: release/*
+          if-no-files-found: error
+
+  collect:
+    needs: [web, windows, android]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: "*-${{ env.RELEASE_TAG }}"
+          merge-multiple: true
+          path: release
+      - name: Require all three packages and calculate checksums
+        working-directory: release
+        run: |
+          test -f "apocalypse-survival-web-${RELEASE_TAG}.tar.gz"
+          test -f "apocalypse-survival-windows-x64-${RELEASE_TAG}-setup.exe"
+          test -f "apocalypse-survival-android-${RELEASE_TAG}.apk"
+          sha256sum *.tar.gz *.exe *.apk > SHA256SUMS
+          sha256sum -c SHA256SUMS
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-${{ env.RELEASE_TAG }}
+          path: release/*
+          if-no-files-found: error
+
+  publish:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release }}
+    needs: collect
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-${{ env.RELEASE_TAG }}
+          path: release
+      - name: Publish all three platforms
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$RELEASE_TAG" release/* --repo "$GITHUB_REPOSITORY" --verify-tag --title "$RELEASE_TAG · Web / Windows / Android" --generate-notes

@@ -1,6 +1,6 @@
 {
   "name": "@apocalypse/mobile",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "private": true,
   "type": "module",
   "description": "APOCALYPSE SURVIVAL 移动端（Capacitor），前端复用 @apocalypse/web",

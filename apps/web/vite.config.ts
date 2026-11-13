@@ -21,6 +21,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
+      disable: process.env.VITE_NATIVE_BUILD === '1',
       // 由界面提示用户更新，避免在阅读过程中强制重载页面。
       registerType: 'prompt',
       includeAssets: ['favicon.svg'],

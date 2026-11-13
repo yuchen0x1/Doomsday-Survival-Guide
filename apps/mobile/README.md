@@ -40,4 +40,6 @@ npx cap open ios
 ## 验证状态
 
 - `npx cap add android` / `add ios` 成功，`npx cap sync` EXIT 0（Windows 无 CocoaPods/xcodebuild，iOS 的 pod install 被跳过——预期）
-- iOS 原生编译需 macOS + Xcode，本机未验证；Android 打包需 Android Studio/SDK，未执行 `gradle assemble`
+- v1.1.1 已完成 Android release APK 构建、发布签名以及 23049RAD8C 真机安装、启动与系统保存窗口导出备份。iOS 原生编译仍未验证。
+- 原生打包先运行 `node scripts/build-native-web.cjs`，关闭 Web/PWA 缓存更新并内置全部静态资源。`SurvivalFilesPlugin` 使用 Android 系统文件选择器保存备份和 CSV，无需申请全盘文件访问权限。
+- 发布使用 JDK 21、Gradle 8.11.1、Android SDK 34；签名材料仅保存在本机受保护文件与 Actions Secrets，后续版本沿用同一证书。详情见 [三端发布说明](../../docs/releases/v1.1.1-platforms.md)。

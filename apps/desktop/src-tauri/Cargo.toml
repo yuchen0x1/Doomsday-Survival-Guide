@@ -1,6 +1,6 @@
 [package]
 name = "apocalypse-desktop"
-version = "1.0.0"
+version = "1.1.1"
 description = "APOCALYPSE SURVIVAL 末日生存指南 - 桌面端（Tauri 2）"
 authors = ["APOCALYPSE SURVIVAL"]
 edition = "2021"

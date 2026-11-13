@@ -17,21 +17,21 @@ pnpm --filter @apocalypse/desktop build
 
 ## 配置要点（`src-tauri/tauri.conf.json`）
 
-| 项                      | 值                                                 |
-| ----------------------- | -------------------------------------------------- |
-| identifier              | `local.survival.apocalypse`                        |
-| 窗口                    | 1280×800，最小 900×600，标题 `APOCALYPSE SURVIVAL` |
-| devUrl                  | `http://localhost:5173`（web dev server）          |
-| frontendDist            | `../web/dist`（web 构建产物）                      |
-| trayIcon                | `id: main-tray`，左键弹菜单                        |
-| beforeDev / beforeBuild | `pnpm --filter @apocalypse/web dev` / `build`      |
+| 项                      | 值                                                         |
+| ----------------------- | ---------------------------------------------------------- |
+| identifier              | `local.survival.apocalypse`                                |
+| 窗口                    | 1280×800，最小 900×600，标题 `APOCALYPSE SURVIVAL`         |
+| devUrl                  | `http://localhost:5173`（web dev server）                  |
+| frontendDist            | `../../web/dist`（相对 src-tauri 的 web 构建产物）         |
+| trayIcon                | `id: main-tray`，左键弹菜单                                |
+| beforeDev / beforeBuild | Web dev server / `node ../../scripts/build-native-web.cjs` |
 
 `capabilities/default.json`：`core:default` + `core:tray:default` + `dialog:default`。
 
 ## Rust 命令（`src-tauri/src/lib.rs`）
 
 - `app_data_dir()` → 应用数据目录（不存在则创建），供 SQLite / 本地备份
-- `export_backup(json, path?)` → 写 JSON 备份；`path` 为空时弹系统「另存为」（tauri-plugin-dialog），取消返回空串
+- `save_text_file(content, filename)` → 系统「另存为」，用户选定位置后写入 UTF-8 备份或 CSV；取消返回 false，不接受 WebView 提供的目标路径
 - `read_backup()` → 弹系统「打开文件」读取备份文本
 
 ## 托盘（中文菜单）
@@ -47,4 +47,4 @@ pnpm --filter @apocalypse/desktop build
 ## 验证状态
 
 - `cargo check`（src-tauri）：见交付报告；`tauri.conf.json` / `capabilities/*.json` 均为合法 JSON
-- 打包 `tauri build` 需完整 Rust 依赖下载与图标资源，未验证项以实际报告为准
+- v1.1.1 已构建 Windows x64 NSIS 安装程序并完成安装、启动、原生保存与离线刷新验证，详见 [三端验收](../../docs/releases/v1.1.1-platforms.md)。安装包包含 WebView2 离线组件；尚无 Authenticode 签名。

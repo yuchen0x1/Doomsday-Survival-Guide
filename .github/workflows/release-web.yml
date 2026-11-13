@@ -1,9 +1,6 @@
-name: Web release package
+name: Legacy Web release package
 
 on:
-  push:
-    tags:
-      - "v*.*.*"
   workflow_dispatch:
     inputs:
       version_tag:

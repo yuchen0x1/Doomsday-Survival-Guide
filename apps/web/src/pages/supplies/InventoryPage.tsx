@@ -1,8 +1,9 @@
 import { SUPPLY_CATEGORY_LABELS, type SupplyCategory } from '@apocalypse/core';
 import { useMemo, useRef, useState } from 'react';
-import { BackupControls, downloadText } from '../../components/BackupControls';
+import { BackupControls } from '../../components/BackupControls';
 import { Icon } from '../../components/Icon';
 import { Confirm, EmptyState, Modal, PageHeader, Panel } from '../../components/ui';
+import { downloadText } from '../../lib/files';
 import {
   inventoryStatus,
   localDate,
@@ -222,13 +223,17 @@ export default function InventoryPage() {
           type="button"
           className="btn"
           disabled={stats.low.length === 0}
-          onClick={() => {
-            downloadText(
-              replenishmentCsv(inventory),
-              `补货清单-${today}.csv`,
-              'text/csv;charset=utf-8',
-            );
-            toast('补货清单已导出', 'success');
+          onClick={async () => {
+            try {
+              const saved = await downloadText(
+                replenishmentCsv(inventory),
+                `补货清单-${today}.csv`,
+                'text/csv;charset=utf-8',
+              );
+              if (saved) toast('补货清单已导出', 'success');
+            } catch (error) {
+              toast(error instanceof Error ? error.message : '导出失败，请重试', 'error');
+            }
           }}
         >
           导出补货清单（{stats.low.length}）

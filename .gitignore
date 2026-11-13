@@ -24,3 +24,12 @@ apps/desktop/src-tauri/target/
 
 # 本地发布应用的映射标记（每台机器各自生成）
 .wbapp_*.genie
+
+# Local recovery/build evidence and release signing material
+.evolution/
+.git-cloud-placeholder-*/
+*.jks
+*.keystore
+*.p12
+*.pfx
+*.dpapi.xml

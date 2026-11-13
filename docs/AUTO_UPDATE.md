@@ -1,5 +1,11 @@
 # 在线更新与发布
 
+## v1.1.1 起的三端发布
+
+正常版本发布使用 `.github/workflows/release-all.yml`：Web/PWA、Windows x64 安装程序和签名 Android APK 全部构建成功后，生成覆盖三个包的 `SHA256SUMS`。标签触发构建；手动启用 `publish_release` 才自动发布。旧 `release-web.yml` 保留为仅手动触发的 Web 工件入口。详见 [三端安装和验收说明](releases/v1.1.1-platforms.md)。
+
+原生应用资源随安装包内置，关闭 PWA Service Worker 注册，以免缓存旧版资源。桌面与 Android 通过同平台的新安装包覆盖升级；目前不支持自动下载安装。Android 后续包须沿用发布证书；Windows 当前没有 Authenticode 签名。更新前建议导出 JSON 备份，不要先卸载。
+
 ## 当前实现
 
 当前项目是离线优先的 React + Vite PWA，并由 Capacitor 复用 Web 资产。Web 端使用 `vite-plugin-pwa` 生成 Workbox Service Worker：
@@ -25,7 +31,7 @@ https://yuchen0x1.github.io/Doomsday-Survival-Guide/
 当前仓库 README 中的 WorkBuddy Demo 是另一套静态托管地址；GitHub Pages 部署不会自动替换 WorkBuddy 上的文件。若继续让用户访问 WorkBuddy 地址，必须在 WorkBuddy 的发布入口重新发布同一份 `apps/web/dist`。
 
 - `.github/workflows/ci.yml`：只监听 `main` 的 push 和 Pull Request，执行 lint、typecheck、test、build，权限为 `contents: read`。
-- `.github/workflows/release-web.yml`：版本标签或手动触发时构建 `apps/web/dist`，生成压缩包和真实 SHA-256 文件，并上传 Actions 工件。
+- `.github/workflows/release-all.yml`：版本标签或手动触发时构建三个平台并生成统一 SHA-256 文件；`release-web.yml` 只保留手动 Web 构建入口。
 - `.github/workflows/pages.yml`：`main` 更新后，自动构建并部署 `apps/web/dist` 到 GitHub Pages；手动触发同样限定在 `main`，与 Pages 环境的分支保护规则一致。构建时使用仓库子路径，补充 `404.html` 以支持 SPA 路由。
 - 正式 GitHub Release 默认不会自动创建。只有从 Actions 手动运行并明确勾选 `publish_release=true` 时，发布 job 才使用内置 `GITHUB_TOKEN` 创建 Release。
 
@@ -39,14 +45,14 @@ git tag v1.0.1
 git push origin main v1.0.1
 ```
 
-推送 `main` 会触发 GitHub Pages 部署，用户访问的站点会得到新构建；版本标签生成可下载的 Actions 工件。确认构建结果后，在 GitHub Actions 手动运行 `Web release package`，填写相同的标签并勾选正式发布，可同步创建 GitHub Release。
+推送 `main` 会触发 GitHub Pages 部署，用户访问的站点会得到新构建；版本标签生成可下载的三端 Actions 工件。确认构建结果后，在 GitHub Actions 手动运行 `Three-platform release`，填写相同的标签并勾选正式发布，可同步创建 GitHub Release。
 
 ## 安全边界与限制
 
 - PWA 静态资源必须从 HTTPS 或 localhost 同源提供；部署时请让 `index.html`、`sw.js` 和 manifest 使用短缓存或 `no-cache`。
 - GitHub Actions 生成的 SHA-256 只用于发布工件校验；浏览器 PWA 不会把压缩包下载到本机再安装，因此不伪造桌面安装包签名、下载进度或静默安装能力。
-- 当前没有桌面安装包、代码签名证书或自定义更新服务器；Tauri/Capacitor 原生应用仍需分别通过其平台分发渠道更新。GitHub Pages 只负责 Web/PWA 静态站点。
-- 本地 Git 元数据已经恢复；发布时保留远程 API/桌面源码，本次可下载产物为 Web/PWA。
+- v1.1.1 起提供桌面安装程序和签名 Android APK；Windows 代码签名证书与原生自动更新服务器尚未配置。GitHub Pages 只负责 Web/PWA 静态站点。
+- 本地 Git 元数据已经恢复；发布时保留远程 API/桌面源码，不把同步缺失项作为远程删除。
 
 ## 故障处理
 

@@ -1,7 +1,31 @@
 use std::fs;
-use std::path::PathBuf;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
+
+/// Save through the system picker; never accept a writable filesystem path from the WebView.
+#[tauri::command]
+async fn save_text_file(
+    app: tauri::AppHandle,
+    content: String,
+    filename: String,
+) -> Result<bool, String> {
+    if content.len() > 25 * 1024 * 1024 || filename.contains(['/', '\\']) {
+        return Err("文件内容或名称无效".into());
+    }
+    let picked = app
+        .dialog()
+        .file()
+        .set_file_name(&filename)
+        .blocking_save_file();
+    let Some(picked) = picked else {
+        return Ok(false);
+    };
+    let path = picked
+        .into_path()
+        .map_err(|e| format!("解析保存路径失败: {e}"))?;
+    fs::write(path, content).map_err(|e| format!("保存失败: {e}"))?;
+    Ok(true)
+}
 
 /// 返回应用数据目录（供 SQLite / 本地备份文件存放），不存在则创建
 #[tauri::command]
@@ -14,32 +38,6 @@ fn app_data_dir(app: tauri::AppHandle) -> Result<String, String> {
     Ok(dir.to_string_lossy().to_string())
 }
 
-/// 导出备份：path 为空时弹出系统「另存为」对话框（tauri-plugin-dialog）
-/// 返回实际写入的文件路径；用户取消对话框时返回空字符串
-#[tauri::command]
-fn export_backup(app: tauri::AppHandle, json: String, path: Option<String>) -> Result<String, String> {
-    let target: PathBuf = match path {
-        Some(p) => PathBuf::from(p),
-        None => {
-            let picked = app
-                .dialog()
-                .file()
-                .add_filter("JSON 备份", &["json"])
-                .set_file_name("apocalypse-backup.json")
-                .blocking_save_file();
-            match picked {
-                Some(fp) => fp.into_path().map_err(|e| format!("解析保存路径失败: {e}"))?,
-                None => return Ok(String::new()), // 用户取消
-            }
-        }
-    };
-    if let Some(parent) = target.parent() {
-        fs::create_dir_all(parent).map_err(|e| format!("创建目标目录失败: {e}"))?;
-    }
-    fs::write(&target, json).map_err(|e| format!("写入备份失败: {e}"))?;
-    Ok(target.to_string_lossy().to_string())
-}
-
 /// 读取备份：弹出系统「打开文件」对话框，返回文件文本内容
 #[tauri::command]
 fn read_backup(app: tauri::AppHandle) -> Result<String, String> {
@@ -49,7 +47,9 @@ fn read_backup(app: tauri::AppHandle) -> Result<String, String> {
         .add_filter("JSON 备份", &["json"])
         .blocking_pick_file();
     let fp = picked.ok_or_else(|| "未选择文件".to_string())?;
-    let path = fp.into_path().map_err(|e| format!("解析文件路径失败: {e}"))?;
+    let path = fp
+        .into_path()
+        .map_err(|e| format!("解析文件路径失败: {e}"))?;
     fs::read_to_string(path).map_err(|e| format!("读取备份失败: {e}"))
 }
 
@@ -99,7 +99,11 @@ fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .invoke_handler(tauri::generate_handler![app_data_dir, export_backup, read_backup])
+        .invoke_handler(tauri::generate_handler![
+            app_data_dir,
+            read_backup,
+            save_text_file
+        ])
         .setup(|app| {
             setup_tray(app)?;
             Ok(())

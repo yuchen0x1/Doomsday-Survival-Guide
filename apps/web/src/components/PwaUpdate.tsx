@@ -1,3 +1,4 @@
+import { detectPlatform } from '../lib/platform';
 import { useAppUpdate } from '../lib/update';
 import { formatUpdateTime } from '../lib/update-helpers';
 import { APP_VERSION, formatVersion } from '../lib/version';
@@ -70,6 +71,23 @@ export function UpdateSettingsPanel() {
     dismissUpdate,
   } = useAppUpdate();
   const checking = status === 'checking' || status === 'updating';
+
+  if (detectPlatform() !== 'web') {
+    return (
+      <section className="panel p-4 lg:col-span-2" aria-labelledby="native-version-title">
+        <h2 id="native-version-title" className="text-[15px] font-semibold">
+          应用版本
+        </h2>
+        <p className="mt-3 font-mono text-[15px]">{formatVersion(APP_VERSION)}</p>
+        <p className="mt-2 text-sm text-[var(--color-ink-dim)]">
+          知识内容已随安装包内置，断网可用。更新时请从项目发布页下载同平台新版安装包并覆盖安装；请勿卸载，以免丢失本机数据。建议先导出备份。
+        </p>
+        <p className="mt-2 break-all text-xs text-[var(--color-ink-faint)]">
+          github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="panel p-4 lg:col-span-2" aria-labelledby="update-settings-title">

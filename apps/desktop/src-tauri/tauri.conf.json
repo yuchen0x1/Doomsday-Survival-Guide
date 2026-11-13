@@ -1,13 +1,13 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "APOCALYPSE SURVIVAL",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "identifier": "local.survival.apocalypse",
   "build": {
     "beforeDevCommand": "pnpm --filter @apocalypse/web dev",
     "devUrl": "http://localhost:5173",
-    "beforeBuildCommand": "pnpm --filter @apocalypse/web build",
-    "frontendDist": "../web/dist"
+    "beforeBuildCommand": "node ../../scripts/build-native-web.cjs",
+    "frontendDist": "../../web/dist"
   },
   "app": {
     "windows": [
@@ -27,12 +27,30 @@
       "menuOnLeftClick": true
     },
     "security": {
-      "csp": null
+      "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; connect-src 'self' ipc: http://ipc.localhost https:; worker-src 'self' blob:; object-src 'none'; base-uri 'self'"
     }
   },
   "bundle": {
     "active": true,
-    "targets": "all",
-    "icon": ["icons/icon.ico", "icons/icon.png"]
+    "targets": [
+      "nsis"
+    ],
+    "icon": [
+      "icons/icon.ico",
+      "icons/icon.png"
+    ],
+    "windows": {
+      "webviewInstallMode": {
+        "type": "offlineInstaller"
+      },
+      "nsis": {
+        "languages": [
+          "SimpChinese",
+          "English"
+        ],
+        "displayLanguageSelector": true,
+        "installMode": "currentUser"
+      }
+    }
   }
 }
