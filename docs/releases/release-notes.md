@@ -2,11 +2,11 @@
 
 按实际发布记录整理。v1.1.0、v1.1.1 为正式 GitHub Release；v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
 
-| 版本 | 发布日期 | 提供内容 |
-| --- | --- | --- |
-| [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13 | Web/PWA、Windows x64 安装程序、签名 Android APK |
-| [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13 | Web/PWA 静态站点压缩包 |
-| v1.0.0 | 历史源码基线 | 源码；未创建正式 GitHub Release |
+| 版本                                                                               | 发布日期     | 提供内容                                        |
+| ---------------------------------------------------------------------------------- | ------------ | ----------------------------------------------- |
+| [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK |
+| [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                          |
+| v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                 |
 
 ## v1.1.1 · 2026-11-13
 
@@ -26,11 +26,11 @@
 
 ### 下载与升级
 
-| 平台 | 入口 / 安装包 |
-| --- | --- |
-| Web/PWA | [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/) · [自行托管压缩包](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.1/apocalypse-survival-web-v1.1.1.tar.gz) |
-| Windows x64 | [EXE 安装程序](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.1/apocalypse-survival-windows-x64-v1.1.1-setup.exe) |
-| Android | [已签名 APK](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.1/apocalypse-survival-android-v1.1.1.apk) |
+| 平台        | 入口 / 安装包                                                                                                                                                                                            |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Web/PWA     | [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/) · [自行托管压缩包](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.1/apocalypse-survival-web-v1.1.1.tar.gz) |
+| Windows x64 | [EXE 安装程序](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.1/apocalypse-survival-windows-x64-v1.1.1-setup.exe)                                                           |
+| Android     | [已签名 APK](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.1/apocalypse-survival-android-v1.1.1.apk)                                                                       |
 
 [SHA256SUMS](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.1/SHA256SUMS) 包含三个安装 / 部署文件的校验值。Web 压缩包需通过 HTTPS 或 localhost 托管，并配置 SPA 路由回退。
 

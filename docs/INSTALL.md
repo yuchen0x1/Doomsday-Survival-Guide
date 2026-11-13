@@ -4,15 +4,15 @@
 
 ## 1. 环境要求总表
 
-| 组件                           | 版本                          | 是否必需             | 用途                                          |
-| ------------------------------ | ----------------------------- | -------------------- | --------------------------------------------- |
-| Node.js                        | >= 22.13.0                    | 必需                 | 前端构建、API 运行                            |
-| pnpm                           | 11（仓库声明 `pnpm@11.20.0`） | 必需                 | workspace 依赖管理                            |
-| Docker + Docker Compose        | 近期稳定版                    | 后端必需             | 运行 PostgreSQL（也可用本机 PostgreSQL）      |
-| Rust（stable）+ Tauri 系统依赖 | 近期稳定版                    | 桌面端可选           | `apps/desktop` 的 `tauri dev` / `cargo check` |
+| 组件                           | 版本                            | 是否必需             | 用途                                          |
+| ------------------------------ | ------------------------------- | -------------------- | --------------------------------------------- |
+| Node.js                        | >= 22.13.0                      | 必需                 | 前端构建、API 运行                            |
+| pnpm                           | 11（仓库声明 `pnpm@11.20.0`）   | 必需                 | workspace 依赖管理                            |
+| Docker + Docker Compose        | 近期稳定版                      | 后端必需             | 运行 PostgreSQL（也可用本机 PostgreSQL）      |
+| Rust（stable）+ Tauri 系统依赖 | 近期稳定版                      | 桌面端可选           | `apps/desktop` 的 `tauri dev` / `cargo check` |
 | Android SDK + JDK              | SDK 34 / JDK 21 / Gradle 8.11.1 | Android 可选         | Capacitor `android/` 构建                     |
-| Xcode + CocoaPods              | 近期稳定版                    | iOS 可选（仅 macOS） | Capacitor `ios/` 构建 / `pod install`         |
-| Git                            | 任意近期版本                  | 必需                 | 获取仓库                                      |
+| Xcode + CocoaPods              | 近期稳定版                      | iOS 可选（仅 macOS） | Capacitor `ios/` 构建 / `pod install`         |
+| Git                            | 任意近期版本                    | 必需                 | 获取仓库                                      |
 
 > 只跑 Web 前端（离线知识浏览、搜索、练习、计算器等）**只需 Node + pnpm**，不需要 Docker / Rust / Android SDK。
 
@@ -225,9 +225,9 @@ pnpm build          # packages/* + web
 | 所有受保护请求返回 `INTERNAL_ERROR: Cannot read properties of undefined (reading 'getAllAndOverride')`                 | 用 `tsx watch src/main.ts` 直接跑源码：`tsx`(esbuild) 不 emit 装饰器元数据，NestJS DI 失效 | 必须用 `pnpm api:start`（tsc 产物 + tsx 加载）或 `pnpm api:start:dev`，不要把 `start` 改回纯 `tsx watch`；详见 TEST_REPORT.md 第 7.4 节                                                                                        |
 | `prisma: command not found`                                                                                            | 用根命令直接调 Prisma                                                                      | 用 `pnpm --filter @apocalypse/api prisma:xxx` 或根封装 `pnpm db:xxx`                                                                                                                                                           |
 | `tauri dev` 报 WebView2 / 系统库缺失                                                                                   | 缺 Tauri 系统依赖                                                                          | Windows 装 WebView2 Runtime + C++ Build Tools；Linux 装 `libwebkit2gtk-4.1-dev` 等（见 3.3）                                                                                                                                   |
-| `cargo check` 失败                                                                                                     | Rust 工具链或缓存问题                                                                      | `rustup default stable`、`cargo update`，重跑；Windows v1.1.1 已完成 release 打包；其他桌面平台仍需验证                                                                                                                                               |
+| `cargo check` 失败                                                                                                     | Rust 工具链或缓存问题                                                                      | `rustup default stable`、`cargo update`，重跑；Windows v1.1.1 已完成 release 打包；其他桌面平台仍需验证                                                                                                                        |
 | `cap add ios` / `pod install` 失败                                                                                     | 在 Windows 上无 CocoaPods                                                                  | 属预期；iOS 构建需 macOS + Xcode + CocoaPods（见 [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)）                                                                                                                                        |
-| Android 构建找不到 SDK                                                                                                 | 未配置 `ANDROID_HOME` / JDK                                                                | 安装 Android SDK 34 + JDK 21，设置 `ANDROID_HOME` 并把 `platform-tools` 加入 PATH                                                                                                                                                 |
+| Android 构建找不到 SDK                                                                                                 | 未配置 `ANDROID_HOME` / JDK                                                                | 安装 Android SDK 34 + JDK 21，设置 `ANDROID_HOME` 并把 `platform-tools` 加入 PATH                                                                                                                                              |
 | PWA 不出现「安装」                                                                                                     | 非 HTTPS / 非 localhost                                                                    | Service Worker 仅安全上下文生效，见 [DEPLOYMENT.md](./DEPLOYMENT.md)                                                                                                                                                           |
 | 前端报 AI 服务不可用                                                                                                   | 未配置 `AI_API_KEY`                                                                        | 属设计内降级；填好服务端 `.env` 的 `AI_API_KEY` 后重启 API                                                                                                                                                                     |
 
