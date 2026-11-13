@@ -16,7 +16,7 @@
 
 ## GitHub Pages 首次启用
 
-在 GitHub 仓库的 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。之后推送到 `main` 或推送 `vMAJOR.MINOR.PATCH` 标签，`pages.yml` 会自动部署项目站点。默认地址为：
+在 GitHub 仓库的 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。之后推送到 `main`，`pages.yml` 会自动部署项目站点。默认地址为：
 
 ```text
 https://yuchen0x1.github.io/Doomsday-Survival-Guide/
@@ -26,7 +26,7 @@ https://yuchen0x1.github.io/Doomsday-Survival-Guide/
 
 - `.github/workflows/ci.yml`：只监听 `main` 的 push 和 Pull Request，执行 lint、typecheck、test、build，权限为 `contents: read`。
 - `.github/workflows/release-web.yml`：版本标签或手动触发时构建 `apps/web/dist`，生成压缩包和真实 SHA-256 文件，并上传 Actions 工件。
-- `.github/workflows/pages.yml`：`main` 或版本标签更新后，自动构建并部署 `apps/web/dist` 到 GitHub Pages；构建时使用仓库子路径，补充 `404.html` 以支持 SPA 路由。
+- `.github/workflows/pages.yml`：`main` 更新后，自动构建并部署 `apps/web/dist` 到 GitHub Pages；手动触发同样限定在 `main`，与 Pages 环境的分支保护规则一致。构建时使用仓库子路径，补充 `404.html` 以支持 SPA 路由。
 - 正式 GitHub Release 默认不会自动创建。只有从 Actions 手动运行并明确勾选 `publish_release=true` 时，发布 job 才使用内置 `GITHUB_TOKEN` 创建 Release。
 
 推荐发布步骤：
@@ -39,7 +39,7 @@ git tag v1.0.1
 git push origin main v1.0.1
 ```
 
-推送 `main` 或版本标签会触发 GitHub Pages 部署，用户访问的站点会得到新构建；版本标签还会生成可下载的 Actions 工件。确认构建结果后，在 GitHub Actions 手动运行 `Web release package`，填写相同的标签并勾选正式发布，可同步创建 GitHub Release。
+推送 `main` 会触发 GitHub Pages 部署，用户访问的站点会得到新构建；版本标签生成可下载的 Actions 工件。确认构建结果后，在 GitHub Actions 手动运行 `Web release package`，填写相同的标签并勾选正式发布，可同步创建 GitHub Release。
 
 ## 安全边界与限制
 
@@ -59,3 +59,5 @@ git push origin main v1.0.1
 ## v1.1.0 发布说明
 
 2026-11-13 发布使用 Node 22.13+ / pnpm 11。GitHub Release 提供根路径 Web/PWA 压缩包，GitHub Pages 构建使用仓库子路径。API 与 Tauri 源码保留在远程，不包含新的原生安装器；同步盘本地缺失这些目录不代表新版本删除它们。
+
+本次主分支部署已成功。旧工作流同时被 `v1.1.0` 标签触发，但标签部署被仅允许 `main` 的 Pages 环境规则拒绝；没有影响已上线站点。后续 Pages 仅部署主分支，标签继续用于 Release 打包。已发布标签与工件保持不变，远程验证记录见 [v1.1.0 发布验证](releases/v1.1.0-validation.md)。
