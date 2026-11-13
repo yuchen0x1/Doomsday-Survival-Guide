@@ -58,6 +58,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: web-${{ env.RELEASE_TAG }}
+          retention-days: 14
           path: release/*
           if-no-files-found: error
 
@@ -89,6 +90,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: windows-${{ env.RELEASE_TAG }}
+          retention-days: 14
           path: release/*
           if-no-files-found: error
 
@@ -145,6 +147,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: android-${{ env.RELEASE_TAG }}
+          retention-days: 14
           path: release/*
           if-no-files-found: error
 
@@ -168,6 +171,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: release-${{ env.RELEASE_TAG }}
+          retention-days: 14
           path: release/*
           if-no-files-found: error
 

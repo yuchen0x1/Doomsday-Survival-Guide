@@ -10,11 +10,11 @@
 |   2 | 地图瓦片依赖外部 OSM，离线不可用      | 离线 | 断网看不到底图；未核实地点可能被误当安全点 | 离线改用地形/纸质图与已核实坐标；`verified=false` 不得标为避难点    |
 |   3 | 场景模拟为教学推演，非真实预测        | 认知 | 把推演结果当真实灾情判断                   | 明确标注 `isSimulation`；以官方应急指令为准                         |
 |   4 | 医疗内容仅供参考                      | 安全 | 替代专业救治造成延误                       | 高危先拨打 120/119；用药前咨询专业人员                              |
-|   5 | Tauri release 完整打包未执行          | 发布 | 桌面端尚无已验证的安装包                   | 以 `cargo check` + `tauri dev` 为当前交付边界；待签名环境补齐后打包 |
+|   5 | Windows 已发布，代码签名待完善        | 发布 | 安装程序可能显示发布者未知；其他桌面平台未发布 | 核对 Release 校验值，升级前备份；详见第 5 条 |
 |   6 | iOS 需 macOS + CocoaPods              | 构建 | Windows 无法构建 iOS 真机包                | 在 macOS 上 `pod install` 并用 Xcode 构建                           |
 |   7 | AI 需自备 API Key                     | 功能 | 未配置时无 AI 能力                         | 服务端 `.env` 填 `AI_API_KEY`；离线自动降级本地检索                 |
 |   8 | `relatedIds` 跨条目接线尚不完整       | 内容 | 部分「相关知识」跳转缺失                   | 通过全局搜索/分类浏览补足；后续完善数据关联                         |
-|   9 | Prisma 6 / Capacitor 6 暂留次新大版本 | 依赖 | 落后 1–2 个大版本，暂无强制安全升级压力    | 见下方第 9 条迁移清单；在独立变更中升级并全量回归                   |
+|   9 | Prisma 6 / Capacitor 6 暂缓大版本迁移 | 依赖 | 迁移涉及后端互操作与原生工程兼容性        | 见下方第 9 条迁移清单；在独立变更中升级并全量回归                   |
 
 ---
 
@@ -52,20 +52,20 @@
   - 用药、创伤处理、心肺复苏等以专业医护人员与正规培训为准；紧急情况优先联系急救系统。
   - 急救内容要求可追溯到权威来源（见 [TEST_REPORT.md](./TEST_REPORT.md) 的 `dataset.test.ts` 覆盖「急救权威来源」）。
 
-## 5. Tauri release 完整打包未执行
+## 5. Windows 已发布，代码签名与其他桌面平台仍待完善
 
-- **影响**：`apps/desktop` 已完成 `cargo check` EXIT 0、`tauri dev` 可用、三个 Rust 命令（`app_data_dir` / `export_backup` / `read_backup`）与 Windows 托盘中文菜单已实现；但**完整 `tauri build` release 安装包（含签名/系统依赖/安装包产物）未执行**，尚无已验证可分发产物。
+- **影响**：v1.1.1 已发布 Windows x64 NSIS 安装程序，并完成安装、启动、系统文件导出与离线知识页刷新；安装包包含 WebView2 离线组件，但尚无 Authenticode 签名。macOS / Linux 安装包和原生自动更新未交付。
 - **规避建议**：
-  - 当前交付边界以源码 + `cargo check` + `tauri dev` 为准，不承诺可安装的 release 包。
-  - 打包前补齐平台前置：Windows WebView2 Runtime + C++ Build Tools、macOS Xcode、Linux `libwebkit2gtk-4.1-dev` 等（见 [INSTALL.md](./INSTALL.md)），并配置代码签名。
-  - 发布前补跑 `pnpm --filter @apocalypse/desktop build` 并把结果回填 [TEST_REPORT.md](./TEST_REPORT.md)。
+  - 从正式 Release 下载安装包并核对 SHA-256；系统可能提示发布者未知。
+  - 更新前导出 JSON 备份，使用同平台新安装包覆盖安装，不要先卸载。
+  - 已验证范围与未测项见 [v1.1.1 三端发布说明](releases/v1.1.1-platforms.md)。
 
 ## 6. iOS 需 macOS + CocoaPods 才能构建
 
 - **影响**：`cap add ios` / `cap sync` 已通过、`ios/` 平台目录已生成，但在 Windows 上无 CocoaPods，`pod install` 跳过属预期；iOS 真机构建/运行未执行。
 - **规避建议**：
   - 在 macOS + Xcode + CocoaPods 环境执行 `cd apps/mobile/ios/App && pod install`，再用 Xcode 打开 `.xcworkspace` 构建。
-  - Android 可在带 Android SDK + JDK 17 的环境先行构建验证。
+  - 当前 Android 构建使用 JDK 21、Gradle 8.11.1 和 Android SDK 34；v1.1.1 已提供签名 APK 并完成一部手机的真机验收。
   - 仅做 Web/桌面验证时可忽略 iOS 构建。
 
 ## 7. AI 需自备 API Key
@@ -86,9 +86,9 @@
 
 ## 9. Prisma 6 / Capacitor 6 暂留次新大版本
 
-- **影响**：2026-11 升级批次已把 Vite 6→8、vitest 3→5、@types/node 22→24、TypeScript 5.9 等升级到位；`@prisma/client`/`prisma`（6.19→7.x）与 `@capacitor/*`（6.x→8.x）**有意暂缓**：Prisma 7 为 ESM 优先 + 强制 driver adapter（`@prisma/adapter-pg`）+ `prisma.config.ts`，与本项目 NestJS CommonJS（`emitDecoratorMetadata`）构建链的互操作需要专门回归（DI 元数据、seed、迁移 CLI、运行时适配器全部受影响）；Capacitor 大版本升级需要原生工程迁移（`cap migrate`/`cap sync`），本机 Windows 环境无法构建 Android/iOS 做真实验证。
+- **影响**：2026-11 升级批次已把 Vite 6→8、vitest 3→5、@types/node 22→24、TypeScript 5.9 等升级到位；`@prisma/client`/`prisma`（6.19→7.x）与 `@capacitor/*`（6.x→8.x）**有意暂缓**：Prisma 7 为 ESM 优先 + 强制 driver adapter（`@prisma/adapter-pg`）+ `prisma.config.ts`，与本项目 NestJS CommonJS（`emitDecoratorMetadata`）构建链的互操作需要专门回归（DI 元数据、seed、迁移 CLI、运行时适配器全部受影响）；Capacitor 大版本升级需要原生工程迁移（`cap migrate`/`cap sync`），当前 Android 6.x 工程已完成构建与单设备验收；Capacitor 大版本迁移和 iOS 仍需单独验证。
 - **规避建议**：
-  - 当前 6.x 均为各自大版本内的最新维护版，无已知强制安全升级；锁文件固定，可复现构建。
+  - 当前锁文件固定依赖版本；安全状态以对应版本的依赖审计记录为准，不把暂缓大版本迁移等同于无漏洞。
   - Prisma 7 迁移清单：generator 换 `prisma-client`（指定 `output`）→ 新增 `prisma.config.ts`（schema/migrations/seed/datasource.url）→ 安装 `@prisma/adapter-pg` + `pg` 并改造 `PrismaService`（`new PrismaClient({ adapter })`）→ 6 个文件的 `@prisma/client` import 改为生成产物路径 → 全量跑 7.7 节的 Docker 冒烟回归。
   - Capacitor 8 迁移清单：`npx cap migrate` → `cap sync` → macOS/Android SDK 环境真实构建验证后回填 [TEST_REPORT.md](./TEST_REPORT.md)。
   - 升级务必走独立变更 + 全量回归（`pnpm lint && pnpm typecheck && pnpm test && pnpm build`），不要与功能改动混在一起。
@@ -101,9 +101,9 @@
 
 ## 2026-11-13 当前限制补充
 
-- API 与 Tauri 源码在工作区中缺失，未擅自恢复已删除文件；无法验收后端、原生安装/签名或真实客户端升级。
+- 同步盘主目录仍缺失 API 与桌面源码；远程源码和完整隔离发布目录均已保留，这些缺失项未作为远程删除提交。原生安装、Android 签名与单设备验收已完成；真实 PostgreSQL、在线 AI 和旧原生客户端升级迁移仍未验证。
 - L4 列表隐藏、全局删除确认偏好尚未接入，设置页已禁用这两个开关并说明状态；阅读历史与紧凑布局已接通。
 - 备份最多 25 MiB / 100000 条，采用同 ID 合并覆盖，无加密与逐条冲突选择。旧畸形备份会明确报错，需先修复副本再恢复。
 - 库存修改已在数据库事务内防止并发丢失，但其他标签页的界面不会自动刷新。
 - 地图瓦片仍依赖网络；PWA 离线浏览需要事先成功缓存；首次完全离线访问无法加载未安装的网页。
-- 全仓 Lint 有历史警告，且尚无低端机压测、真机测试或完整安全审计；测试通过不等于可发布认证。
+- 全仓 Lint 有历史警告；已有一部 Android 手机的安装 / 导出验收和发布产物静态审计，但尚无低端机压测、广泛设备兼容性测试或完整安全审计。

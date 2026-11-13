@@ -5,7 +5,7 @@
 ### v1.1.1 · 2026-11-13
 
 - 同时提供网页版、Windows x64 安装程序和 Android APK，三端使用相同版本的知识与物资管理功能。
-- Windows 和 Android 可通过系统保存窗口导出备份与补货 CSV；取消保存不会误报成功。
+- Windows 和 Android 可通过系统保存窗口导出备份、收藏与补货 CSV；取消保存不会误报成功，写入失败会明确提示。
 - 原生应用内置离线资源，设置页明确显示安装包版本和覆盖安装的更新方式。
 
 [完整更新历史](docs/releases/release-notes.md) · [三端下载 v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
@@ -23,8 +23,8 @@
 [![在线 Demo](https://img.shields.io/badge/在线%20Demo-立即体验-0B8A5F?style=flat-square)](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
 [![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
 [![React](https://img.shields.io/badge/React-19-087EA4?style=flat-square&logo=react&logoColor=white)](apps/web)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square&logo=typescript&logoColor=white)](tsconfig.base.json)
-[![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white)](apps/web/vite.config.ts)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](tsconfig.base.json)
+[![Vite](https://img.shields.io/badge/Vite-8-646CFF?style=flat-square&logo=vite&logoColor=white)](apps/web/vite.config.ts)
 [![PWA](https://img.shields.io/badge/PWA-离线可用-5A0FC8?style=flat-square)](apps/web/vite.config.ts)
 [![Tauri](https://img.shields.io/badge/Tauri-2-24C8DB?style=flat-square&logo=tauri&logoColor=white)](apps/desktop)
 [![NestJS](https://img.shields.io/badge/NestJS-11-E0234E?style=flat-square&logo=nestjs&logoColor=white)](apps/api)
@@ -159,7 +159,7 @@ Doomsday Survival Guide/
 │       ├── src/               #   各数据集 + normalize.ts（危险等级归一化）+ helpers.ts
 │       └── tests/             #   dataset.test.ts
 ├── apps/
-│   ├── web/                   # React 19 + Vite 6 + Tailwind v4 + PWA（38 条 lazy 路由）
+│   ├── web/                   # React 19 + Vite 8 + Tailwind v4 + PWA（38 条 lazy 路由）
 │   ├── desktop/               # Tauri 2（Rust 命令：app_data_dir / export_backup / read_backup）
 │   │   └── src-tauri/
 │   ├── mobile/                # Capacitor 6（android/ 与 ios/ 平台目录已生成）

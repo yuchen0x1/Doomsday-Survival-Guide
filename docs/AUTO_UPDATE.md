@@ -18,8 +18,6 @@
 
 版本由根 `package.json` 的 `version` 在 Vite 构建时注入 `VITE_APP_VERSION`。发布标签统一使用 `vMAJOR.MINOR.PATCH`，例如 `v1.0.1`。
 
-## GitHub Actions
-
 ## GitHub Pages 首次启用
 
 在 GitHub 仓库的 **Settings → Pages → Build and deployment → Source** 中选择 **GitHub Actions**。之后推送到 `main`，`pages.yml` 会自动部署项目站点。默认地址为：
@@ -28,21 +26,27 @@
 https://yuchen0x1.github.io/Doomsday-Survival-Guide/
 ```
 
-当前仓库 README 中的 WorkBuddy Demo 是另一套静态托管地址；GitHub Pages 部署不会自动替换 WorkBuddy 上的文件。若继续让用户访问 WorkBuddy 地址，必须在 WorkBuddy 的发布入口重新发布同一份 `apps/web/dist`。
+README 的在线入口已指向 GitHub Pages。历史 WorkBuddy Demo 属于另一套静态托管；GitHub Pages 部署不会自动替换那里的文件。
+
+## GitHub Actions
 
 - `.github/workflows/ci.yml`：只监听 `main` 的 push 和 Pull Request，执行 lint、typecheck、test、build，权限为 `contents: read`。
 - `.github/workflows/release-all.yml`：版本标签或手动触发时构建三个平台并生成统一 SHA-256 文件；`release-web.yml` 只保留手动 Web 构建入口。
 - `.github/workflows/pages.yml`：`main` 更新后，自动构建并部署 `apps/web/dist` 到 GitHub Pages；手动触发同样限定在 `main`，与 Pages 环境的分支保护规则一致。构建时使用仓库子路径，补充 `404.html` 以支持 SPA 路由。
 - 正式 GitHub Release 默认不会自动创建。只有从 Actions 手动运行并明确勾选 `publish_release=true` 时，发布 job 才使用内置 `GITHUB_TOKEN` 创建 Release。
+- Release 构建的临时 Actions 工件保留 14 天；正式 Release 附件长期保留，不受此期限影响。Pages 工件仅用于部署。
 
 推荐发布步骤：
 
 ```bash
 git checkout main
 git pull --ff-only origin main
-# 修改根 package.json 的 version，例如 1.0.1
-git tag v1.0.1
-git push origin main v1.0.1
+# 将根、Web、桌面、移动、Cargo、Tauri 与 Android 版本统一为下一版本
+# 例如下一补丁版本 1.1.2；同时递增 Android versionCode
+node scripts/verify-release-versions.cjs
+# 完成验证并提交版本改动和 docs/releases/release-notes.md 后打标签
+git tag v1.1.2
+git push origin main v1.1.2
 ```
 
 推送 `main` 会触发 GitHub Pages 部署，用户访问的站点会得到新构建；版本标签生成可下载的三端 Actions 工件。确认构建结果后，在 GitHub Actions 手动运行 `Three-platform release`，填写相同的标签并勾选正式发布，可同步创建 GitHub Release。

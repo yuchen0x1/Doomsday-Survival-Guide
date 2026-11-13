@@ -1,1 +1,0 @@
-{"default":{"identifier":"default","description":"主窗口默认能力：核心 + 托盘 + 文件对话框（备份导出/读取）","local":true,"windows":["main"],"permissions":["core:default","core:tray:default","dialog:default"]}}
