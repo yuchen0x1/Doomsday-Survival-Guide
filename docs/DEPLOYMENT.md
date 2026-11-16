@@ -103,7 +103,7 @@ volumes:
 | 认证      | `JWT_SECRET`、`JWT_EXPIRES_IN`、`ADMIN_EMAIL`、`ADMIN_PASSWORD`                                           | 生产必须替换 `JWT_SECRET`（>= 32 字节强随机）、改掉初始管理员密码 |
 | AI        | `AI_BASE_URL`、`AI_MODEL`、`AI_API_KEY`、`AI_TIMEOUT_MS`、`AI_RATE_LIMIT_PER_MIN`                         | 密钥仅服务端                                                      |
 | 存储      | `S3_ENDPOINT`、`S3_REGION`、`S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY`、`S3_PUBLIC_BASE_URL` | 可选，图片与离线包托管                                            |
-| 地图      | `MAP_TILE_URL`、`MAP_ATTRIBUTION`                                                                         | OSM 兼容瓦片服务                                                  |
+| 地图      | `MAP_TILE_URL`、`MAP_ATTRIBUTION`（服务端）；`VITE_MAP_TILE_URL`、`VITE_MAP_ATTRIBUTION`（Web 构建）      | OSM 兼容瓦片服务；Web 端只暴露 `VITE_` 前缀变量                   |
 | 限流/安全 | `API_RATE_LIMIT_PER_MIN`、`UPLOAD_MAX_BYTES`、`ENABLE_CORS_WHITELIST`、`CORS_ORIGINS`                     | 生产建议 `ENABLE_CORS_WHITELIST=true` 并收紧来源                  |
 
 安全红线：

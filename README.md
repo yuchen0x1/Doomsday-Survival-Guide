@@ -2,21 +2,26 @@
 
 ## 最新更新
 
-### v1.1.1 · 2026-11-13
+### v1.1.2 · 2026-11-16
 
-- 同时提供网页版、Windows x64 安装程序和 Android APK，三端使用相同版本的知识与物资管理功能。
-- Windows 和 Android 可通过系统保存窗口导出备份、收藏与补货 CSV；取消保存不会误报成功，写入失败会明确提示。
-- 原生应用内置离线资源，设置页明确显示安装包版本和覆盖安装的更新方式。
+- 地图支持构建时配置瓦片服务和归因信息，瓦片加载失败会显示明确提示。
+- 地图标记、添加位置和方向控制支持键盘操作；离线包状态会依据真实 payload 校验，避免显示虚假的已下载状态。
+- 修复多处列表交互的稳定标识和启动保护，补充部署、备份、环境变量与升级审计文档。
 
-[完整更新历史](docs/releases/release-notes.md) · [三端下载 v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
+[完整更新历史](docs/releases/release-notes.md) · [三端下载 v1.1.2](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.2) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
+
+本轮项目审计、20 个开源竞品研究、40 项升级路线和实际验证见
+[PROJECT_AUDIT.md](PROJECT_AUDIT.md) · [COMPETITOR_ANALYSIS.md](COMPETITOR_ANALYSIS.md) ·
+[UPGRADE_ROADMAP.md](UPGRADE_ROADMAP.md) · [UPGRADE_REPORT.md](UPGRADE_REPORT.md) ·
+[CHANGELOG.md](CHANGELOG.md)。报告会区分当前工作区实测结果与既有未提交修改；不会把未恢复的 API/Tauri 文件或未执行的原生/生产验证写成完成。
 
 | 使用方式          | 入口 / 文件                                                                                                                                    |
 | ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| 网页版 / PWA      | [直接打开](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)，支持浏览器「安装应用」；自行托管下载 `apocalypse-survival-web-v1.1.1.tar.gz` |
-| Windows 10/11 x64 | `apocalypse-survival-windows-x64-v1.1.1-setup.exe`，包含 WebView2 离线安装组件                                                                 |
-| Android           | `apocalypse-survival-android-v1.1.1.apk`，正式发布密钥签名                                                                                     |
+| 网页版 / PWA      | [直接打开](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)，支持浏览器「安装应用」；自行托管下载 `apocalypse-survival-web-v1.1.2.tar.gz` |
+| Windows 10/11 x64 | `apocalypse-survival-windows-x64-v1.1.2-setup.exe`，包含 WebView2 离线安装组件                                                                 |
+| Android           | `apocalypse-survival-android-v1.1.2.apk`，正式发布密钥签名                                                                                     |
 
-安装说明、校验方法及测试范围见 [三端发布说明](docs/releases/v1.1.1-platforms.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。
+安装说明、校验方法及测试范围见 [三端发布说明](docs/releases/v1.1.2-platforms.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。
 
 **一份可离线运行、跨平台的末日生存百科全书。** 全部知识随应用打包，断网照样能查；AI 只做辅助，绝不替代审核结论。
 
@@ -138,6 +143,9 @@ pnpm build
 Web 的 `/api` 请求在 dev 下由 Vite 代理到 `http://localhost:3000`（见 `apps/web/vite.config.ts`）；不启动后端也能离线浏览全部知识内容，仅 AI 助手会降级为本地检索。
 
 ---
+
+地图 Web/PWA 构建使用 VITE_MAP_TILE_URL 和 VITE_MAP_ATTRIBUTION（见 .env.example）。
+服务端的 MAP_TILE_URL / MAP_ATTRIBUTION 不会自动注入 Vite 前端；替换瓦片服务时请同时核对配额、缓存和署名条款。
 
 ## 目录结构
 

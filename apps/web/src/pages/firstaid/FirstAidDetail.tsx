@@ -88,8 +88,8 @@ export default function FirstAidDetail() {
               <Icon name="warning" size={16} /> 危险信号（出现即刻呼叫 120）
             </div>
             <ul className="grid gap-1.5 sm:grid-cols-2">
-              {guide.dangerSignals.map((s, i) => (
-                <li key={i} className="flex gap-2 text-[13px] text-[var(--color-ink)]">
+              {guide.dangerSignals.map((s) => (
+                <li key={s} className="flex gap-2 text-[13px] text-[var(--color-ink)]">
                   <span className="text-[var(--color-danger)]">●</span>
                   {s}
                 </li>
@@ -121,8 +121,8 @@ export default function FirstAidDetail() {
               <Icon name="firstaid" size={14} /> 何时必须寻求医疗帮助
             </div>
             <ul className="flex flex-col gap-1.5">
-              {guide.whenToSeekHelp.map((w, i) => (
-                <li key={i} className="flex gap-2 text-[13px] text-[var(--color-ink-dim)]">
+              {guide.whenToSeekHelp.map((w) => (
+                <li key={w} className="flex gap-2 text-[13px] text-[var(--color-ink-dim)]">
                   <span className="text-[var(--color-info)]">▸</span>
                   {w}
                 </li>

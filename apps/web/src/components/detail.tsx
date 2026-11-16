@@ -191,8 +191,8 @@ export function RelatedLinks({
 export function Sections({ sections }: { sections: { heading: string; body: string }[] }) {
   return (
     <div className="flex flex-col gap-5">
-      {sections.map((s, i) => (
-        <section key={i}>
+      {sections.map((s) => (
+        <section key={s.heading}>
           <h2 className="mb-2 flex items-center gap-2 text-[15px] font-bold text-[var(--color-ink)]">
             <span className="h-3.5 w-0.5 bg-[var(--color-sand)]" />
             {s.heading}
@@ -212,7 +212,7 @@ export function StepList({ steps, numbered = true }: { steps: string[]; numbered
   return (
     <ol className="flex flex-col gap-2.5">
       {steps.map((s, i) => (
-        <li key={i} className="flex gap-3 text-[13.5px] leading-relaxed">
+        <li key={s} className="flex gap-3 text-[13.5px] leading-relaxed">
           <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[var(--color-moss)] font-mono text-[10px] text-[var(--color-moss-hi)]">
             {numbered ? i + 1 : '•'}
           </span>
@@ -259,9 +259,9 @@ export function TipList({
         </div>
       )}
       <ul className="flex flex-col gap-1.5">
-        {items.map((x, i) => (
+        {items.map((x) => (
           <li
-            key={i}
+            key={x}
             className="flex gap-2 text-[13px] leading-relaxed text-[var(--color-ink-dim)]"
           >
             <Icon name={icon} size={13} className="mt-1 shrink-0" style={{ color }} />

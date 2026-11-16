@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { buildPackagePayload, computePackageSize, PACKAGE_DEFS } from '../src/lib/offline';
+import {
+  buildPackagePayload,
+  computePackageSize,
+  PACKAGE_DEFS,
+  packageEntryCount,
+} from '../src/lib/offline';
 
 function getPackageDef(id: string) {
   const def = PACKAGE_DEFS.find((item) => item.id === id);
@@ -16,6 +21,13 @@ describe('offline package payloads', () => {
         new TextEncoder().encode(JSON.stringify(payload)).length,
       );
     }
+  });
+
+  it('reports the number of real serialized entries instead of trusting metadata', () => {
+    const payload = buildPackagePayload(getPackageDef('pkg-plants'));
+    const expected = Object.values(payload).reduce((sum, rows) => sum + rows.length, 0);
+    expect(packageEntryCount(payload)).toBe(expected);
+    expect(packageEntryCount({ plants: [{ id: 'one' }, { id: 'two' }] })).toBe(2);
   });
 
   it('includes the datasets named by each package', () => {

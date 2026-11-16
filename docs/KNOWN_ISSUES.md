@@ -29,11 +29,11 @@
 
 ## 2. 地图瓦片依赖外部 OSM，离线不可用且未核实不能标避难点
 
-- **影响**：`MAP_TILE_URL` 默认指向 `https://tile.openstreetmap.org/{z}/{x}/{y}.png`，属外部服务；断网/服务不可达时底图无法加载。此外地图上的自定义标记若未核实，可能被误当作可用水源、避难所或安全路线。
+- **影响**：Web 端 `VITE_MAP_TILE_URL` 默认指向 `https://tile.openstreetmap.org/{z}/{x}/{y}.png`，属外部服务；断网/服务不可达时底图无法加载。此外地图上的自定义标记若未核实，可能被误当作可用水源、避难所或安全路线。
 - **规避建议**：
   - 离线场景不依赖在线瓦片：改用预存地形图、纸质地图与已核实的经纬度；`apps/web/src/lib/offline.ts` 的离线包与 Service Worker 不缓存跨源瓦片（Workbox 对跨源 `/api/` 为 `NetworkOnly`）。
   - 数据模型 `MapMarker.verified` 为 `false` 的地点**不得标记为安全避难点**；`private` 标记不对外共享。
-  - 生产可通过 `MAP_TILE_URL` / `MAP_ATTRIBUTION` 替换为合规服务商，并遵守其使用条款与署名要求。
+  - Web/PWA 构建通过 `VITE_MAP_TILE_URL` / `VITE_MAP_ATTRIBUTION` 替换，服务端保留 `MAP_TILE_URL` / `MAP_ATTRIBUTION` 作为后端配置；两者都必须遵守服务商使用条款与署名要求。
   - 相关类型见 `packages/core/src/types.ts` 的 `MapMarker` / `MapRoute`。
 
 ## 3. 场景模拟为教学推演，非真实预测

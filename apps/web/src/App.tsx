@@ -43,8 +43,8 @@ function Loading() {
     <div className="flex flex-col gap-4">
       <div className="skeleton h-9 w-64" />
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="skeleton h-28" />
+        {['a', 'b', 'c', 'd', 'e', 'f'].map((key) => (
+          <div key={key} className="skeleton h-28" />
         ))}
       </div>
     </div>

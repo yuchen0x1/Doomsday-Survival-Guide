@@ -14,7 +14,7 @@
 | 离线知识包                                                        | IndexedDB `settings`(键 `pkgdata:*`) + `offlinePackages` | 随 IndexedDB 全量备份一起导出             | 可重建（知识已编译进 bundle） |
 | 知识数据集本体                                                    | `packages/knowledge-data/src/`（编译进 bundle）          | 随代码仓库版本管理                        | 是，无需单独备份              |
 
-> 核心知识已编译进前端 bundle 并由 Service Worker 预缓存，**天然离线可用**；离线包只是按分类拆分的本地副本，删除后可重新「下载」重建，不是不可替代数据。
+> 核心知识已编译进前端 bundle 并由 Service Worker 预缓存，**天然离线可用**；离线包是按分类序列化保存的本地副本，删除后可重新「下载」重建，不是不可替代数据。应用会在打开离线包页面时读取并校验真实 payload；若元数据显示已下载但副本缺失或损坏，会自动回到「未下载」状态，避免显示虚假的离线可用状态。
 
 ## 2. PostgreSQL 定时备份（pg_dump / pg_restore）
 

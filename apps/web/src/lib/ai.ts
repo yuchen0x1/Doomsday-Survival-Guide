@@ -1,4 +1,4 @@
-import type { AIAnswerStructure, AIToolCall, SearchDocument } from '@apocalypse/core';
+import type { AIAnswerStructure, AIToolCall } from '@apocalypse/core';
 import { SearchIndex } from '@apocalypse/core';
 import { searchDocuments } from './knowledge';
 

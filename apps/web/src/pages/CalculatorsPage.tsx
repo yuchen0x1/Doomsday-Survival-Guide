@@ -2,7 +2,7 @@ import { CALCULATORS, getCalculator } from '@apocalypse/core';
 import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Icon } from '../components/Icon';
-import { EmptyState, PageHeader, Panel, Tag } from '../components/ui';
+import { EmptyState, PageHeader, Panel } from '../components/ui';
 
 /**
  * 生存计算器：全部公式带说明、单位、输入范围与计算依据。

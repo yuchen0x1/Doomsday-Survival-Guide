@@ -2,7 +2,7 @@ import type { AIConversation } from '@apocalypse/core';
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
-import { EmptyState, PageHeader, Panel, Spinner, Tag } from '../components/ui';
+import { PageHeader, Panel } from '../components/ui';
 import { type ChatMessage, checkAIHealth, localFallbackAnswer, streamChat } from '../lib/ai';
 import { listConversations, saveConversation, uid } from '../lib/db';
 import { useApp } from '../lib/store';
@@ -200,9 +200,9 @@ export default function AIPage() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {messages.map((m, i) => (
+                  {messages.map((m) => (
                     <div
-                      key={i}
+                      key={`${m.role}:${m.content}`}
                       className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div
@@ -219,9 +219,11 @@ export default function AIPage() {
                         )}
                         <div className="whitespace-pre-wrap">
                           {m.content}
-                          {streaming && i === messages.length - 1 && m.role === 'assistant' && (
-                            <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse bg-[var(--color-sand)]" />
-                          )}
+                          {streaming &&
+                            m === messages[messages.length - 1] &&
+                            m.role === 'assistant' && (
+                              <span className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse bg-[var(--color-sand)]" />
+                            )}
                         </div>
                       </div>
                     </div>

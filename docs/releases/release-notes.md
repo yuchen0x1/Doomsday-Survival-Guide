@@ -1,12 +1,36 @@
 # 更新历史
 
-按实际发布记录整理。v1.1.0、v1.1.1 为正式 GitHub Release；v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
+按实际发布记录整理。v1.1.0、v1.1.1、v1.1.2 为正式 GitHub Release；v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
 
 | 版本                                                                               | 发布日期     | 提供内容                                        |
 | ---------------------------------------------------------------------------------- | ------------ | ----------------------------------------------- |
+| [v1.1.2](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.2) | 2026-11-16   | Web/PWA、Windows x64 安装程序、签名 Android APK |
 | [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK |
 | [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                          |
 | v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                 |
+
+## v1.1.2 · 2026-11-16
+
+### 地图与离线可靠性
+
+- 地图瓦片地址和归因支持通过 `VITE_MAP_TILE_URL`、`VITE_MAP_ATTRIBUTION` 在 Web 构建时配置，并保留安全默认值。
+- 瓦片加载失败显示可见提示；地图添加层、标记和方向控制支持键盘操作。
+- 离线包页面读取真实 IndexedDB payload，元数据缺失、损坏或版本不一致时不会显示为已下载。
+
+### 工程与文档
+
+- 统一根、Web、移动、核心数据、Tauri、Cargo 与 Android 的版本为 `1.1.2`，Android `versionCode` 为 `10102`。
+- 补充项目审计、竞品研究、升级路线、发布报告、部署和备份说明。
+
+### 下载与校验
+
+| 平台        | 入口 / 安装包                                                                                                                                                                                            |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Web/PWA     | [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/) · [自行托管压缩包](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.2/apocalypse-survival-web-v1.1.2.tar.gz) |
+| Windows x64 | [EXE 安装程序](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.2/apocalypse-survival-windows-x64-v1.1.2-setup.exe)                                                           |
+| Android     | [已签名 APK](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.2/apocalypse-survival-android-v1.1.2.apk)                                                                       |
+
+发布附件和 `SHA256SUMS` 以 GitHub Actions 汇总工件为准；发布验证记录见 [v1.1.2 三端发布](v1.1.2-platforms.md)。
 
 ## v1.1.1 · 2026-11-13
 

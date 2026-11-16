@@ -166,9 +166,39 @@ export function computePackageSize(def: PackageDef): number {
 
 export interface PackageState extends OfflinePackage {
   def: PackageDef;
+  /** 已写入 IndexedDB 的真实条目数量；未下载或旧数据可能为空。 */
+  storedEntryCount?: number;
+  /** 元数据标记为已下载但 payload 缺失/损坏时为 false。 */
+  storedPayloadValid?: boolean;
 }
 
 const KEY_PREFIX = 'pkgdata:';
+
+type PackagePayload = Record<string, unknown[]>;
+
+function parseStoredPayload(value: unknown): PackagePayload | null {
+  if (typeof value !== 'string') return null;
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
+    const payload = parsed as Record<string, unknown>;
+    if (!Object.values(payload).every((rows) => Array.isArray(rows))) return null;
+    return payload as PackagePayload;
+  } catch {
+    return null;
+  }
+}
+
+/** 统计序列化包中的条目，用于显示和下载后完整性检查。 */
+export function packageEntryCount(payload: PackagePayload): number {
+  return Object.values(payload).reduce((sum, rows) => sum + rows.length, 0);
+}
+
+/** 读取下载包的真实 IndexedDB payload；不存在或损坏时返回 null。 */
+export async function loadPackagePayload(id: string): Promise<PackagePayload | null> {
+  const raw = await db.getSetting<string | null>(KEY_PREFIX + id, null);
+  return parseStoredPayload(raw);
+}
 
 export async function loadPackageStates(): Promise<PackageState[]> {
   const stored = await db.listOfflinePackages();
@@ -184,21 +214,32 @@ export async function loadPackageStates(): Promise<PackageState[]> {
       name: BASE_PACKAGE.name,
     } as unknown as PackageDef,
   };
-  const rest = PACKAGE_DEFS.map((def) => {
-    const existing = storedMap.get(def.id);
-    const sizeBytes = computePackageSize(def);
-    if (!existing) {
-      return { ...def, sizeBytes, status: 'not_downloaded' as const, def, version: def.version };
-    }
-    // 版本比较 → 可更新
-    const status: OfflinePackage['status'] =
-      existing.version !== def.version
-        ? 'update_available'
-        : existing.status === 'downloading'
-          ? 'not_downloaded'
-          : existing.status;
-    return { ...existing, sizeBytes, status, def };
-  });
+  const rest = await Promise.all(
+    PACKAGE_DEFS.map(async (def) => {
+      const existing = storedMap.get(def.id);
+      const sizeBytes = computePackageSize(def);
+      if (!existing) {
+        return { ...def, sizeBytes, status: 'not_downloaded' as const, def, version: def.version };
+      }
+      const payload = await loadPackagePayload(def.id);
+      const payloadValid = payload !== null;
+      // 版本比较 → 可更新；元数据与实际 payload 不一致时回到可下载状态。
+      const status: OfflinePackage['status'] =
+        existing.version !== def.version
+          ? 'update_available'
+          : existing.status === 'downloading' || (existing.status === 'downloaded' && !payloadValid)
+            ? 'not_downloaded'
+            : existing.status;
+      return {
+        ...existing,
+        sizeBytes,
+        status,
+        def,
+        storedEntryCount: payload ? packageEntryCount(payload) : undefined,
+        storedPayloadValid: payloadValid,
+      };
+    }),
+  );
   return [base as PackageState, ...rest];
 }
 

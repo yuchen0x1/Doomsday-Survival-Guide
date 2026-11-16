@@ -1,20 +1,26 @@
 import type { MapMarker, MapMarkerKind } from '@apocalypse/core';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from '../components/Icon';
-import { Confirm, EmptyState, Modal, PageHeader, Panel, Tag } from '../components/ui';
+import { Confirm, EmptyState, Modal, PageHeader, Panel } from '../components/ui';
 import { listMapMarkers, removeMapMarker, saveMapMarker, uid } from '../lib/db';
 import { useApp } from '../lib/store';
 
 /**
  * 生存地图：
- * - 自定义瓦片服务（MAP_TILE_URL 可配置替换，见 .env.example）
+ * - 自定义瓦片服务（VITE_MAP_TILE_URL / VITE_MAP_ATTRIBUTION 可配置替换，见 .env.example）
  * - 用户标记（水源/避难/危险/路线/物资/自定义）全部本地保存
  * - 隐私：默认 private=true，不公开位置；未核实地点不得标记为安全避难点
  * 无网络时瓦片不可用，但标记数据仍完整可读可编辑。
  */
 
-const TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const ATTRIBUTION = '© OpenStreetMap contributors';
+const DEFAULT_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const DEFAULT_ATTRIBUTION = '© OpenStreetMap contributors';
+const configuredTileUrl = import.meta.env.VITE_MAP_TILE_URL?.trim();
+const TILE_URL =
+  configuredTileUrl && /^(https?:\/\/|\/)/i.test(configuredTileUrl)
+    ? configuredTileUrl
+    : DEFAULT_TILE_URL;
+const ATTRIBUTION = import.meta.env.VITE_MAP_ATTRIBUTION?.trim() || DEFAULT_ATTRIBUTION;
 
 const MARKER_KINDS: { key: MapMarkerKind; label: string; color: string }[] = [
   { key: 'water', label: '水源', color: '#5a9bb5' },
@@ -50,7 +56,7 @@ export default function MapPage() {
   });
   const [delTarget, setDelTarget] = useState<MapMarker | null>(null);
   const [listOpen, setListOpen] = useState(false);
-  const [usingFallback, setUsingFallback] = useState(false);
+  const [tileError, setTileError] = useState(false);
 
   const refresh = useCallback(async () => setMarkers(await listMapMarkers()), []);
   useEffect(() => {
@@ -115,7 +121,7 @@ export default function MapPage() {
     [center],
   );
 
-  const onMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const onMapClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const px = e.clientX - rect.left - rect.width / 2;
     const py = e.clientY - rect.top - rect.height / 2;
@@ -180,6 +186,14 @@ export default function MapPage() {
         </div>
       )}
 
+      {online && tileError && (
+        <div className="mb-3 rounded-[3px] border border-[var(--color-warn)] bg-[var(--color-warn-dim)]/40 px-4 py-2.5 text-[12.5px] text-[var(--color-warn)]">
+          <Icon name="alert-triangle" size={14} className="mr-1.5 inline" />
+          地图瓦片服务暂时无法加载，已保留灰底地图与本地标记。请检查网络或在构建配置中更换
+          <code className="mx-1 rounded bg-black/10 px-1">VITE_MAP_TILE_URL</code>。
+        </div>
+      )}
+
       <Panel className="overflow-hidden p-0">
         {/* 工具栏 */}
         <div className="flex flex-wrap items-center gap-2 border-b border-[var(--color-edge)] bg-[var(--color-panel)] px-3.5 py-2.5">
@@ -206,16 +220,13 @@ export default function MapPage() {
         </div>
 
         {/* 地图主体 */}
-        <div
-          className="relative h-[480px] cursor-crosshair overflow-hidden bg-[#1a1f1a] select-none"
-          onClick={onMapClick}
-        >
+        <div className="relative h-[480px] cursor-crosshair overflow-hidden bg-[#1a1f1a] select-none">
           {/* 瓦片层 */}
           <div className="absolute left-1/2 top-1/2" style={{ transform: 'translate(-50%, -50%)' }}>
             <div className="relative" style={{ width: TILE_SIZE * 5, height: TILE_SIZE * 5 }}>
               {tiles.map((t, i) => (
                 <img
-                  key={`${t.x}-${t.y}-${i}`}
+                  key={`${t.x}-${t.y}`}
                   src={TILE_URL.replace('{z}', String(ZOOM))
                     .replace('{x}', String(t.x))
                     .replace('{y}', String(t.y))}
@@ -229,12 +240,19 @@ export default function MapPage() {
                     opacity: online ? 0.9 : 0.06,
                     filter: online ? 'saturate(0.55) brightness(0.72) contrast(1.1)' : 'none',
                   }}
-                  onError={() => setUsingFallback(true)}
+                  onError={() => setTileError(true)}
                   draggable={false}
                 />
               ))}
             </div>
           </div>
+
+          <button
+            type="button"
+            aria-label="点击地图任意位置添加标记"
+            className="absolute inset-0 z-[1] cursor-crosshair border-0 bg-transparent p-0"
+            onClick={onMapClick}
+          />
 
           {/* 网格（离线兜底视觉） */}
           {!online && (
@@ -262,16 +280,16 @@ export default function MapPage() {
             const color = MARKER_KINDS.find((k) => k.key === m.kind)?.color ?? '#9aa096';
             if (Math.abs(px) > 400 || Math.abs(py) > 400) return null;
             return (
-              <div
+              <button
+                type="button"
                 key={m.id}
-                className="group absolute z-10 -translate-x-1/2 -translate-y-full cursor-pointer"
+                className="group absolute z-10 -translate-x-1/2 -translate-y-full cursor-pointer border-0 bg-transparent p-0"
                 style={{ left: `calc(50% + ${px}px)`, top: `calc(50% + ${py}px)` }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (window.confirm(`${m.name}\n${m.note ?? ''}\n\n删除该标记？`)) {
-                    removeMapMarker(m.id).then(refresh);
-                  }
+                  setDelTarget(m);
                 }}
+                aria-label={`${m.name}${m.verified ? '（已核实）' : m.kind === 'shelter' ? '（未核实）' : ''}，按回车确认删除`}
                 title={`${m.name}${m.verified ? '（已核实）' : m.kind === 'shelter' ? '（未核实）' : ''}`}
               >
                 <svg width="22" height="30" viewBox="0 0 22 30" aria-hidden="true">
@@ -294,7 +312,7 @@ export default function MapPage() {
                 <span className="absolute left-1/2 top-full mt-0.5 -translate-x-1/2 whitespace-nowrap rounded-[2px] bg-black/75 px-1.5 py-0.5 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
                   {m.name}
                 </span>
-              </div>
+              </button>
             );
           })}
 
@@ -304,16 +322,16 @@ export default function MapPage() {
           </div>
 
           {/* 方向控制 */}
-          <div className="absolute right-3 top-3 flex flex-col gap-1">
+          <div className="absolute right-3 top-3 z-20 flex flex-col gap-1">
             {[
               { d: [-0.03, 0], icon: 'chevron-down', rot: 180 },
               { d: [0.03, 0], icon: 'chevron-down', rot: 0 },
               { d: [0, -0.04], icon: 'chevron-down', rot: 90 },
               { d: [0, 0.04], icon: 'chevron-down', rot: -90 },
-            ].map((b, i) => (
+            ].map((b) => (
               <button
                 type="button"
-                key={i}
+                key={`${b.icon}-${b.rot}`}
                 className="btn !bg-black/60 !px-2 !py-1.5"
                 onClick={(e) => {
                   e.stopPropagation();
@@ -332,7 +350,7 @@ export default function MapPage() {
           <span className="inline-block h-2.5 w-2.5 rounded-full bg-[#6b8f5e]" /> 绿色对勾 = 已核实
         </span>
         <span>隐私：所有标记仅存本机，默认私有，不上传不公开</span>
-        <span>瓦片服务可通过 MAP_TILE_URL 配置替换</span>
+        <span>瓦片服务可通过 VITE_MAP_TILE_URL 配置替换</span>
       </div>
 
       {/* 添加标记 */}
@@ -480,8 +498,6 @@ export default function MapPage() {
           toast('已删除', 'info');
         }}
       />
-
-      {usingFallback && <span className="hidden" />}
     </div>
   );
 }

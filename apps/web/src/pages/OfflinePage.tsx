@@ -227,6 +227,7 @@ export default function OfflinePage() {
                 <div className="mt-2.5 flex items-center gap-3 font-mono text-[11px] text-[var(--color-ink-faint)]">
                   <span>{fmtSize(p.sizeBytes)}</span>
                   <span>v{p.version}</span>
+                  {p.storedEntryCount !== undefined && <span>{p.storedEntryCount} 条目</span>}
                   {p.downloadedAt && <span>{p.downloadedAt.slice(0, 10)}</span>}
                 </div>
 
