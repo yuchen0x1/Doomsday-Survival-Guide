@@ -42,11 +42,11 @@ README 的在线入口已指向 GitHub Pages。历史 WorkBuddy Demo 属于另�
 git checkout main
 git pull --ff-only origin main
 # 将根、Web、桌面、移动、Cargo、Tauri 与 Android 版本统一为下一版本
-# 例如下一补丁版本 1.1.2；同时递增 Android versionCode
+# 例如下一补丁版本 1.1.3；同时递增 Android versionCode
 node scripts/verify-release-versions.cjs
 # 完成验证并提交版本改动和 docs/releases/release-notes.md 后打标签
-git tag v1.1.2
-git push origin main v1.1.2
+git tag v1.1.3
+git push origin main v1.1.3
 ```
 
 推送 `main` 会触发 GitHub Pages 部署，用户访问的站点会得到新构建；版本标签生成可下载的三端 Actions 工件。确认构建结果后，在 GitHub Actions 手动运行 `Three-platform release`，填写相同的标签并勾选正式发布，可同步创建 GitHub Release。

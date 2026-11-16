@@ -1,8 +1,8 @@
 # Changelog
 
-## [1.1.2] · 2026-11-16
+## [1.1.3] · 2026-11-16
 
-发布页：[v1.1.2](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.2)
+发布页：[v1.1.3](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.3)
 
 ### Added
 
@@ -19,6 +19,7 @@
 - 离线包 metadata 与 payload 不一致时回退为未下载，避免显示虚假的已下载状态。
 - 补充部署、备份、已知问题和环境变量文档。
 - 清理受影响组件的稳定列表 key、未使用导入和根节点非空断言。
+- 对齐 Tauri Cargo.lock 中桌面应用版本，修复 Windows `--locked` 发布构建无法更新锁文件的问题。
 
 ### Verification
 

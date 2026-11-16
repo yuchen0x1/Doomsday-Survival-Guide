@@ -1,15 +1,16 @@
 # 更新历史
 
-按实际发布记录整理。v1.1.0、v1.1.1、v1.1.2 为正式 GitHub Release；v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
+按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3 为正式 GitHub Release；v1.1.2 仅为未完成的发布尝试，没有创建正式 Release。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
 
-| 版本                                                                               | 发布日期     | 提供内容                                        |
-| ---------------------------------------------------------------------------------- | ------------ | ----------------------------------------------- |
-| [v1.1.2](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.2) | 2026-11-16   | Web/PWA、Windows x64 安装程序、签名 Android APK |
-| [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK |
-| [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                          |
-| v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                 |
+| 版本                                                                               | 发布日期     | 提供内容 / 状态                                  |
+| ---------------------------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| [v1.1.3](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.3) | 2026-11-16   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
+| v1.1.2                                                                             | 2026-11-16   | 标签已推送；Windows 构建失败，未创建正式 Release |
+| [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
+| [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                           |
+| v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                  |
 
-## v1.1.2 · 2026-11-16
+## v1.1.3 · 2026-11-16
 
 ### 地图与离线可靠性
 
@@ -19,18 +20,25 @@
 
 ### 工程与文档
 
-- 统一根、Web、移动、核心数据、Tauri、Cargo 与 Android 的版本为 `1.1.2`，Android `versionCode` 为 `10102`。
+- 统一根、Web、移动、核心数据、Tauri、Cargo 与 Android 的版本为 `1.1.3`，Android `versionCode` 为 `10103`。
+- 对齐 Tauri Cargo.lock 中桌面应用版本，修复 Windows `--locked` 构建无法更新锁文件的问题。
 - 补充项目审计、竞品研究、升级路线、发布报告、部署和备份说明。
 
 ### 下载与校验
 
 | 平台        | 入口 / 安装包                                                                                                                                                                                            |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Web/PWA     | [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/) · [自行托管压缩包](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.2/apocalypse-survival-web-v1.1.2.tar.gz) |
-| Windows x64 | [EXE 安装程序](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.2/apocalypse-survival-windows-x64-v1.1.2-setup.exe)                                                           |
-| Android     | [已签名 APK](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.2/apocalypse-survival-android-v1.1.2.apk)                                                                       |
+| Web/PWA     | [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/) · [自行托管压缩包](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.3/apocalypse-survival-web-v1.1.3.tar.gz) |
+| Windows x64 | [EXE 安装程序](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.3/apocalypse-survival-windows-x64-v1.1.3-setup.exe)                                                           |
+| Android     | [已签名 APK](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/download/v1.1.3/apocalypse-survival-android-v1.1.3.apk)                                                                       |
 
-发布附件和 `SHA256SUMS` 以 GitHub Actions 汇总工件为准；发布验证记录见 [v1.1.2 三端发布](v1.1.2-platforms.md)。
+发布附件和 `SHA256SUMS` 以 GitHub Actions 汇总工件为准；发布验证记录见 [v1.1.3 三端发布](v1.1.3-platforms.md)。
+
+## v1.1.2 · 2026-11-16 · 未完成的发布尝试
+
+- 标签 `v1.1.2` 和对应主分支提交已推送，但没有创建正式 GitHub Release。
+- GitHub Actions 运行 `43881997910` 中 Web 与 Android 构建成功，Windows 构建因 `apps/desktop/src-tauri/Cargo.lock` 仍记录桌面包版本 `1.1.1`，而 `Cargo.toml` 已为 `1.1.2`，在 `--locked` 模式下失败。
+- 汇总与发布任务因此跳过。修正后的锁文件与版本提交进入 `v1.1.3`。
 
 ## v1.1.1 · 2026-11-13
 
