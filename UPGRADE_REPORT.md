@@ -80,7 +80,8 @@ COMPLETE 中包含本轮新增和此前已经存在、且本轮重新核实的�
 
 - 没有恢复或覆盖 apps/api、apps/desktop 的用户既有删除。
 - 没有删除用户数据、.env、.git-cloud-placeholder-20261113 或 .evolution。
-- 没有提交、推送、创建 Release 或部署。
+- 本轮已提交并推送 v1.1.2 的版本改动以及修正后的 v1.1.3；v1.1.2 的 Windows 锁文件问题导致其标签构建失败，未创建正式 Release，详情见 `docs/releases/v1.1.2-platforms.md`。
+- v1.1.3 已创建正式 GitHub Release；三端构建、签名、哈希汇总和公开资产校验记录见 `docs/releases/v1.1.3-platforms.md`。
 
 ## 5. 测试与构建证据
 
@@ -115,13 +116,14 @@ Biome warning 主要集中在既有的 Modal/Toast 静态交互、索引 key、R
 - 地图关键操作可使用键盘。
 - 离线包页显示真实 payload 条目，缺失副本不会继续显示为已下载。
 - 当前 Web/共享包的类型检查、98 项测试、生产构建和 lint 退出状态通过。
+- v1.1.3 已通过 GitHub Actions 的 Web、Windows、Android 构建、Android 签名、SHA256 汇总和正式 Release 发布。
 - 文档现在明确区分实际完成、部分完成、计划和阻塞，不把旧报告或 HEAD 源码当成当前工作区实测。
 
 仍然不足：
 
 - 离线包还没有成为真正的动态内容加载器。
 - 没有加密备份、跨设备冲突同步、离线地图包、事件/任务协作。
-- API、Tauri、原生设备、真实数据库、真实 AI 上游和签名发布尚未由本轮当前工作区证明。
+- API、真实数据库、真实 AI 上游和原生设备实际运行仍未由本地同步盘工作区证明；Tauri/Android 的发布打包与 Android 签名已由 v1.1.3 GitHub Actions 证明。
 
 ## 7. 下一阶段执行顺序
 
