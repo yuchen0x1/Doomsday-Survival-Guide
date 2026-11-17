@@ -10,6 +10,13 @@
 | [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                           |
 | v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                  |
 
+## Unreleased · 2026-11-17
+
+### Changed
+
+- 网页/PWA 壳层支持按浏览器或系统语言自动选择中文或 English，设置入口支持手动选择并持久化。
+- 导航、搜索、离线状态和错误恢复提示会随语言即时更新；生存知识数据保持原文。
+
 ## v1.1.3 · 2026-11-16
 
 ### 地图与离线可靠性

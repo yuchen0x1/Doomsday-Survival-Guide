@@ -8,6 +8,7 @@ import { PwaUpdateProvider } from '../lib/update';
 import { Icon } from './Icon';
 import { PwaUpdateBanner } from './PwaUpdate';
 import { ToastHost } from './ui';
+import { useI18n, type LocaleSetting } from '../lib/i18n';
 
 /** 导航结构（三端共用，按平台差异化呈现） */
 interface NavItem {
@@ -79,7 +80,16 @@ const MOBILE_NAV: NavItem[] = [
   { to: '/bookmarks', label: '我的', icon: 'user' },
 ];
 
+const NAV_KEYS = {
+  '/': 'home', '/search': 'search', '/ai': 'ai', '/knowledge': 'knowledge', '/plants': 'plants',
+  '/animals': 'animals', '/insects': 'insects', '/medicines': 'medicines', '/first-aid': 'firstAid',
+  '/skills': 'skillsPage', '/supplies': 'supplies', '/inventory': 'inventory', '/calculators': 'calculators',
+  '/simulator': 'simulator', '/map': 'map', '/learn': 'learn', '/hazards': 'hazards', '/bookmarks': 'bookmarks',
+  '/profile': 'profile', '/offline': 'offline', '/admin': 'admin', '/settings': 'settings',
+} as const;
+
 function OnlineBadge() {
+  const { t } = useI18n();
   const online = useApp((s) => s.online);
   return (
     <span
@@ -88,18 +98,19 @@ function OnlineBadge() {
         borderColor: online ? 'var(--color-moss)' : 'var(--color-warn)',
         color: online ? 'var(--color-moss-hi)' : 'var(--color-warn)',
       }}
-      title={online ? '网络正常，AI 助手可用' : '离线模式：本地知识库可用，AI 不可用'}
+      title={online ? t('onlineTitle') : t('offlineTitle')}
     >
       <span
         className="inline-block h-1.5 w-1.5 rounded-full"
         style={{ background: 'currentColor' }}
       />
-      {online ? 'ONLINE' : 'OFFLINE 离线'}
+      {online ? 'ONLINE' : t('offlineBadge')}
     </span>
   );
 }
 
 function GlobalSearchBox() {
+  const { t } = useI18n();
   const nav = useNavigate();
   const [q, setQ] = useState('');
   return (
@@ -117,7 +128,7 @@ function GlobalSearchBox() {
       />
       <input
         className="field global-search-input !pl-9 !py-2"
-        placeholder="搜索生存知识、植物、急救…（Ctrl+K）"
+        placeholder={t('searchPlaceholder')}
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
@@ -134,6 +145,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 }
 
 function AppLayoutContent({ children }: { children: React.ReactNode }) {
+  const { setting, locale, setSetting, t } = useI18n();
   const location = useLocation();
   const nav = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
@@ -207,8 +219,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           <nav className="flex-1 overflow-y-auto px-2 py-3">
             {NAV_SECTIONS.map((sec) => (
               <div key={sec.title} className="mb-3">
-                {!collapsed && <div className="micro-label mb-1.5 px-2">{sec.title}</div>}
+                {!collapsed && <div className="micro-label mb-1.5 px-2">{t(sec.title === '指挥' ? 'command' : sec.title === '图鉴' ? 'atlas' : sec.title === '技能与物资' ? 'skills' : sec.title === '实战' ? 'field' : 'mine')}</div>}
                 {sec.items.map((item) => (
+                  (() => {
+                    const navKey = NAV_KEYS[item.to as keyof typeof NAV_KEYS] ?? 'home';
+                    return (
                   <NavLink
                     key={item.to}
                     to={item.to}
@@ -223,8 +238,10 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                     title={collapsed ? item.label : undefined}
                   >
                     <Icon name={item.icon} size={16} className="shrink-0" />
-                    {!collapsed && <span className="truncate">{item.label}</span>}
+                    {!collapsed && <span className="truncate">{t(navKey)}</span>}
                   </NavLink>
+                    );
+                  })()
                 ))}
               </div>
             ))}
@@ -236,7 +253,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             onClick={() => setCollapsed((c) => !c)}
           >
             <Icon name={collapsed ? 'chevron' : 'chevron-left'} size={14} />
-            {!collapsed && '收起导航'}
+            {!collapsed && (locale === 'en-US' ? 'Collapse navigation' : '收起导航')}
           </button>
         </aside>
       )}
@@ -260,25 +277,37 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             type="button"
             className="btn btn-ghost md:hidden"
             onClick={() => nav('/search')}
-            aria-label="搜索"
+            aria-label={t('search')}
           >
             <Icon name="search" size={18} />
           </button>
           <div className="ml-auto flex items-center gap-2">
+            <label className="sr-only" htmlFor="app-locale">{t('locale')}</label>
+            <select
+              id="app-locale"
+              className="field !w-auto !py-1 !px-2 text-xs"
+              value={setting}
+              onChange={(event) => setSetting(event.target.value as LocaleSetting)}
+              aria-label={t('locale')}
+            >
+              <option value="auto">{t('auto')}</option>
+              <option value="zh-CN">简体中文</option>
+              <option value="en-US">English</option>
+            </select>
             <button
               type="button"
               className="btn btn-ghost !px-2"
               onClick={() => nav('/first-aid')}
-              title="紧急急救"
+              title={t('emergency')}
               style={{ color: 'var(--color-danger)' }}
             >
               <Icon name="firstaid" size={17} />
-              <span className="hidden text-[12px] lg:inline">紧急急救</span>
+              <span className="hidden text-[12px] lg:inline">{t('emergency')}</span>
             </button>
             <OnlineBadge />
             <button type="button" className="btn btn-sand !py-1.5" onClick={() => nav('/ai')}>
               <Icon name="bot" size={15} />
-              <span className="hidden sm:inline text-[12px]">AI 助手</span>
+              <span className="hidden sm:inline text-[12px]">{t('aiAssistant')}</span>
             </button>
           </div>
         </header>
@@ -291,9 +320,9 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                 role="alert"
                 className="mb-4 rounded border border-[var(--color-danger)] p-3 text-sm"
               >
-                本地个人数据读取失败，当前清单可能不完整。请重试，不要清除数据。{' '}
+                {t('dataError')}{' '}
                 <button type="button" className="btn" onClick={() => hydrate()}>
-                  重新读取
+                  {t('reload')}
                 </button>
               </div>
             )}
@@ -326,7 +355,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
               }
             >
               <Icon name={item.icon} size={19} />
-              {item.label}
+              {t(item.to === '/' ? 'mobileHome' : item.to === '/knowledge' ? 'mobileAtlas' : item.to === '/search' ? 'mobileSearch' : item.to === '/bookmarks' ? 'mobileMine' : 'mobileSearch')}
             </NavLink>
           ))}
         </nav>
@@ -338,8 +367,8 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           type="button"
           className={`fixed bottom-16 right-3 z-40 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[var(--color-danger)] bg-[var(--color-danger-dim)] text-[var(--color-danger)] shadow-lg${platform === 'mobile' ? '' : ' md:hidden'}`}
           onClick={() => nav('/first-aid')}
-          aria-label="紧急急救"
-          title="紧急急救"
+          aria-label={t('emergency')}
+          title={t('emergency')}
         >
           <Icon name="firstaid" size={22} />
         </button>

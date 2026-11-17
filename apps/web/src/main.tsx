@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App';
 import './styles/index.css';
+import { I18nProvider } from './lib/i18n';
 
 const routerBasename = import.meta.env.BASE_URL.replace(/\/$/, '') || '/';
 const root = document.getElementById('root');
@@ -14,7 +15,7 @@ if (!root) {
 createRoot(root).render(
   <StrictMode>
     <BrowserRouter basename={routerBasename}>
-      <App />
+      <I18nProvider><App /></I18nProvider>
     </BrowserRouter>
   </StrictMode>,
 );
