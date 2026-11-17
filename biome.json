@@ -21,6 +21,7 @@
   },
   "formatter": {
     "enabled": true,
+    "lineEnding": "crlf",
     "lineWidth": 100,
     "indentStyle": "space"
   },

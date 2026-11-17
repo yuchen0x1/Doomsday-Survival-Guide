@@ -15,7 +15,9 @@ if (!root) {
 createRoot(root).render(
   <StrictMode>
     <BrowserRouter basename={routerBasename}>
-      <I18nProvider><App /></I18nProvider>
+      <I18nProvider>
+        <App />
+      </I18nProvider>
     </BrowserRouter>
   </StrictMode>,
 );

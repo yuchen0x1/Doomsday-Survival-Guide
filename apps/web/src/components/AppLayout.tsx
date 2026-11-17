@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { getSetting } from '../lib/db';
+import { type LocaleSetting, useI18n } from '../lib/i18n';
 import { watchOnline } from '../lib/offline';
 import { detectPlatform, usePlatformLayout } from '../lib/platform';
 import { useApp } from '../lib/store';
@@ -8,7 +9,6 @@ import { PwaUpdateProvider } from '../lib/update';
 import { Icon } from './Icon';
 import { PwaUpdateBanner } from './PwaUpdate';
 import { ToastHost } from './ui';
-import { useI18n, type LocaleSetting } from '../lib/i18n';
 
 /** 导航结构（三端共用，按平台差异化呈现） */
 interface NavItem {
@@ -81,11 +81,28 @@ const MOBILE_NAV: NavItem[] = [
 ];
 
 const NAV_KEYS = {
-  '/': 'home', '/search': 'search', '/ai': 'ai', '/knowledge': 'knowledge', '/plants': 'plants',
-  '/animals': 'animals', '/insects': 'insects', '/medicines': 'medicines', '/first-aid': 'firstAid',
-  '/skills': 'skillsPage', '/supplies': 'supplies', '/inventory': 'inventory', '/calculators': 'calculators',
-  '/simulator': 'simulator', '/map': 'map', '/learn': 'learn', '/hazards': 'hazards', '/bookmarks': 'bookmarks',
-  '/profile': 'profile', '/offline': 'offline', '/admin': 'admin', '/settings': 'settings',
+  '/': 'home',
+  '/search': 'search',
+  '/ai': 'ai',
+  '/knowledge': 'knowledge',
+  '/plants': 'plants',
+  '/animals': 'animals',
+  '/insects': 'insects',
+  '/medicines': 'medicines',
+  '/first-aid': 'firstAid',
+  '/skills': 'skillsPage',
+  '/supplies': 'supplies',
+  '/inventory': 'inventory',
+  '/calculators': 'calculators',
+  '/simulator': 'simulator',
+  '/map': 'map',
+  '/learn': 'learn',
+  '/hazards': 'hazards',
+  '/bookmarks': 'bookmarks',
+  '/profile': 'profile',
+  '/offline': 'offline',
+  '/admin': 'admin',
+  '/settings': 'settings',
 } as const;
 
 function OnlineBadge() {
@@ -219,30 +236,44 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           <nav className="flex-1 overflow-y-auto px-2 py-3">
             {NAV_SECTIONS.map((sec) => (
               <div key={sec.title} className="mb-3">
-                {!collapsed && <div className="micro-label mb-1.5 px-2">{t(sec.title === '指挥' ? 'command' : sec.title === '图鉴' ? 'atlas' : sec.title === '技能与物资' ? 'skills' : sec.title === '实战' ? 'field' : 'mine')}</div>}
-                {sec.items.map((item) => (
+                {!collapsed && (
+                  <div className="micro-label mb-1.5 px-2">
+                    {t(
+                      sec.title === '指挥'
+                        ? 'command'
+                        : sec.title === '图鉴'
+                          ? 'atlas'
+                          : sec.title === '技能与物资'
+                            ? 'skills'
+                            : sec.title === '实战'
+                              ? 'field'
+                              : 'mine',
+                    )}
+                  </div>
+                )}
+                {sec.items.map((item) =>
                   (() => {
                     const navKey = NAV_KEYS[item.to as keyof typeof NAV_KEYS] ?? 'home';
                     return (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    end={item.end}
-                    className={({ isActive }) =>
-                      `mb-0.5 flex items-center gap-2.5 rounded-[3px] px-2.5 py-[7px] text-[13px] transition-colors ${
-                        isActive
-                          ? 'border-l-2 border-[var(--color-sand)] bg-[var(--color-riser)] text-[var(--color-ink)]'
-                          : 'border-l-2 border-transparent text-[var(--color-ink-dim)] hover:bg-[var(--color-panel)] hover:text-[var(--color-ink)]'
-                      }`
-                    }
-                    title={collapsed ? item.label : undefined}
-                  >
-                    <Icon name={item.icon} size={16} className="shrink-0" />
-                    {!collapsed && <span className="truncate">{t(navKey)}</span>}
-                  </NavLink>
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        end={item.end}
+                        className={({ isActive }) =>
+                          `mb-0.5 flex items-center gap-2.5 rounded-[3px] px-2.5 py-[7px] text-[13px] transition-colors ${
+                            isActive
+                              ? 'border-l-2 border-[var(--color-sand)] bg-[var(--color-riser)] text-[var(--color-ink)]'
+                              : 'border-l-2 border-transparent text-[var(--color-ink-dim)] hover:bg-[var(--color-panel)] hover:text-[var(--color-ink)]'
+                          }`
+                        }
+                        title={collapsed ? item.label : undefined}
+                      >
+                        <Icon name={item.icon} size={16} className="shrink-0" />
+                        {!collapsed && <span className="truncate">{t(navKey)}</span>}
+                      </NavLink>
                     );
-                  })()
-                ))}
+                  })(),
+                )}
               </div>
             ))}
           </nav>
@@ -282,7 +313,9 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
             <Icon name="search" size={18} />
           </button>
           <div className="ml-auto flex items-center gap-2">
-            <label className="sr-only" htmlFor="app-locale">{t('locale')}</label>
+            <label className="sr-only" htmlFor="app-locale">
+              {t('locale')}
+            </label>
             <select
               id="app-locale"
               className="field !w-auto !py-1 !px-2 text-xs"
@@ -355,7 +388,17 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
               }
             >
               <Icon name={item.icon} size={19} />
-              {t(item.to === '/' ? 'mobileHome' : item.to === '/knowledge' ? 'mobileAtlas' : item.to === '/search' ? 'mobileSearch' : item.to === '/bookmarks' ? 'mobileMine' : 'mobileSearch')}
+              {t(
+                item.to === '/'
+                  ? 'mobileHome'
+                  : item.to === '/knowledge'
+                    ? 'mobileAtlas'
+                    : item.to === '/search'
+                      ? 'mobileSearch'
+                      : item.to === '/bookmarks'
+                        ? 'mobileMine'
+                        : 'mobileSearch',
+              )}
             </NavLink>
           ))}
         </nav>
