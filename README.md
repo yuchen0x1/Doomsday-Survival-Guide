@@ -4,9 +4,9 @@
 
 <!-- github-release:start -->
 
-**[v1.1.4](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.4)** · 2026-11-17
+**[v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5)** · 2026-11-18
 
-本版本为网页/PWA 壳层增加中文/English 自动语言检测、手动切换和本地持久化，并使发布验证脚本具备跨平台兼容性。生存知识库内容保持原文。
+Windows 和 Android 设置页可检查稳定版并打开官方发行页。Web/PWA 可调整定期检查频率，暂时关闭更新提示后仍能在设置中应用已缓存的新版本。
 
 [全部发行记录](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases)
 
