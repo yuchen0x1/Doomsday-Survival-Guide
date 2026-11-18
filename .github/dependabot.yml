@@ -12,6 +12,17 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    ignore:
+      # Capacitor majors require coordinated native-project migration and the
+      # CLI patch is intentionally tied to the supported 6.2.3 toolchain.
+      - dependency-name: "@capacitor/android"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@capacitor/cli"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@capacitor/core"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@capacitor/ios"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: cargo
     directory: /apps/desktop/src-tauri
     schedule:
