@@ -1,6 +1,25 @@
 use std::fs;
 use tauri::Manager;
 use tauri_plugin_dialog::DialogExt;
+use tauri_plugin_opener::OpenerExt;
+
+/// The webview may open release notes only on the project's official GitHub page.
+#[tauri::command]
+fn open_release_page(app: tauri::AppHandle, tag: String) -> Result<(), String> {
+    let parts: Vec<_> = tag.strip_prefix('v').unwrap_or_default().split('.').collect();
+    if tag.len() > 32
+        || parts.len() != 3
+        || parts.iter().any(|part| part.is_empty() || !part.bytes().all(|b| b.is_ascii_digit()))
+    {
+        return Err("发行版本号无效".into());
+    }
+    app.opener()
+        .open_url(
+            format!("https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/{tag}"),
+            None::<&str>,
+        )
+        .map_err(|_| "未能打开系统浏览器".into())
+}
 
 /// Save through the system picker; never accept a writable filesystem path from the WebView.
 #[tauri::command]
@@ -99,10 +118,12 @@ fn setup_tray(app: &mut tauri::App) -> tauri::Result<()> {
 pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             app_data_dir,
             read_backup,
-            save_text_file
+            save_text_file,
+            open_release_page
         ])
         .setup(|app| {
             setup_tray(app)?;

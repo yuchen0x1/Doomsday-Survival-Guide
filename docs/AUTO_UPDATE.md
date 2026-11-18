@@ -2,7 +2,7 @@
 
 ## v1.1.1 起的三端发布
 
-正常版本发布使用 `.github/workflows/release-all.yml`：Web/PWA、Windows x64 安装程序和签名 Android APK 全部构建成功后，生成覆盖三个包的 `SHA256SUMS`。标签触发构建；手动启用 `publish_release` 才自动发布。旧 `release-web.yml` 保留为仅手动触发的 Web 工件入口。详见 [三端安装和验收说明](releases/v1.1.1-platforms.md)。
+正式标签触发 `.github/workflows/release-all.yml`。Web/PWA、Windows x64 和签名 Android APK 全部构建成功后会生成 `SHA256SUMS` 与 `release-metadata.json`，草稿下载校验成功后自动公开。旧 `release-web.yml` 保留手动 Web 工件入口。安装见 [安装指南](INSTALL.md)。
 
 原生应用资源随安装包内置，关闭 PWA Service Worker 注册，以免缓存旧版资源。桌面与 Android 通过同平台的新安装包覆盖升级；目前不支持自动下载安装。Android 后续包须沿用发布证书；Windows 当前没有 Authenticode 签名。更新前建议导出 JSON 备份，不要先卸载。
 
@@ -33,7 +33,7 @@ README 的在线入口已指向 GitHub Pages。历史 WorkBuddy Demo 属于另�
 - `.github/workflows/ci.yml`：只监听 `main` 的 push 和 Pull Request，执行 lint、typecheck、test、build，权限为 `contents: read`。
 - `.github/workflows/release-all.yml`：版本标签或手动触发时构建三个平台并生成统一 SHA-256 文件；`release-web.yml` 只保留手动 Web 构建入口。
 - `.github/workflows/pages.yml`：`main` 更新后，自动构建并部署 `apps/web/dist` 到 GitHub Pages；手动触发同样限定在 `main`，与 Pages 环境的分支保护规则一致。构建时使用仓库子路径，补充 `404.html` 以支持 SPA 路由。
-- 正式 GitHub Release 默认不会自动创建。只有从 Actions 手动运行并明确勾选 `publish_release=true` 时，发布 job 才使用内置 `GITHUB_TOKEN` 创建 Release。
+- 正式标签构建经完整校验后创建 Release。手动验证的默认行为是只构建工件，只有明确选择 `publish_release=true` 并通过相同校验时才发行。
 - Release 构建的临时 Actions 工件保留 14 天；正式 Release 附件长期保留，不受此期限影响。Pages 工件仅用于部署。
 
 推荐发布步骤：
@@ -71,3 +71,10 @@ git push origin main v1.1.3
 2026-11-13 发布使用 Node 22.13+ / pnpm 11。GitHub Release 提供根路径 Web/PWA 压缩包，GitHub Pages 构建使用仓库子路径。API 与 Tauri 源码保留在远程，不包含新的原生安装器；同步盘本地缺失这些目录不代表新版本删除它们。
 
 本次主分支部署已成功。旧工作流同时被 `v1.1.0` 标签触发，但标签部署被仅允许 `main` 的 Pages 环境规则拒绝；没有影响已上线站点。后续 Pages 仅部署主分支，标签继续用于 Release 打包。已发布标签与工件保持不变，远程验证记录见 [v1.1.0 发布验证](releases/v1.1.0-validation.md)。
+
+## v1.1.5 渠道
+
+- **Web/PWA**：在设置选择每天、每小时或仅手动。定期检查在页面可见且联网时运行，浏览器仍会自行维护 Service Worker。稍后处理会隐藏横幅，等待中的版本可从设置手动应用。
+- **Windows**：设置检查稳定版并在系统浏览器打开官方发行页。下载 x64 安装程序后关闭应用并覆盖安装。可使用 `gh release verify-asset TAG FILE` 核对不可变发行证明。安装程序当前无 Authenticode 签名。
+- **Android**：设置打开官方发行页，系统安装器验证 APK 签名并覆盖安装。同一正式签名的证书摘要由发布流程检查。旧版本号 APK 可能受系统降级限制。
+- **回退**：静态自托管保留上一套完整资源，回退时一起部署 HTML、脚本和 worker。原生端先导出 JSON，遵循系统限制恢复，签名自动安装和一键回退尚无完整实现。

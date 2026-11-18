@@ -3,6 +3,7 @@ import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json, urlencoded } from 'express';
+import { version } from '../package.json';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { envInt, loadEnvFiles } from './config/load-env';
@@ -41,7 +42,7 @@ async function bootstrap(): Promise<void> {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('APOCALYPSE SURVIVAL API')
     .setDescription('末日生存指南后端 API：内容、审核、同步、AI 助手')
-    .setVersion('1.0.0')
+    .setVersion(process.env.API_VERSION ?? version)
     .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);

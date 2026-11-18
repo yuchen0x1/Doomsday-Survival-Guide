@@ -7,11 +7,6 @@ on:
         description: "要发布的版本标签，例如 v1.0.1"
         required: true
         type: string
-      publish_release:
-        description: "确认后才创建 GitHub Release；默认只构建并上传 Actions 工件"
-        required: true
-        default: false
-        type: boolean
 
 permissions:
   contents: read
@@ -20,18 +15,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref_name }}
+      RELEASE_TAG: ${{ inputs.version_tag }}
     steps:
-      - name: Checkout requested main/tag ref
-        uses: actions/checkout@v4
+      - name: Checkout requested tag
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.version_tag || github.ref }}
+          ref: refs/tags/${{ inputs.version_tag }}
+          persist-credentials: false
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 11.20.0
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.13.0
           cache: pnpm
@@ -56,27 +52,8 @@ jobs:
           tar -czf "release/apocalypse-survival-web-${RELEASE_TAG}.tar.gz" -C apps/web/dist .
           (cd release && sha256sum "apocalypse-survival-web-${RELEASE_TAG}.tar.gz" > SHA256SUMS)
       - name: Upload build artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: web-release-${{ env.RELEASE_TAG }}
           retention-days: 14
           path: release/
-
-  publish:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.publish_release == true }}
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    env:
-      RELEASE_TAG: ${{ inputs.version_tag }}
-    steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: web-release-${{ env.RELEASE_TAG }}
-          path: release
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release create "$RELEASE_TAG" release/* --title "$RELEASE_TAG" --generate-notes

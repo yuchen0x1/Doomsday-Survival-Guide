@@ -1,3 +1,4 @@
+import { createHash, randomUUID } from 'node:crypto';
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService, type JwtSignOptions } from '@nestjs/jwt';
@@ -75,10 +76,11 @@ export class AuthService {
         message: '刷新令牌无效或已过期',
       });
     }
-    if (payload.type !== 'refresh') {
+    const sessionId = payload.jti;
+    if (payload.type !== 'refresh' || typeof sessionId !== 'string' || !sessionId) {
       throw new UnauthorizedException({
         code: 'INVALID_REFRESH_TOKEN',
-        message: '刷新令牌类型错误',
+        message: '刷新会话已失效，请重新登录',
       });
     }
     const user = await this.prisma.user.findUnique({ where: { id: payload.sub } });
@@ -88,7 +90,10 @@ export class AuthService {
         message: '用户不存在或已停用',
       });
     }
-    const tokens = await this.issueTokens(user.id, user.email, user.role, user.name, refreshToken);
+    const tokens = await this.issueTokens(user.id, user.email, user.role, user.name, {
+      id: sessionId,
+      token: refreshToken,
+    });
     return { user: this.toPublic(user), tokens };
   }
 
@@ -105,7 +110,7 @@ export class AuthService {
     email: string,
     role: 'USER' | 'ADMIN',
     name: string | null,
-    previousRefresh?: string,
+    previousRefresh?: { id: string; token: string },
   ): Promise<TokenPair> {
     const accessTtl = (this.config.get<string>('JWT_EXPIRES_IN') ??
       '7d') as JwtSignOptions['expiresIn'];
@@ -113,38 +118,49 @@ export class AuthService {
       { sub: userId, email, role, name: name ?? undefined, type: 'access' },
       { expiresIn: accessTtl },
     );
+    const sessionId = randomUUID();
     const refreshToken = await this.jwt.signAsync(
       { sub: userId, email, role, name: name ?? undefined, type: 'refresh' },
-      { expiresIn: '30d' },
+      { expiresIn: '30d', jwtid: sessionId },
     );
 
-    const hash = (token: string): string => bcrypt.hashSync(token, 4);
-    if (previousRefresh) {
-      const previous = await this.prisma.userSession.findFirst({
-        where: { userId, revokedAt: null },
-        orderBy: { createdAt: 'desc' },
-      });
-      if (previous && bcrypt.compareSync(previousRefresh, previous.refreshTokenHash)) {
-        await this.prisma.userSession.update({
-          where: { id: previous.id },
-          data: { revokedAt: new Date() },
+    const now = new Date();
+    const expiresAt = new Date(now.getTime() + 30 * 24 * 3600 * 1000);
+    await this.prisma.$transaction(async (tx) => {
+      if (previousRefresh) {
+        const consumed = await tx.userSession.updateMany({
+          where: {
+            id: previousRefresh.id,
+            userId,
+            refreshTokenHash: hashToken(previousRefresh.token),
+            revokedAt: null,
+            expiresAt: { gt: now },
+          },
+          data: { revokedAt: now },
         });
+        if (consumed.count !== 1) {
+          throw new UnauthorizedException({
+            code: 'INVALID_REFRESH_TOKEN',
+            message: '刷新会话已失效，请重新登录',
+          });
+        }
       }
-    }
-    const expiresAt = new Date(Date.now() + 30 * 24 * 3600 * 1000);
-    await this.prisma.userSession.create({
-      data: { userId, refreshTokenHash: hash(refreshToken), expiresAt },
+      await tx.userSession.create({
+        data: { id: sessionId, userId, refreshTokenHash: hashToken(refreshToken), expiresAt },
+      });
+      const stale = await tx.userSession.findMany({
+        where: { userId, revokedAt: null },
+        orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+        skip: 10,
+        select: { id: true },
+      });
+      await tx.userSession.deleteMany({
+        where: {
+          userId,
+          OR: [{ revokedAt: { not: null } }, { id: { in: stale.map(({ id }) => id) } }],
+        },
+      });
     });
-    // 只保留最近 10 个会话
-    const stale = await this.prisma.userSession.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      skip: 10,
-      select: { id: true },
-    });
-    if (stale.length > 0) {
-      await this.prisma.userSession.deleteMany({ where: { id: { in: stale.map((s) => s.id) } } });
-    }
     return { accessToken, refreshToken };
   }
 
@@ -163,4 +179,8 @@ export class AuthService {
       createdAt: user.createdAt.toISOString(),
     };
   }
+}
+
+function hashToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
 }

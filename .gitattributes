@@ -1,1 +1,15 @@
+# Keep the formatter input identical in Windows and Linux checkouts.
+.gitattributes text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.md text eol=lf
+*.html text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+apps/mobile/ios/**/*.json -text !eol
+apps/desktop/src-tauri/**/*.json -text !eol
 apps/mobile/android/gradlew text eol=lf

@@ -12,15 +12,18 @@ permissions:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
       - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
         with:
           version: 11.20.0
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22.13.0
           cache: pnpm
@@ -36,5 +39,54 @@ jobs:
         run: pnpm test
       - name: Capacitor archive compatibility
         run: node --test scripts/verify-capacitor-template.cjs
+      - name: Version alignment
+        run: node scripts/verify-release-versions.cjs
       - name: Build
         run: pnpm build
+
+  postgres-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: survival_ci
+          POSTGRES_DB: survival_ci
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U survival_ci"
+          --health-interval=5s
+          --health-timeout=3s
+          --health-retries=10
+    env:
+      DATABASE_URL: postgresql://survival_ci@127.0.0.1:5432/survival_ci
+      API_PORT: 3100
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 11.20.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @apocalypse/api prisma:generate
+      - run: pnpm --filter @apocalypse/api exec prisma migrate deploy
+      - run: pnpm build:api
+      - name: Exercise the compiled API
+        run: |
+          export NODE_ENV=production
+          export JWT_SECRET="$(openssl rand -hex 32)"
+          node apps/api/dist/apps/api/src/main.js > api.log 2>&1 &
+          api_pid=$!
+          trap 'kill "$api_pid" 2>/dev/null || true' EXIT
+          if ! curl --fail --silent --retry 20 --retry-connrefused --retry-delay 1 http://127.0.0.1:3100/api/health; then
+            cat api.log
+            exit 1
+          fi
+          node scripts/api-smoke.cjs

@@ -12,17 +12,14 @@
 
 <!-- github-release:end -->
 
-[完整更新历史](docs/releases/release-notes.md) · [最近一次三端发行](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
+[完整更新历史](docs/releases/release-notes.md) · [三端安装包](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest) · [在线使用](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)
 
-本轮项目审计、20 个开源竞品研究、40 项升级路线和实际验证见
-[PROJECT_AUDIT.md](PROJECT_AUDIT.md) · [COMPETITOR_ANALYSIS.md](COMPETITOR_ANALYSIS.md) ·
-[UPGRADE_ROADMAP.md](UPGRADE_ROADMAP.md) · [UPGRADE_REPORT.md](UPGRADE_REPORT.md) ·
-[CHANGELOG.md](CHANGELOG.md)。报告会区分当前工作区实测结果与既有未提交修改；不会把未恢复的 API/Tauri 文件或未执行的原生/生产验证写成完成。
+平台支持和发布流程见 [平台与维护](docs/MAINTENANCE.md)。本轮核查了 [33 个相关项目](COMPETITOR_ANALYSIS.md)，并更新了 [40 项升级候选](UPGRADE_ROADMAP.md) 的实施状态。贡献和安全报告见 [贡献指南](CONTRIBUTING.md) 与 [安全报告](SECURITY.md)。
 
-| 使用方式          | 入口 / 文件                                                                                                                                    |
-| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| 使用方式          | 入口 / 文件                                                                                                                                                                                          |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 网页版 / PWA      | [直接打开](https://yuchen0x1.github.io/Doomsday-Survival-Guide/)，支持浏览器「安装应用」；自行托管下载 [Web 静态包（.tar.gz）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest) |
-| Windows 10/11 x64 | [Windows 安装程序（.exe）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest)，包含 WebView2 离线安装组件                                                                 |
+| Windows 10/11 x64 | [Windows 安装程序（.exe）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest)，包含 WebView2 离线安装组件                                                                         |
 | Android           | [Android 安装包（.apk）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest)，正式发布密钥签名                                                                                     |
 
 安装说明、校验方法及测试范围见 [v1.1.3 三端验证记录](docs/releases/v1.1.3-platforms.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。

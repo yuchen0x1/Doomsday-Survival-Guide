@@ -3,6 +3,7 @@ import { useAppUpdate } from '../lib/update';
 import { formatUpdateTime } from '../lib/update-helpers';
 import { APP_VERSION, formatVersion } from '../lib/version';
 import { Icon } from './Icon';
+import { NativeUpdateSettings } from './NativeUpdateSettings';
 
 const STATUS_LABELS = {
   checking: '正在检查',
@@ -16,8 +17,8 @@ const STATUS_LABELS = {
 } as const;
 
 export function PwaUpdateBanner() {
-  const { needRefresh, status, error, updateNow, dismissUpdate } = useAppUpdate();
-  if (!needRefresh && status !== 'error') return null;
+  const { needRefresh, showUpdateBanner, status, error, updateNow, dismissUpdate } = useAppUpdate();
+  if (!showUpdateBanner) return null;
 
   return (
     <div className="fixed inset-x-3 bottom-20 z-50 mx-auto max-w-xl md:bottom-5">
@@ -38,17 +39,28 @@ export function PwaUpdateBanner() {
               <>
                 <div className="text-[13px] font-semibold">发现可用更新</div>
                 <p className="mt-1 text-[12px] text-[var(--color-ink-dim)]">
-                  新版本会先由 Service Worker 校验并接管，应用本地数据不会被清除。
+                  新版本已经缓存。更新时会重新加载页面，已保存的本机数据会保留。
                 </p>
               </>
             )}
             <div className="mt-2 flex flex-wrap gap-2">
               {needRefresh && (
-                <button type="button" className="btn btn-primary !py-1.5" onClick={updateNow}>
-                  <Icon name="refresh" size={14} /> 立即更新
+                <button
+                  type="button"
+                  className="btn btn-primary !py-1.5"
+                  onClick={updateNow}
+                  disabled={status === 'updating'}
+                >
+                  <Icon name="refresh" size={14} />{' '}
+                  {status === 'updating' ? '正在更新…' : '立即更新'}
                 </button>
               )}
-              <button type="button" className="btn !py-1.5" onClick={dismissUpdate}>
+              <button
+                type="button"
+                className="btn !py-1.5"
+                onClick={dismissUpdate}
+                disabled={status === 'updating'}
+              >
                 稍后处理
               </button>
             </div>
@@ -66,27 +78,15 @@ export function UpdateSettingsPanel() {
     status,
     error,
     lastCheckedAt,
+    checkFrequency,
+    setCheckFrequency,
     checkForUpdate,
     updateNow,
-    dismissUpdate,
   } = useAppUpdate();
   const checking = status === 'checking' || status === 'updating';
 
   if (detectPlatform() !== 'web') {
-    return (
-      <section className="panel p-4 lg:col-span-2" aria-labelledby="native-version-title">
-        <h2 id="native-version-title" className="text-[15px] font-semibold">
-          应用版本
-        </h2>
-        <p className="mt-3 font-mono text-[15px]">{formatVersion(APP_VERSION)}</p>
-        <p className="mt-2 text-sm text-[var(--color-ink-dim)]">
-          知识内容已随安装包内置，断网可用。更新时请从项目发布页下载同平台新版安装包并覆盖安装；请勿卸载，以免丢失本机数据。建议先导出备份。
-        </p>
-        <p className="mt-2 break-all text-xs text-[var(--color-ink-faint)]">
-          github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest
-        </p>
-      </section>
-    );
+    return <NativeUpdateSettings />;
   }
 
   return (
@@ -124,6 +124,23 @@ export function UpdateSettingsPanel() {
         </p>
       )}
       {error && <p className="mt-3 text-[12.5px] text-[var(--color-danger)]">{error}</p>}
+      <label className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+        定期检查
+        <select
+          className="input"
+          value={checkFrequency}
+          onChange={(event) => {
+            const value = event.target.value;
+            if (value === 'manual' || value === 'hourly' || value === 'daily') {
+              setCheckFrequency(value);
+            }
+          }}
+        >
+          <option value="daily">每天</option>
+          <option value="hourly">每小时</option>
+          <option value="manual">仅手动</option>
+        </select>
+      </label>
       <div className="mt-3 flex flex-wrap gap-2">
         <button
           type="button"
@@ -136,11 +153,6 @@ export function UpdateSettingsPanel() {
         {needRefresh && (
           <button type="button" className="btn btn-sand" onClick={updateNow} disabled={checking}>
             <Icon name="download" size={14} /> 立即更新
-          </button>
-        )}
-        {needRefresh && (
-          <button type="button" className="btn" onClick={dismissUpdate}>
-            稍后提醒
           </button>
         )}
       </div>

@@ -6,21 +6,29 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { detectPlatform } from './platform';
 import { getInitialUpdateStatus, type UpdateStatus } from './update-helpers';
 
 const LAST_CHECK_KEY = 'apocalypse-survival:last-update-check';
+const CHECK_FREQUENCY_KEY = 'apocalypse-survival:update-check-frequency';
+const INTERVAL_MS = { hourly: 3_600_000, daily: 86_400_000, manual: 0 } as const;
+
+type CheckFrequency = keyof typeof INTERVAL_MS;
 
 export type { UpdateStatus } from './update-helpers';
 
 export interface AppUpdateContextValue {
   needRefresh: boolean;
+  showUpdateBanner: boolean;
   offlineReady: boolean;
   status: UpdateStatus;
   error: string | null;
   lastCheckedAt: string | null;
+  checkFrequency: CheckFrequency;
+  setCheckFrequency: (value: CheckFrequency) => void;
   checkForUpdate: () => Promise<void>;
   updateNow: () => Promise<void>;
   dismissUpdate: () => void;
@@ -28,22 +36,31 @@ export interface AppUpdateContextValue {
 
 const UpdateContext = createContext<AppUpdateContextValue | null>(null);
 
-function readLastCheckedAt(): string | null {
-  if (typeof window === 'undefined') return null;
-  return window.localStorage.getItem(LAST_CHECK_KEY);
+function readPreference(key: string): string | null {
+  try {
+    return window.localStorage.getItem(key);
+  } catch {
+    return null;
+  }
 }
 
-function saveLastCheckedAt(value: string): void {
-  if (typeof window === 'undefined') return;
-  window.localStorage.setItem(LAST_CHECK_KEY, value);
+function savePreference(key: string, value: string): void {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Update checks also work when the browser restricts local storage.
+  }
 }
 
 const nativeUpdateState: AppUpdateContextValue = {
   needRefresh: false,
+  showUpdateBanner: false,
   offlineReady: true,
   status: 'ready',
   error: null,
   lastCheckedAt: null,
+  checkFrequency: 'manual',
+  setCheckFrequency: () => {},
   checkForUpdate: async () => {},
   updateNow: async () => {},
   dismissUpdate: () => {},
@@ -65,7 +82,19 @@ function WebUpdateProvider({ children }: { children: ReactNode }) {
     });
   });
   const [error, setError] = useState<string | null>(null);
-  const [lastCheckedAt, setLastCheckedAt] = useState<string | null>(readLastCheckedAt);
+  const [lastCheckedAt, setLastCheckedAt] = useState(() => readPreference(LAST_CHECK_KEY));
+  const [checkFrequency, changeCheckFrequency] = useState<CheckFrequency>(() => {
+    const saved = readPreference(CHECK_FREQUENCY_KEY);
+    return saved === 'hourly' || saved === 'manual' ? saved : 'daily';
+  });
+  const setCheckFrequency = useCallback((value: CheckFrequency) => {
+    changeCheckFrequency(value);
+    savePreference(CHECK_FREQUENCY_KEY, value);
+  }, []);
+  const [bannerDismissed, setBannerDismissed] = useState(false);
+  const activationTimer = useRef<number | undefined>(undefined);
+  const checkInProgress = useRef(false);
+  const lastAttemptAt = useRef(0);
   const {
     needRefresh: [needRefresh, setNeedRefresh],
     offlineReady: [offlineReady],
@@ -73,9 +102,9 @@ function WebUpdateProvider({ children }: { children: ReactNode }) {
   } = useRegisterSW({
     immediate: true,
     onNeedRefresh: () => setStatus('available'),
-    onOfflineReady: () => setStatus('ready'),
+    onOfflineReady: () => setStatus((current) => (current === 'checking' ? 'ready' : current)),
     onRegisteredSW: (_swScriptUrl, registration) => {
-      if (registration) setStatus('ready');
+      if (registration) setStatus((current) => (current === 'checking' ? 'ready' : current));
     },
     onRegisterError: (registrationError) => {
       setError(
@@ -94,15 +123,17 @@ function WebUpdateProvider({ children }: { children: ReactNode }) {
       return;
     }
     const timeout = window.setTimeout(() => {
-      setStatus((current) => (current === 'checking' ? 'unsupported' : current));
+      setStatus((current) => (current === 'checking' ? 'error' : current));
     }, 5000);
     return () => window.clearTimeout(timeout);
   }, []);
 
-  const checkForUpdate = useCallback(async () => {
+  const runCheck = useCallback(async () => {
+    if (checkInProgress.current || activationTimer.current !== undefined) return;
     const checkedAt = new Date().toISOString();
+    lastAttemptAt.current = Date.parse(checkedAt);
     setLastCheckedAt(checkedAt);
-    saveLastCheckedAt(checkedAt);
+    savePreference(LAST_CHECK_KEY, checkedAt);
     setError(null);
 
     if (import.meta.env.DEV) {
@@ -119,54 +150,105 @@ function WebUpdateProvider({ children }: { children: ReactNode }) {
     }
 
     setStatus('checking');
+    checkInProgress.current = true;
     try {
       const registration = await navigator.serviceWorker.getRegistration();
       if (!registration) {
         setStatus('unsupported');
         return;
       }
-      await registration.update();
+      if (!registration.waiting) await registration.update();
+      if (registration.waiting) {
+        setNeedRefresh(true);
+        setStatus('available');
+        return;
+      }
       setStatus((current) => (current === 'available' ? 'available' : 'ready'));
     } catch (checkError) {
       setError(checkError instanceof Error ? checkError.message : '检查更新失败');
       setStatus('error');
+    } finally {
+      checkInProgress.current = false;
     }
-  }, []);
+  }, [setNeedRefresh]);
+
+  const checkForUpdate = useCallback(async () => {
+    setBannerDismissed(false);
+    await runCheck();
+  }, [runCheck]);
+
+  useEffect(() => {
+    const interval = INTERVAL_MS[checkFrequency];
+    if (!interval || import.meta.env.DEV || !('serviceWorker' in navigator)) return;
+    const checkIfDue = () => {
+      if (!navigator.onLine || document.visibilityState !== 'visible') return;
+      const last = Math.max(
+        lastAttemptAt.current,
+        Date.parse(readPreference(LAST_CHECK_KEY) ?? '') || 0,
+      );
+      if (Date.now() - last >= interval) void runCheck();
+    };
+    const timer = window.setInterval(checkIfDue, 60_000);
+    window.addEventListener('focus', checkIfDue);
+    window.addEventListener('online', checkIfDue);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', checkIfDue);
+      window.removeEventListener('online', checkIfDue);
+    };
+  }, [checkFrequency, runCheck]);
+
+  useEffect(() => () => window.clearTimeout(activationTimer.current), []);
 
   const updateNow = useCallback(async () => {
+    if (activationTimer.current !== undefined) return;
     setStatus('updating');
     setError(null);
-    try {
-      await updateServiceWorker(true);
-      setStatus('updated');
-    } catch (updateError) {
-      setError(updateError instanceof Error ? updateError.message : '更新失败，请稍后重试');
+    const fail = (message: string) => {
+      window.clearTimeout(activationTimer.current);
+      activationTimer.current = undefined;
+      setError(message);
       setStatus('error');
+    };
+    activationTimer.current = window.setTimeout(
+      () => fail('新版本尚未接管，请检查更新后重试。'),
+      15_000,
+    );
+    try {
+      // Workbox reloads when the waiting worker takes control.
+      await updateServiceWorker(true);
+    } catch (updateError) {
+      fail(updateError instanceof Error ? updateError.message : '更新失败，请稍后重试');
     }
   }, [updateServiceWorker]);
 
   const dismissUpdate = useCallback(() => {
-    setNeedRefresh(false);
-    setStatus('ready');
-  }, [setNeedRefresh]);
+    setBannerDismissed(true);
+  }, []);
 
   const value = useMemo<AppUpdateContextValue>(
     () => ({
       needRefresh,
+      showUpdateBanner: !bannerDismissed && (needRefresh || status === 'error'),
       offlineReady,
       status,
       error,
       lastCheckedAt,
+      checkFrequency,
+      setCheckFrequency,
       checkForUpdate,
       updateNow,
       dismissUpdate,
     }),
     [
       needRefresh,
+      bannerDismissed,
       offlineReady,
       status,
       error,
       lastCheckedAt,
+      checkFrequency,
+      setCheckFrequency,
       checkForUpdate,
       updateNow,
       dismissUpdate,

@@ -268,3 +268,14 @@ curl -s https://survival.example.com/api/ai/health
 ## 10. 相关文档
 
 - [../README.md](../README.md) · [INSTALL.md](./INSTALL.md) · [BACKUP.md](./BACKUP.md) · [API.md](./API.md) · [TEST_REPORT.md](./TEST_REPORT.md) · [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)
+
+## 用 Docker Compose 提供静态站
+
+构建根路径版静态资源，或把正式 Web 归档解压进 `apps/web/dist`，然后运行：
+
+```bash
+pnpm build
+docker compose -p apocalypse-web --profile web up -d web
+```
+
+从 `http://localhost:8081` 打开。容器提供深链接回退与静态更新缓存头。NAS 或局域网用户访问时由部署者配置 HTTPS 反向代理。发布时先准备完整静态目录再切换，并保留上一版本副本以便回退。可选 API 和数据库沿用上面的独立部署流程。

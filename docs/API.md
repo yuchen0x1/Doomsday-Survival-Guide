@@ -219,3 +219,7 @@ curl -N -X POST http://localhost:3000/api/ai/chat \
 ## 8. 相关文档
 
 - [../README.md](../README.md) · [INSTALL.md](./INSTALL.md) · [DEPLOYMENT.md](./DEPLOYMENT.md) · [BACKUP.md](./BACKUP.md) · [TEST_REPORT.md](./TEST_REPORT.md) · [KNOWN_ISSUES.md](./KNOWN_ISSUES.md)
+
+## v1.1.5 刷新会话
+
+同一个刷新令牌成功使用一次后即失效。客户端收到 401 时重新登录，多个并行请求共享一次刷新。更新前生成的刷新令牌需要重新登录。数据库无需新增迁移，已有用户、库存和同步数据继续可读。生产运行时请为 `JWT_SECRET` 配置独立随机密钥，至少 32 字符。

@@ -8,7 +8,7 @@ on:
     types: [completed]
   # Catch releases published by another workflow using GITHUB_TOKEN and missed events.
   schedule:
-    - cron: '43 3 * * *'
+    - cron: "43 3 * * *"
 
 permissions:
   contents: write

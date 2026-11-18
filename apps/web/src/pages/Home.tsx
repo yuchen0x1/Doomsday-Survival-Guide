@@ -180,7 +180,7 @@ export default function Home() {
           unit="条"
           icon="bookmark"
           accent="danger"
-          hint="本地加密保存"
+          hint="保存在此设备"
         />
       </div>
 

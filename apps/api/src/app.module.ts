@@ -19,6 +19,19 @@ function int(value: unknown, fallback: number): number {
   return Number.isFinite(n) && n > 0 ? n : fallback;
 }
 
+const DEV_JWT_SECRET = 'change-me-to-a-strong-random-secret-32bytes';
+
+function jwtSecret(config: ConfigService): string {
+  const secret = config.get<string>('JWT_SECRET')?.trim();
+  if (
+    config.get('NODE_ENV') === 'production' &&
+    (!secret || secret === DEV_JWT_SECRET || secret.length < 32)
+  ) {
+    throw new Error('Production requires a unique JWT_SECRET of at least 32 characters');
+  }
+  return secret || DEV_JWT_SECRET;
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -47,7 +60,7 @@ function int(value: unknown, fallback: number): number {
       global: true,
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET') ?? 'change-me-to-a-strong-random-secret-32bytes',
+        secret: jwtSecret(config),
         signOptions: {
           expiresIn: (config.get<string>('JWT_EXPIRES_IN') ?? '7d') as '7d',
         },

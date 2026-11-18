@@ -1,6 +1,6 @@
 {
   "name": "@apocalypse/api",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "private": true,
   "description": "APOCALYPSE SURVIVAL 后端 API（NestJS + Prisma + PostgreSQL）",
   "scripts": {
@@ -31,6 +31,7 @@
     "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "express": "^5.2.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },

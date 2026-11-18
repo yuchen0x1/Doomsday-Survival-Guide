@@ -1,0 +1,25 @@
+name: 错误、兼容性或更新问题
+description: 报告使用失败、平台兼容性或覆盖升级问题。
+labels: [bug]
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: 平台
+      options: [Web, PWA, Windows, Android, 自托管 API, 其他]
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 应用版本、系统和浏览器
+      description: 更新失败时请提供更新前后的版本和下载渠道。
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: 复现过程、预期及实际结果
+      description: 请先移除账号、位置、备份文件和其他隐私信息。
+    validations:
+      required: true

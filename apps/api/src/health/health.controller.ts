@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
+import { version } from '../../package.json';
 import { Public } from '../common/decorators';
 import { PrismaService } from '../prisma/prisma.service';
 
@@ -29,7 +30,7 @@ export class HealthController {
     return {
       status: db === 'up' ? 'ok' : 'degraded',
       db,
-      version: process.env.API_VERSION ?? '1.0.0',
+      version: process.env.API_VERSION ?? version,
       uptimeSec: Math.round(process.uptime()),
     };
   }

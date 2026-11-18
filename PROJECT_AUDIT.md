@@ -118,3 +118,7 @@ APOCALYPSE SURVIVAL 是离线优先的灾害与野外生存知识系统，面向
 3. 设计加密备份、跨设备同步冲突和迁移版本。
 4. 以 MapLibre/PMTiles 的思想重新实现离线地图包，单独核对 OSM 数据和瓦片许可。
 5. 逐批清理 lint/a11y 警告，建立浏览器端关键流程矩阵。
+
+## 2026-11-18 基线核查
+
+当前主工作区的 Git 元数据可读，API 和 Tauri 源码完整，初始 HEAD 为 `a4c5613`。冻结锁安装、类型检查、144 项 Vitest、Capacitor 归档回归及 Web 构建通过。Windows 同步盘 CRLF 检出触发格式差异。新增 PostgreSQL 实际启动验证时发现 API 未直接声明 Express。仓库已有三端版 v1.1.4，本轮修正发布入口、更新流程和部署文档，历史记录保留。见 [维护说明](docs/MAINTENANCE.md)。

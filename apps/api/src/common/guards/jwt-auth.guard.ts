@@ -5,6 +5,7 @@ import type { AuthUser } from '../decorators';
 import { IS_PUBLIC_KEY } from '../decorators';
 
 export interface JwtPayload {
+  jti?: string;
   sub: string;
   email: string;
   role: 'USER' | 'ADMIN';

@@ -1,0 +1,32 @@
+name: Verify published downloads
+on:
+  schedule:
+    - cron: "39 4 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Verify stable release completeness and public bytes
+        run: |
+          tag="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq .tagName)"
+          [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
+          base="https://github.com/$GITHUB_REPOSITORY/releases/download/$tag"
+          curl --fail --location --retry 3 --silent --show-error "$base/SHA256SUMS" -o SHA256SUMS
+          names=("apocalypse-survival-web-$tag.tar.gz" "apocalypse-survival-windows-x64-$tag-setup.exe" "apocalypse-survival-android-$tag.apk")
+          if gh api "repos/$GITHUB_REPOSITORY/releases/tags/$tag" --jq .immutable | grep -Fxq true; then
+            names+=("release-metadata.json")
+          fi
+          for name in "${names[@]}"; do
+            curl --fail --location --retry 3 --silent --show-error "$base/$name" -o "$name"
+            grep "  $name$" SHA256SUMS | sha256sum --check --strict
+          done
+          curl --fail --location --retry 3 --silent --show-error "https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/manifest.webmanifest" -o manifest.json
+          jq -e '.display == "standalone" and (.icons | length >= 2)' manifest.json
