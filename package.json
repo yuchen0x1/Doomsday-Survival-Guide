@@ -25,6 +25,6 @@
     "db:studio": "pnpm --filter @apocalypse/api prisma:studio"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.6.5"
+    "@biomejs/biome": "2.6.8"
   }
 }
