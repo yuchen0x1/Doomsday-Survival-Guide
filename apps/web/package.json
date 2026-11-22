@@ -16,7 +16,7 @@
     "@apocalypse/core": "workspace:*",
     "@apocalypse/knowledge-data": "workspace:*",
     "@capacitor/core": "6.2.3",
-    "@tauri-apps/api": "^2.12.4",
+    "@tauri-apps/api": "^2.12.5",
     "idb": "^8.0.4",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
