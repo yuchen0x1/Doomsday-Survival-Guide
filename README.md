@@ -6,7 +6,7 @@
 
 **[v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6)** · 2026-11-26
 
-安全与稳定性补丁：审计日志不再记录密码、令牌和 AI 对话内容；Windows / Android 启动后可自动检查稳定版；同时修正危险等级展示、同步 API、地图与离线更新等缺陷。
+本次更新是安全与稳定性补丁：审计日志不再记录密码、令牌和 AI 对话内容，修复依赖安全告警与发布链路阻断；Windows / Android 启动后可自动检查稳定版，Web/PWA 继续使用 Service Worker 更新提示。同时修正危险等级展示、同步 API、AI 系统提示词、地图与离线更新等缺陷。
 
 [全部发行记录](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases)
 
