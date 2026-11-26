@@ -6,7 +6,7 @@
 
 **[v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7)** · 2026-11-26
 
-安全与兼容性补丁：管理端修改已发布内容会自动退回草稿并重新审核；生产环境默认启用 CORS 白名单、关闭 Swagger，数据库异常时健康检查返回 503；AI 流式回答改为空闲超时。同时修复旧 WebView 崩溃、分类搜索越界和备份读取无上限等缺陷。
+本次更新是安全与兼容性补丁：管理端修改已发布内容会自动退回草稿并重新审核；生产环境默认启用 CORS 白名单、关闭 Swagger，数据库异常时健康检查返回 503；AI 流式回答改为空闲超时，不再因总时长被截断。同时修复旧 WebView 崩溃、分类搜索越界和备份读取无上限等缺陷。
 
 [全部发行记录](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases)
 
