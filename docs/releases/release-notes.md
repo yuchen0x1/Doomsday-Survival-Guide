@@ -1,10 +1,16 @@
 # 更新历史
 
-## v1.1.8 · 2026-11-26
+## v1.1.9 · 2026-11-27
 
-修复地图定位、并发收藏、AI 会话切换、离线包升级和更新检查恢复；增加服务端内容审核并发保护，拒绝非法同步条目并脱敏个人同步审计载荷。删除两份无用模板测试。
+修复桌面 Rust 依赖漏洞，为安全检查和发布流程加入 RustSec 审计，改善手机顶栏和 AI 导航标签。同时交付原 v1.1.8 计划的地图、并发收藏、AI 会话、离线包、更新检查与服务端同步隐私修复。沿用现有更新接口、应用标识与 Android 正式签名。
 
-[完整版本说明](v1.1.8.md)
+[完整版本说明](v1.1.9.md)
+
+## v1.1.8 · 2026-11-26 · 发布已取消
+
+构建在正式发布前取消，临时标签已删除，没有公开的 v1.1.8 Release。已完成的修复随 v1.1.9 一并交付，用户无需安装此中间版本。
+
+[历史准备稿](v1.1.8.md)
 
 ## v1.1.7 · 2026-11-26
 
@@ -24,11 +30,12 @@ Windows 和 Android 可以在设置中查询新版本并打开官方发行页。
 
 [完整版本说明](v1.1.5.md)
 
-按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3–v1.1.8 为正式 GitHub Release；v1.1.2 仅为未完成的发布尝试，没有创建正式 Release。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
+按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3–v1.1.7 为此前已发布的正式 GitHub Release；v1.1.2 为未完成的发布尝试，v1.1.8 的发布已取消，均没有创建正式 Release。本轮发布版本为 v1.1.9，安装包与最终发布状态以 GitHub Release 页面为准。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
 
 | 版本                                                                               | 发布日期     | 提供内容 / 状态                                  |
 | ---------------------------------------------------------------------------------- | ------------ | ------------------------------------------------ |
-| [v1.1.8](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.8) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
+| [v1.1.9](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.9) | 2026-11-27   | 本轮发布；Web/PWA、Windows x64、签名 Android APK，以 Release 附件为准 |
+| v1.1.8                                                                             | 2026-11-26   | 发布已取消，未创建正式 Release；修复随 v1.1.9 交付 |
 | [v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5) | 2026-11-18   | Web/PWA、Windows x64 安装程序、签名 Android APK  |

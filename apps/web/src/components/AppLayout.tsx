@@ -111,18 +111,20 @@ function OnlineBadge() {
   const online = useApp((s) => s.online);
   return (
     <span
+      role="status"
       className="micro-label flex items-center gap-1.5 rounded-[2px] border px-2 py-1"
       style={{
         borderColor: online ? 'var(--color-moss)' : 'var(--color-warn)',
         color: online ? 'var(--color-moss-hi)' : 'var(--color-warn)',
       }}
       title={online ? t('onlineTitle') : t('offlineTitle')}
+      aria-label={online ? t('onlineTitle') : t('offlineTitle')}
     >
       <span
         className="inline-block h-1.5 w-1.5 rounded-full"
         style={{ background: 'currentColor' }}
       />
-      {online ? 'ONLINE' : t('offlineBadge')}
+      <span className="hidden sm:inline">{online ? 'ONLINE' : t('offlineBadge')}</span>
     </span>
   );
 }
@@ -294,7 +296,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
       <div className="flex min-w-0 flex-1 flex-col">
         {/* 顶部栏 */}
         <header
-          className="sticky top-0 z-40 flex items-center gap-3 border-b border-[var(--color-edge)] bg-[var(--color-void)]/95 px-4 py-2.5 backdrop-blur"
+          className="sticky top-0 z-40 flex items-center gap-2 border-b border-[var(--color-edge)] bg-[var(--color-void)]/95 px-3 py-2.5 backdrop-blur sm:gap-3 sm:px-4"
           style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 10px)' }}
         >
           {platform === 'mobile' && (
@@ -307,19 +309,19 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
           </div>
           <button
             type="button"
-            className="btn btn-ghost md:hidden"
+            className="btn btn-ghost !px-2 md:hidden"
             onClick={() => nav('/search')}
             aria-label={t('search')}
           >
             <Icon name="search" size={18} />
           </button>
-          <div className="ml-auto flex items-center gap-2">
+          <div className="ml-auto flex min-w-0 items-center gap-1.5 sm:gap-2">
             <label className="sr-only" htmlFor="app-locale">
               {t('locale')}
             </label>
             <select
               id="app-locale"
-              className="field !w-auto !py-1 !px-2 text-xs"
+              className="field min-w-0 !w-28 truncate !py-1 !px-2 text-xs sm:!w-auto"
               value={setting}
               onChange={(event) => setSetting(event.target.value as LocaleSetting)}
               aria-label={t('locale')}
@@ -339,7 +341,12 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
               <span className="hidden text-[12px] lg:inline">{t('emergency')}</span>
             </button>
             <OnlineBadge />
-            <button type="button" className="btn btn-sand !py-1.5" onClick={() => nav('/ai')}>
+            <button
+              type="button"
+              className="btn btn-sand !px-2 !py-1.5"
+              onClick={() => nav('/ai')}
+              aria-label={t('aiAssistant')}
+            >
               <Icon name="bot" size={15} />
               <span className="hidden sm:inline text-[12px]">{t('aiAssistant')}</span>
             </button>
@@ -396,9 +403,11 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
                     ? 'mobileAtlas'
                     : item.to === '/search'
                       ? 'mobileSearch'
-                      : item.to === '/bookmarks'
-                        ? 'mobileMine'
-                        : 'mobileSearch',
+                      : item.to === '/ai'
+                        ? 'mobileAI'
+                        : item.to === '/bookmarks'
+                          ? 'mobileMine'
+                          : 'mobileSearch',
               )}
             </NavLink>
           ))}

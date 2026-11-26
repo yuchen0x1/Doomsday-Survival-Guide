@@ -53,8 +53,24 @@ jobs:
           echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           node scripts/verify-release-versions.cjs
 
-  web:
+  rust-audit:
     needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.preflight.outputs.commit }}
+          persist-credentials: false
+      - name: Install locked RustSec audit tooling
+        run: |
+          rustup toolchain install stable --profile minimal
+          cargo +stable install cargo-audit --locked --version 0.23.0
+      - name: Audit desktop Rust dependencies
+        run: cargo +stable audit --file apps/desktop/src-tauri/Cargo.lock
+
+  web:
+    needs: [preflight, rust-audit]
     if: ${{ !inputs.android_only }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -93,7 +109,7 @@ jobs:
           if-no-files-found: error
 
   windows:
-    needs: preflight
+    needs: [preflight, rust-audit]
     if: ${{ !inputs.android_only }}
     runs-on: windows-latest
     timeout-minutes: 45
@@ -128,7 +144,7 @@ jobs:
           if-no-files-found: error
 
   android:
-    needs: preflight
+    needs: [preflight, rust-audit]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:

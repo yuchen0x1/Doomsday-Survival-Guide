@@ -22,7 +22,7 @@
 | Windows 10/11 x64 | [Windows 安装程序（.exe）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest)，包含 WebView2 离线安装组件                                                                         |
 | Android           | [Android 安装包（.apk）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest)，正式发布密钥签名                                                                                     |
 
-安装说明、校验方法及测试范围见 [v1.1.8 发布说明](docs/releases/v1.1.8.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。
+安装说明、校验方法及测试范围见 [v1.1.9 发布说明](docs/releases/v1.1.9.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。
 
 **一份可离线运行、跨平台的末日生存百科全书。** 全部知识随应用打包，断网照样能查；AI 只做辅助，绝不替代审核结论。
 

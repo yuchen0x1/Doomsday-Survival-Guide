@@ -12,6 +12,20 @@ permissions:
   contents: read
 
 jobs:
+  rust-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install locked RustSec audit tooling
+        run: |
+          rustup toolchain install stable --profile minimal
+          cargo +stable install cargo-audit --locked --version 0.23.0
+      - name: Audit desktop Rust dependencies
+        run: cargo +stable audit --file apps/desktop/src-tauri/Cargo.lock
+
   dependency-review:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
