@@ -21,11 +21,31 @@ export default function AIPage() {
   const [toolCalls, setToolCalls] = useState<string[]>([]);
   const bottomRef = useRef<HTMLDivElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const fallbackTimer = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    checkAIHealth().then(setAiAvailable);
     listConversations().then(setConvList);
-  }, [setAiAvailable]);
+  }, []);
+
+  // 断网再恢复时重新探测服务端，而不是永久停留在本地检索模式。
+  useEffect(() => {
+    if (!online) return;
+    let cancelled = false;
+    checkAIHealth().then((available) => {
+      if (!cancelled) setAiAvailable(available);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [online, setAiAvailable]);
+
+  useEffect(
+    () => () => {
+      abortRef.current?.abort();
+      if (fallbackTimer.current !== undefined) window.clearTimeout(fallbackTimer.current);
+    },
+    [],
+  );
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -42,7 +62,9 @@ export default function AIPage() {
 
     // AI 不可用 → 本地知识库降级
     if (!online || aiAvailable === false) {
-      setTimeout(() => {
+      if (fallbackTimer.current !== undefined) window.clearTimeout(fallbackTimer.current);
+      fallbackTimer.current = window.setTimeout(() => {
+        fallbackTimer.current = undefined;
         const fallback = localFallbackAnswer(content);
         setMessages([...nextMsgs, { role: 'assistant', content: fallback }]);
         setStreaming(false);
@@ -97,8 +119,8 @@ export default function AIPage() {
     const conv: AIConversation = {
       id: convId,
       title: messages[0]?.content.slice(0, 24) ?? '新对话',
-      messages: messages.map((m, i) => ({
-        id: `${i}`,
+      messages: messages.map((m) => ({
+        id: uid(),
         role: m.role,
         content: m.content,
         createdAt: new Date().toISOString(),
@@ -106,16 +128,39 @@ export default function AIPage() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    await saveConversation(conv);
-    setConvList(await listConversations());
-    toast('对话已保存到本地', 'success');
+    try {
+      await saveConversation(conv);
+      setConvList(await listConversations());
+      toast('对话已保存到本地', 'success');
+    } catch {
+      toast('保存对话失败，请检查浏览器存储空间', 'error');
+    }
+  };
+
+  const stopPending = () => {
+    abortRef.current?.abort();
+    if (fallbackTimer.current !== undefined) {
+      window.clearTimeout(fallbackTimer.current);
+      fallbackTimer.current = undefined;
+    }
+  };
+
+  const resetConversation = () => {
+    stopPending();
+    setMessages([]);
+    setConvId(uid());
+    setStreaming(false);
+    setToolCalls([]);
   };
 
   const loadConv = (c: AIConversation) => {
+    stopPending();
     setMessages(
       c.messages.map((m) => ({ role: m.role as 'user' | 'assistant', content: m.content })),
     );
     setConvId(c.id);
+    setStreaming(false);
+    setToolCalls([]);
   };
 
   const suggestions = [
@@ -154,14 +199,7 @@ export default function AIPage() {
             >
               <Icon name="copy" size={14} /> 保存对话
             </button>
-            <button
-              type="button"
-              className="btn btn-danger"
-              onClick={() => {
-                setMessages([]);
-                setConvId(uid());
-              }}
-            >
+            <button type="button" className="btn btn-danger" onClick={resetConversation}>
               <Icon name="trash" size={14} /> 新对话
             </button>
           </>
@@ -200,9 +238,9 @@ export default function AIPage() {
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
-                  {messages.map((m) => (
+                  {messages.map((m, index) => (
                     <div
-                      key={`${m.role}:${m.content}`}
+                      key={`${index}-${m.role}`}
                       className={`flex ${m.role === 'user' ? 'justify-end' : 'justify-start'}`}
                     >
                       <div

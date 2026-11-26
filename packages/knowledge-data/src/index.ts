@@ -46,30 +46,30 @@ export interface KnowledgeDataset {
   quizQuestions: QuizQuestion[];
 }
 
-let cached: KnowledgeDataset | null = null;
+const dataset: KnowledgeDataset = {
+  articles,
+  plants,
+  animals,
+  animalTracks,
+  insects,
+  medicines,
+  firstAid: firstAidGuides,
+  skills,
+  supplies,
+  scenarios,
+  hazards,
+  quizQuestions,
+};
+
+// 危险等级由审核规则强制确定（规则优先于人工/AI 标注，只升不降）。
+// 在模块加载时执行，确保直接导入的数组与 getDataset() 看到同一套等级。
+normalizeDatasetDanger(dataset);
+
 let cachedDocs: SearchDocument[] | null = null;
 
 /** 获取全量知识数据集（单例，避免重复展开大数组） */
 export function getDataset(): KnowledgeDataset {
-  if (!cached) {
-    cached = {
-      articles,
-      plants,
-      animals,
-      animalTracks,
-      insects,
-      medicines,
-      firstAid: firstAidGuides,
-      skills,
-      supplies,
-      scenarios,
-      hazards,
-      quizQuestions,
-    };
-    // 危险等级由审核规则强制确定（规则优先于人工/AI 标注，只升不降）
-    normalizeDatasetDanger(cached);
-  }
-  return cached;
+  return dataset;
 }
 
 /** 构建全局搜索文档（供 SearchIndex 使用） */

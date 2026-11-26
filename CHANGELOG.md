@@ -4,10 +4,56 @@
 
 ## [Unreleased]
 
+- TypeScript 7.0.2 跨大版本升级因 CI（validate / postgres-smoke）未通过暂缓，待单独评估后再升级。
+
+## [1.1.6] - 2026-11-26
+
+发布页：[v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) · [完整版本说明](docs/releases/v1.1.6.md)
+
+### 📢 版本概述
+
+安全与稳定性补丁：审计日志不再记录密码、令牌和 AI 对话内容，修复依赖安全告警与发布链路阻断；Windows / Android 启动后可自动检查稳定版，Web/PWA 继续使用 Service Worker 更新提示。同时修正危险等级展示、同步 API、AI 系统提示词、地图与离线更新等缺陷。
+
+### ✨ 新增功能
+
+- **原生端启动检查更新**：Windows / Android 启动后每天最多检查一次 GitHub 稳定版，发现新版本时显示覆盖安装提示；设置页仍可手动检查。
+
 ### 🔧 改进与优化
 
-- 依赖升级：express ^5.3.0、vite 8.3.8、@vitejs/plugin-react 6.3.0、@biomejs/biome 2.6.8，以及 GitHub Actions 组合升级（10 项）。均为维护性更新，无用户可见功能变化。
-- TypeScript 7.0.2 跨大版本升级因 CI（validate / postgres-smoke）未通过暂缓，待单独评估后再升级。
+- **审计日志脱敏**：写操作审计不再保存密码、令牌、AI 对话或图片内容；嵌套敏感字段替换为 `[REDACTED]`，超长载荷只记录长度。
+- **登录态即时校验**：JWT 守卫每次请求读取账号状态与最新角色，停用账号立即失效；`@Public()` 页面携带有效令牌时可识别登录用户。
+- **AI 系统提示词**：改由 API 服务端注入，客户端无法覆盖；客户端断开后取消上游请求。
+- **危险等级一致性**：审核规则提升后的等级同步到实体顶层字段，详情页、筛选器与搜索/元数据展示保持一致。
+- 依赖升级：express ^5.3.0、vite 8.3.8、@vitejs/plugin-react 6.3.0、@biomejs/biome 2.6.8；新增 effect 3.22.1 覆盖以清除 ReDoS 告警。
+
+### 🐛 问题修复
+
+- **审计日志泄露敏感信息**：登录密码、刷新令牌和 AI 提示词不再写入审计载荷，并通过数据库迁移清理历史敏感载荷。
+- **发布与 CI 阻断**：修正发布说明模板表格格式与 Biome schema 版本，`pnpm lint` 恢复通过。
+- **管理端审核事务**：内容状态更新与审核记录改用同一事务客户端，任一步失败都会整体回滚。
+- **同步 API**：历史、物资流水和答题记录按真实 `at` 字段排序；已删除物资对应的流水跳过；会话与消息 ID 改由服务端生成，避免跨用户主键冲突。
+- **内容查询**：危险等级、审核状态和搜索词增加运行时校验；危险与题库不再错误套用 `tags` 过滤；首页统计不再重复计算昆虫，并统一排除 D 级来源。
+- **AI 流式响应**：处理流结束时缺少换行符的最后一帧，避免丢失末段回答。
+- **地图**：瓦片改为行优先排列，修复 5×5 网格与标记错位。
+- **离线包**：更新时先成功下载再覆盖旧包，失败不再丢失上一版内容。
+- **学习与档案**：防止快速重复点击写入重复答题记录；连续学习天数按本地时区计算；家庭人数限制为 1-30 的整数。
+- **模拟器**：按选项 `nextStepId` 进入分支，并在切换场景时清空上一局进度。
+- **更新检查与备份**：时间格式异常不再抛错；导出超过 25 MB 时明确报错，避免生成无法再次导入的文件。
+
+### 🔒 安全与兼容性
+
+- 历史审计载荷迁移会清空 `/auth/`、`/ai/chat`、`/ai/identify` 以及包含 password、accessToken、refreshToken 的旧 payload；部署时执行 `prisma migrate deploy` 后生效，请先备份数据库。
+- 生产环境仍需单独设置至少 32 字符的 `JWT_SECRET`，不要使用 `.env.example` 中的默认值。
+- 重跑 `prisma db seed` 不再重置已有管理员密码和状态；首次创建且未设置 `ADMIN_PASSWORD` 时仍使用默认口令，请登录后立即修改。
+
+### 📦 下载与安装
+
+Web/PWA 下载 `.tar.gz` 后部署到 HTTPS 静态服务器；Windows 10/11 x64 关闭应用后覆盖安装；Android 使用系统安装器覆盖安装 APK（沿用正式签名）。文件名、平台、大小见 Release 页与 `release-metadata.json`，`SHA256SUMS` 提供下载文件摘要。Windows 安装程序未做 Authenticode 签名。
+
+### 🧪 验证结果
+
+- 本地 `pnpm lint`、`pnpm typecheck`、`pnpm test`（139 项）、`pnpm build`、`pnpm build:api`、`pnpm audit --prod --audit-level=high` 与 `node scripts/verify-release-versions.cjs` 全部通过。
+- 三端安装包由标签触发的 `Three-platform release` 构建，并校验 Android 签名与 `SHA256SUMS`。
 
 ## [1.1.5] - 2026-11-18
 

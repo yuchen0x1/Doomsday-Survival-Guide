@@ -19,7 +19,8 @@ pnpm --filter @apocalypse/mobile build
 
 # 同步 web 产物与插件到原生工程（Android + iOS）
 pnpm --filter @apocalypse/mobile sync     # = npx cap sync
-pnpm --filter @apocalypse/android 同步单端：npx cap sync android
+# 只同步 Android
+pnpm --filter @apocalypse/mobile exec cap sync android
 
 # 原生工程（需本机 Android Studio / Xcode）
 npx cap open android

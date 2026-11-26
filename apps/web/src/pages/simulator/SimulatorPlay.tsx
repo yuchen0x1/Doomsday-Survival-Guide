@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { BackButton } from '../../components/detail';
 import { Icon } from '../../components/Icon';
@@ -24,8 +24,17 @@ export default function SimulatorPlay() {
     label: string;
     consequence: string;
     quality: string;
+    nextStepId?: string;
   } | null>(null);
   const [finished, setFinished] = useState(false);
+
+  // 路由复用同一组件；切换到另一个场景时必须清空上一局进度。
+  useEffect(() => {
+    setStepIdx(0);
+    setScores([]);
+    setChosen(null);
+    setFinished(false);
+  }, [id]);
 
   const step = scenario?.steps[stepIdx];
 
@@ -56,14 +65,23 @@ export default function SimulatorPlay() {
   }
 
   const choose = (choice: (typeof step.choices)[0]) => {
-    setChosen({ label: choice.label, consequence: choice.consequence, quality: choice.quality });
+    setChosen({
+      label: choice.label,
+      consequence: choice.consequence,
+      quality: choice.quality,
+      nextStepId: choice.nextStepId,
+    });
     setScores((s) => [...s, { step: stepIdx, quality: choice.quality, risk: choice.riskLevel }]);
   };
 
   const next = () => {
-    const hasNext = stepIdx + 1 < scenario.steps.length;
-    if (hasNext) {
-      setStepIdx(stepIdx + 1);
+    // 决策树优先跳转到 choice.nextStepId，未指定时才顺序进入下一幕。
+    const targetIndex = chosen?.nextStepId
+      ? scenario.steps.findIndex((item) => item.id === chosen.nextStepId)
+      : -1;
+    const nextIndex = targetIndex >= 0 ? targetIndex : stepIdx + 1;
+    if (nextIndex < scenario.steps.length) {
+      setStepIdx(nextIndex);
       setChosen(null);
     } else {
       setFinished(true);

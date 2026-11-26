@@ -25,6 +25,13 @@ export interface IdentifyResult {
 
 const IDENTIFY_WARNING = '识别结果由 AI 生成，置信度仅供参考；身份未确认前禁止食用、药用或触碰。';
 
+const SURVIVAL_SYSTEM_PROMPT = `你是 APOCALYPSE SURVIVAL 末日生存指南的 AI 生存助手。规则：
+1. 优先使用工具检索正式知识库，基于检索结果回答；没有可靠资料时明确说"目前无法确认"，禁止编造。
+2. 高危问题优先给出风险规避与紧急求助建议（如涉及中毒、外伤、火灾、触电，先建议拨打 120/119 并远离危险源）。
+3. 回答结构：问题分析 → 当前风险 → 优先级 → 建议行动 → 不建议采取的行动 → 相关知识 → 信息来源 → 不确定性说明。
+4. 植物/动物识别结果必须提示不确定性，禁止建议食用或药用未确认物种。
+5. 使用简体中文，简洁、可操作。`;
+
 @Injectable()
 export class AIService {
   private readonly logger = new Logger('AI');
@@ -73,6 +80,10 @@ export class AIService {
     let status = 'ok';
     let error: string | undefined;
     let usage: { promptTokens?: number; completionTokens?: number; totalTokens?: number } = {};
+    // 客户端断开后立即取消上游请求，避免继续消耗额度。
+    const controller = new AbortController();
+    const onClose = () => controller.abort();
+    if (typeof res.on === 'function') res.on('close', onClose);
 
     try {
       if (!this.isAvailable()) {
@@ -87,8 +98,10 @@ export class AIService {
         baseUrl: this.baseUrl,
         apiKey: this.apiKey,
         model: this.model,
-        messages,
+        // 系统提示词只由服务端注入；客户端消息中的 system 角色在 DTO 层被拒绝。
+        messages: [{ role: 'system', content: SURVIVAL_SYSTEM_PROMPT }, ...messages],
         timeoutMs: this.timeoutMs,
+        signal: controller.signal,
       });
       const iterator = stream[Symbol.asyncIterator]();
       for (;;) {
@@ -115,6 +128,7 @@ export class AIService {
         /* 客户端已断开 */
       }
     } finally {
+      if (typeof res.off === 'function') res.off('close', onClose);
       try {
         res.end();
       } catch {

@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { isReviewStatus } from '../common/content-state';
 import { type ContentKind, KIND_DEFS, type SourceRow } from '../common/kinds';
 import { isVisibleTo, type ViewerRole } from '../common/visibility';
 import { PrismaService } from '../prisma/prisma.service';
@@ -19,6 +20,19 @@ export interface PagedResult {
   page: number;
   limit: number;
 }
+
+const TAG_KINDS = new Set<ContentKind>([
+  'articles',
+  'plants',
+  'animals',
+  'insects',
+  'medicines',
+  'first-aid',
+  'skills',
+  'supplies',
+  'scenarios',
+]);
+const DANGER_LEVELS = new Set(['L0', 'L1', 'L2', 'L3', 'L4']);
 
 /** 各 kind 的可搜索字段（仅使用模型真实存在的列） */
 const SEARCH_FIELDS: Record<ContentKind, string[]> = {
@@ -72,13 +86,35 @@ export class ContentService {
         and.push({ NOT: { sourceIds: { hasSome: dIds } } });
       }
     } else if (query.status) {
+      if (typeof query.status !== 'string' || !isReviewStatus(query.status)) {
+        throw new BadRequestException({
+          code: 'INVALID_STATUS',
+          message: `未知审核状态：${String(query.status)}`,
+        });
+      }
       and.push({ reviewStatus: query.status });
     }
     if (query.category && def.categoryField) {
+      if (typeof query.category !== 'string') {
+        throw new BadRequestException({ code: 'INVALID_CATEGORY', message: '分类参数格式错误' });
+      }
       and.push({ [def.categoryField]: query.category });
     }
-    if (query.danger) and.push({ dangerLevel: query.danger });
-    if (query.tag) and.push({ tags: { has: query.tag } });
+    if (query.danger) {
+      if (typeof query.danger !== 'string' || !DANGER_LEVELS.has(query.danger)) {
+        throw new BadRequestException({
+          code: 'INVALID_DANGER_LEVEL',
+          message: `未知危险等级：${String(query.danger)}`,
+        });
+      }
+      and.push({ dangerLevel: query.danger });
+    }
+    if (query.tag && TAG_KINDS.has(kind)) {
+      if (typeof query.tag !== 'string') {
+        throw new BadRequestException({ code: 'INVALID_TAG', message: '标签参数格式错误' });
+      }
+      and.push({ tags: { has: query.tag } });
+    }
     return and.length > 0 ? { AND: and } : {};
   }
 
@@ -163,7 +199,10 @@ export class ContentService {
     return def.serialize({ ...row, ...extra }, sources);
   }
 
-  async search(q: string, role: ViewerRole, limit = 20): Promise<Record<string, unknown>[]> {
+  async search(q: unknown, role: ViewerRole, limit = 20): Promise<Record<string, unknown>[]> {
+    if (typeof q !== 'string') {
+      throw new BadRequestException({ code: 'INVALID_QUERY', message: '搜索关键词格式错误' });
+    }
     const keyword = q.trim();
     if (!keyword) return [];
     const results: Record<string, unknown>[] = [];
@@ -236,16 +275,24 @@ export class ContentService {
   /** 首页统计：全部来自真实计数（游客/用户只统计已发布） */
   async homeStats(role: ViewerRole, userId?: string): Promise<Record<string, number>> {
     const publicOnly = role !== 'ADMIN';
+    const dSourceIds = publicOnly
+      ? (
+          await this.prisma.source.findMany({
+            where: { credibility: 'D' },
+            select: { id: true },
+          })
+        ).map((source) => source.id)
+      : [];
     const count = async (kind: ContentKind): Promise<number> => {
       const def = KIND_DEFS[kind];
       const delegate = this.delegate(kind);
-      const where = publicOnly ? { reviewStatus: 'published' } : {};
-      const base = (await delegate.count({ where })) as number;
-      if (!publicOnly || !def.dExcludeField) return base;
-      const excluded = (await delegate.count({
-        where: { AND: [where, { [def.dExcludeField]: 'D' }] },
-      })) as number;
-      return base - excluded;
+      const and: Record<string, unknown>[] = [];
+      if (publicOnly) {
+        and.push({ reviewStatus: 'published' });
+        if (def.dExcludeField) and.push({ NOT: { [def.dExcludeField]: 'D' } });
+        if (dSourceIds.length > 0) and.push({ NOT: { sourceIds: { hasSome: dSourceIds } } });
+      }
+      return (await delegate.count({ where: and.length > 0 ? { AND: and } : {} })) as number;
     };
 
     const [
@@ -281,7 +328,7 @@ export class ContentService {
     return {
       articles,
       plants,
-      animals: animals + insects,
+      animals,
       insects,
       skills,
       medicines,

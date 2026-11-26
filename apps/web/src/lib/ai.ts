@@ -20,13 +20,6 @@ export interface StreamHandlers {
   onError?: (message: string, degraded: boolean) => void;
 }
 
-export const AI_SYSTEM_PROMPT = `你是 APOCALYPSE SURVIVAL 末日生存指南的 AI 生存助手。规则：
-1. 优先使用工具检索正式知识库，基于检索结果回答；没有可靠资料时明确说"目前无法确认"，禁止编造。
-2. 高危问题优先给出风险规避与紧急求助建议（如涉及中毒、外伤、火灾、触电，先建议拨打 120/119 并远离危险源）。
-3. 回答结构：问题分析 → 当前风险 → 优先级 → 建议行动 → 不建议采取的行动 → 相关知识 → 信息来源 → 不确定性说明。
-4. 植物/动物识别结果必须提示不确定性，禁止建议食用或药用未确认物种。
-5. 使用简体中文，简洁、可操作。`;
-
 /** 检查 AI 服务健康（服务端存在且配置了密钥） */
 export async function checkAIHealth(): Promise<boolean> {
   try {
@@ -61,6 +54,34 @@ export async function streamChat(
   const decoder = new TextDecoder();
   let buffer = '';
   let full = '';
+
+  const handleLine = async (line: string): Promise<boolean> => {
+    if (!line.startsWith('data:')) return true;
+    const payload = line.slice(5).trim();
+    if (!payload || payload === '[DONE]') return true;
+    let obj: { type: string; text?: string; toolCall?: AIToolCall; error?: string };
+    try {
+      obj = JSON.parse(payload) as typeof obj;
+    } catch {
+      /* 忽略不完整帧 */
+      return true;
+    }
+    if (obj.type === 'delta' && obj.text) {
+      full += obj.text;
+      handlers.onDelta(obj.text);
+    } else if (obj.type === 'tool_call' && obj.toolCall) {
+      handlers.onToolCall?.(obj.toolCall);
+    } else if (obj.type === 'error') {
+      await reader.cancel().catch(() => undefined);
+      if (handlers.onError) {
+        handlers.onError(obj.error ?? '流式响应错误', false);
+        return false;
+      }
+      throw new Error(obj.error ?? '流式响应错误');
+    }
+    return true;
+  };
+
   for (;;) {
     const { done, value } = await reader.read();
     if (done) break;
@@ -68,31 +89,12 @@ export async function streamChat(
     const lines = buffer.split('\n');
     buffer = lines.pop() ?? '';
     for (const line of lines) {
-      if (!line.startsWith('data:')) continue;
-      const payload = line.slice(5).trim();
-      if (payload === '[DONE]') continue;
-      let obj: { type: string; text?: string; toolCall?: AIToolCall; error?: string };
-      try {
-        obj = JSON.parse(payload) as typeof obj;
-      } catch {
-        /* 忽略不完整帧 */
-        continue;
-      }
-      if (obj.type === 'delta' && obj.text) {
-        full += obj.text;
-        handlers.onDelta(obj.text);
-      } else if (obj.type === 'tool_call' && obj.toolCall) {
-        handlers.onToolCall?.(obj.toolCall);
-      } else if (obj.type === 'error') {
-        await reader.cancel().catch(() => undefined);
-        if (handlers.onError) {
-          handlers.onError(obj.error ?? '流式响应错误', false);
-          return;
-        }
-        throw new Error(obj.error ?? '流式响应错误');
-      }
+      if (!(await handleLine(line))) return;
     }
   }
+  // 流结束时最后一个事件可能没有换行符，必须冲洗 decoder 与残留缓冲。
+  buffer += decoder.decode();
+  if (buffer.trim() && !(await handleLine(buffer))) return;
   handlers.onDone?.(full);
 }
 

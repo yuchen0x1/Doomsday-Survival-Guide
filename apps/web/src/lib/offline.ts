@@ -287,7 +287,7 @@ export async function updatePackage(
   def: PackageDef,
   onProgress: (pct: number) => void,
 ): Promise<void> {
-  await deletePackage(def.id);
+  // downloadPackage 成功后才覆盖旧 payload；失败时保留上一版离线内容。
   await downloadPackage(def, onProgress);
 }
 

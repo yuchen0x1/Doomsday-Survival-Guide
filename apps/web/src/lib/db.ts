@@ -13,7 +13,7 @@ import type {
   UserNote,
 } from '@apocalypse/core';
 import { type DBSchema, type IDBPDatabase, openDB } from 'idb';
-import { BACKUP_STORES, parseBackup } from './backup';
+import { BACKUP_STORES, MAX_BACKUP_BYTES, parseBackup } from './backup';
 import { validateInventory } from './inventory';
 
 /**
@@ -252,23 +252,35 @@ export const setSetting = (key: string, value: unknown): Promise<void> =>
 export const listQuizRecords = () => all<QuizRecord>('quizRecords');
 export const addQuizRecord = (r: Omit<QuizRecord, 'id'>): Promise<void> =>
   put('quizRecords', { ...r, id: uid() } as QuizRecord);
+function localDateKey(date: Date): string {
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getFullYear()}-${month}-${day}`;
+}
+
+function shiftDateKey(key: string, days: number): string {
+  const [year, month, day] = key.split('-').map(Number);
+  const date = new Date(year, month - 1, day);
+  date.setDate(date.getDate() + days);
+  return localDateKey(date);
+}
+
 export async function getLearningProgress(): Promise<LearningProgress> {
   const records = await listQuizRecords();
   const answered = records.length;
   const correct = records.filter((r) => r.correct).length;
   const wrongBook = Array.from(new Set(records.filter((r) => !r.correct).map((r) => r.questionId)));
-  const days = new Set(records.map((r) => r.at.slice(0, 10)));
+  // 学习连续天数按用户本地时区计算；直接切 ISO 字符串会在 UTC+8 的凌晨断签。
+  const days = new Set(records.map((r) => localDateKey(new Date(r.at))));
   const sortedDays = Array.from(days).sort();
   let streak = 0;
-  const today = new Date().toISOString().slice(0, 10);
+  const today = localDateKey(new Date());
   let cursor: string | null = sortedDays.includes(today) ? today : null;
   if (cursor) {
     streak = 1;
     for (let i = sortedDays.length - 1; i >= 0; i--) {
       if (sortedDays[i] === cursor) {
-        const d: Date = new Date(cursor);
-        d.setDate(d.getDate() - 1);
-        cursor = d.toISOString().slice(0, 10);
+        cursor = shiftDateKey(cursor, -1);
         if (i > 0 && sortedDays[i - 1] === cursor) streak++;
       }
     }
@@ -337,7 +349,11 @@ export async function exportAllData(): Promise<string> {
     }),
   );
   await tx.done;
-  return JSON.stringify(payload, null, 2);
+  const json = JSON.stringify(payload, null, 2);
+  if (new TextEncoder().encode(json).length > MAX_BACKUP_BYTES) {
+    throw new Error('备份超过 25 MB，无法导出为可再次导入的文件');
+  }
+  return json;
 }
 
 export async function importAllData(json: string): Promise<number> {

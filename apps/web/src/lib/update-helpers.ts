@@ -25,8 +25,10 @@ export function getInitialUpdateStatus({
 
 export function formatUpdateTime(value: string | null): string {
   if (!value) return '尚未检查';
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return '时间格式无效';
   return new Intl.DateTimeFormat('zh-CN', {
     dateStyle: 'short',
     timeStyle: 'medium',
-  }).format(new Date(value));
+  }).format(date);
 }

@@ -93,9 +93,15 @@ export default function ProfilePage() {
                   max={30}
                   className="field mt-1.5"
                   value={profile.householdSize}
-                  onChange={(e) =>
-                    setProfile({ ...profile, householdSize: Number(e.target.value) })
-                  }
+                  onChange={(e) => {
+                    const value = Number(e.target.value);
+                    // 空值/小数/越界值会让备份无法再次导入，输入时即限制为 1-30 的整数。
+                    setProfile({
+                      ...profile,
+                      householdSize:
+                        Number.isInteger(value) && value >= 1 && value <= 30 ? value : 1,
+                    });
+                  }}
                   onBlur={() => persist(profile)}
                 />
               </label>

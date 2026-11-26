@@ -80,8 +80,9 @@ export default function MapPage() {
   const { x: cx, y: cy } = useMemo(() => deg2num(center.lat, center.lng, ZOOM), [center]);
   const world = 2 ** ZOOM;
   const tiles: { x: number; y: number }[] = [];
-  for (let dx = -2; dx <= 2; dx++) {
-    for (let dy = -2; dy <= 2; dy++) {
+  // 行优先顺序（y 外层、x 内层），与下方按 i % 5 / i / 5 的网格定位保持一致。
+  for (let dy = -2; dy <= 2; dy++) {
+    for (let dx = -2; dx <= 2; dx++) {
       const x = (((cx + dx) % world) + world) % world;
       const y = cy + dy;
       if (y >= 0 && y < world) tiles.push({ x, y });

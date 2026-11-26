@@ -7,6 +7,7 @@ import { detectPlatform, usePlatformLayout } from '../lib/platform';
 import { useApp } from '../lib/store';
 import { PwaUpdateProvider } from '../lib/update';
 import { Icon } from './Icon';
+import { NativeUpdateBanner } from './NativeUpdateBanner';
 import { PwaUpdateBanner } from './PwaUpdate';
 import { ToastHost } from './ui';
 
@@ -419,6 +420,7 @@ function AppLayoutContent({ children }: { children: React.ReactNode }) {
 
       <ToastHost />
       <PwaUpdateBanner />
+      <NativeUpdateBanner />
     </div>
   );
 }

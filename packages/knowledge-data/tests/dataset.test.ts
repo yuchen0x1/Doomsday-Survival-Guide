@@ -51,6 +51,27 @@ describe('数据集完整性', () => {
     );
     expect(getHomeCounts().articles).toBe(ds.articles.length);
   });
+
+  it('顶层危险等级与审核后的 meta 一致', () => {
+    const collections = {
+      animals: ds.animals,
+      insects: ds.insects,
+      medicines: ds.medicines,
+      skills: ds.skills,
+      hazards: ds.hazards,
+    };
+    for (const [name, list] of Object.entries(collections)) {
+      for (const item of list as {
+        id: string;
+        dangerLevel: string;
+        meta: { dangerLevel: string };
+      }[]) {
+        expect(item.dangerLevel, `${name}/${item.id} 顶层等级与 meta 不一致`).toBe(
+          item.meta.dangerLevel,
+        );
+      }
+    }
+  });
 });
 
 describe('审核规则闸门（AI 知识质量控制）', () => {

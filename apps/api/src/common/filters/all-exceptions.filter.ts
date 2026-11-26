@@ -39,15 +39,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
               : exception.message;
       }
     } else if (exception instanceof Error) {
-      message = exception.message;
+      // 非 HttpException 的 5xx 只记录服务端日志，响应保持通用文案，避免泄露栈/数据库细节。
       this.logger.error(
         `${request.method} ${request.url} -> ${exception.message}`,
         exception.stack,
       );
-    }
-
-    if (status >= 500 && !(exception instanceof HttpException)) {
-      // 5xx 已在上方记录
+    } else {
+      this.logger.error(`${request.method} ${request.url} -> 未知异常`);
     }
 
     response.status(status).json({ code, message });

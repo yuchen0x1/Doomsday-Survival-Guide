@@ -1,5 +1,11 @@
 # 更新历史
 
+## v1.1.6 · 2026-11-26
+
+安全与稳定性补丁：审计日志不再记录密码、令牌和 AI 对话内容；修复依赖安全告警与发布链路阻断；Windows / Android 启动后可自动检查稳定版；同时修正危险等级展示、同步 API、地图与离线更新等缺陷。
+
+[完整版本说明](v1.1.6.md)
+
 ## v1.1.5 · 2026-11-18
 
 Windows 和 Android 可以在设置中查询新版本并打开官方发行页。Web/PWA 可调整定期检查频率，关闭提示后仍可在设置中应用已下载的更新。
@@ -10,6 +16,9 @@ Windows 和 Android 可以在设置中查询新版本并打开官方发行页。
 
 | 版本                                                                               | 发布日期     | 提供内容 / 状态                                  |
 | ---------------------------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| [v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
+| [v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5) | 2026-11-18   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
+| [v1.1.4](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.4) | 2026-11-17   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.3](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.3) | 2026-11-16   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | v1.1.2                                                                             | 2026-11-16   | 标签已推送；Windows 构建失败，未创建正式 Release |
 | [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK  |

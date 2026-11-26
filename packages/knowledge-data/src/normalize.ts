@@ -18,11 +18,17 @@ import { computeRequiredDanger, DANGER_ORDER } from '@apocalypse/core';
  * validateDataset 与运行时展示使用同一套判定。
  */
 
-function enforceLevel(meta: { dangerLevel: string }, text: string): void {
+function enforceLevel(
+  meta: { dangerLevel: string },
+  text: string,
+  entity?: { dangerLevel: string },
+): void {
   const required = computeRequiredDanger(text);
   if (DANGER_ORDER[required.level] > DANGER_ORDER[meta.dangerLevel as 'L0']) {
     meta.dangerLevel = required.level;
   }
+  // 详情页/筛选器读取实体顶层的 dangerLevel，必须与审核后的 meta 保持一致。
+  if (entity) entity.dangerLevel = meta.dangerLevel;
 }
 
 const articleText = (a: KnowledgeArticle): string =>
@@ -59,10 +65,10 @@ export function normalizeDatasetDanger(input: {
 }): void {
   for (const a of input.articles) enforceLevel(a.meta, articleText(a));
   for (const p of input.plants) enforceLevel(p.meta, plantText(p));
-  for (const a of input.animals) enforceLevel(a.meta, animalText(a));
+  for (const a of input.animals) enforceLevel(a.meta, animalText(a), a);
   for (const f of input.firstAid) enforceLevel(f.meta, firstAidText(f));
-  for (const s of input.skills) enforceLevel(s.meta, skillText(s));
-  for (const m of input.medicines) enforceLevel(m.meta, medicineText(m));
-  for (const h of input.hazards) enforceLevel(h.meta, hazardText(h));
+  for (const s of input.skills) enforceLevel(s.meta, skillText(s), s);
+  for (const m of input.medicines) enforceLevel(m.meta, medicineText(m), m);
+  for (const h of input.hazards) enforceLevel(h.meta, hazardText(h), h);
   for (const s of input.scenarios) enforceLevel(s.meta, scenarioText(s));
 }

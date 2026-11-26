@@ -123,10 +123,10 @@ export class SyncService {
       }));
     }
     const delegate = this.delegate(resource);
-    const rows = await delegate.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-    });
+    const orderBy = ['history', 'transactions', 'quiz-records'].includes(resource)
+      ? { at: 'desc' }
+      : { createdAt: 'desc' };
+    const rows = await delegate.findMany({ where: { userId }, orderBy });
     return rows.map((row: Record<string, unknown>) => serializeDates(row));
   }
 
@@ -192,8 +192,9 @@ export class SyncService {
             def.dateFields?.includes(field) && value !== null ? new Date(String(value)) : value;
         }
         if (typeof item.id === 'string' && item.id) data.id = item.id;
-        if (resource === 'transactions' && validEntryIds && typeof data.entryId === 'string') {
-          if (!validEntryIds.has(data.entryId)) data.entryId = null;
+        if (resource === 'transactions') {
+          // entryId 为非空外键：跳过已删除物资对应的流水，避免整包同步回滚。
+          if (typeof data.entryId !== 'string' || !validEntryIds?.has(data.entryId)) continue;
         }
         await scoped.create({ data });
         created += 1;
@@ -218,12 +219,11 @@ export class SyncService {
           : [];
         await tx.aIConversation.create({
           data: {
-            ...(typeof item.id === 'string' && item.id ? { id: item.id } : {}),
+            // 会话与消息 ID 由服务端生成；客户端 ID 只在本地有效，跨用户复用会撞全局主键。
             userId,
             title: typeof item.title === 'string' ? item.title : '新对话',
             messages: {
               create: messages.map((m) => ({
-                ...(typeof m.id === 'string' && m.id ? { id: m.id } : {}),
                 role: typeof m.role === 'string' ? m.role : 'user',
                 content: typeof m.content === 'string' ? m.content : '',
                 toolCalls: (m.toolCalls as object | undefined) ?? undefined,

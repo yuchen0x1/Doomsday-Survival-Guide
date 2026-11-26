@@ -33,6 +33,10 @@ const PROTECTED_FIELDS = new Set([
 
 const MEDICAL_CATEGORY_SLUGS = new Set(['first-aid', 'medicines']);
 
+type ContentDelegate = {
+  update(args: unknown): Promise<Record<string, unknown>>;
+};
+
 export interface StatusInput {
   status: string;
   note?: string;
@@ -257,7 +261,11 @@ export class AdminService {
     }
 
     const updated = await this.prisma.$transaction(async (tx) => {
-      const next = (await delegate.update({
+      const txDelegate = (tx as unknown as Record<string, ContentDelegate>)[
+        KIND_DEFS[kind].delegate
+      ];
+      // 状态更新与审核记录必须使用同一个事务客户端，任何一步失败都整体回滚。
+      const next = await txDelegate.update({
         where: { id },
         data: {
           reviewStatus: to,
@@ -266,7 +274,7 @@ export class AdminService {
           reviewedBy,
           version: { increment: 1 },
         },
-      })) as Record<string, unknown>;
+      });
       await tx.reviewRecord.create({
         data: {
           contentKind: kind,

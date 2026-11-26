@@ -4,9 +4,9 @@
 
 <!-- github-release:start -->
 
-**[v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5)** · 2026-11-18
+**[v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6)** · 2026-11-26
 
-Windows 和 Android 设置页可检查稳定版并打开官方发行页。Web/PWA 可调整定期检查频率，暂时关闭更新提示后仍能在设置中应用已缓存的新版本。
+安全与稳定性补丁：审计日志不再记录密码、令牌和 AI 对话内容；Windows / Android 启动后可自动检查稳定版；同时修正危险等级展示、同步 API、地图与离线更新等缺陷。
 
 [全部发行记录](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases)
 
@@ -280,16 +280,16 @@ PWA 安装与 Service Worker 仅在 **HTTPS 或 localhost** 下生效（见 [doc
 
 ## AI 知识质量控制红线
 
-| 红线                           | 落地方式                                                                            |
-| ------------------------------ | ----------------------------------------------------------------------------------- |
-| 危险等级不得由 AI/作者自行降级 | `computeRequiredDanger` + `normalize.ts`：规则命中即强制提升（只升不降）            |
-| 审核状态机不可逆跳过           | `draft → pending_review → reviewed → published → retired`，`admin` 状态迁移接口校验 |
-| AI 生成内容不得直接发布        | 默认 `pending_review`；5 个未验证技能显式标注 `pending_review`                      |
-| 高危问题先给避险建议           | `AI_SYSTEM_PROMPT` 要求中毒/外伤/火灾/触电先建议拨打 120/119 并远离危险源           |
-| 身份未确认禁止食用/药用        | 识别结果仅返回候选 + 置信度 + 不确定性，低置信度明确写「身份未确认」                |
-| 结果必须可追溯                 | 回答结构含「信息来源 / 不确定性说明」；练习题带来源溯源链接                         |
-| 无依据不得编造                 | `validateDataset` 质量闸门；无 Key/离线时降级本地检索并标注来源，禁止伪造 AI 输出   |
-| 密钥不出服务端                 | `AI_API_KEY` 仅存服务端 `.env`；前端只调 `/api/ai/chat`（SSE）与 `/api/ai/identify` |
+| 红线                           | 落地方式                                                                               |
+| ------------------------------ | -------------------------------------------------------------------------------------- |
+| 危险等级不得由 AI/作者自行降级 | `computeRequiredDanger` + `normalize.ts`：规则命中即强制提升（只升不降）               |
+| 审核状态机不可逆跳过           | `draft → pending_review → reviewed → published → retired`，`admin` 状态迁移接口校验    |
+| AI 生成内容不得直接发布        | 默认 `pending_review`；5 个未验证技能显式标注 `pending_review`                         |
+| 高危问题先给避险建议           | API 服务端 `SURVIVAL_SYSTEM_PROMPT` 要求中毒/外伤/火灾/触电先拨打 120/119 并远离危险源 |
+| 身份未确认禁止食用/药用        | 识别结果仅返回候选 + 置信度 + 不确定性，低置信度明确写「身份未确认」                   |
+| 结果必须可追溯                 | 回答结构含「信息来源 / 不确定性说明」；练习题带来源溯源链接                            |
+| 无依据不得编造                 | `validateDataset` 质量闸门；无 Key/离线时降级本地检索并标注来源，禁止伪造 AI 输出      |
+| 密钥不出服务端                 | `AI_API_KEY` 仅存服务端 `.env`；前端只调 `/api/ai/chat`（SSE）与 `/api/ai/identify`    |
 
 AI 服务参数、环境变量清单见 [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) 与根 `.env.example`。
 

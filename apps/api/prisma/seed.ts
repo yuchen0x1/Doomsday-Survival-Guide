@@ -97,11 +97,14 @@ async function seedSources(): Promise<number> {
 
 async function seedAdmin(): Promise<string> {
   const email = (process.env.ADMIN_EMAIL ?? 'admin@survival.local').trim().toLowerCase();
-  const password = process.env.ADMIN_PASSWORD ?? 'change-me-initial-admin-password';
+  const configuredPassword = process.env.ADMIN_PASSWORD?.trim();
+  const password = configuredPassword ?? 'change-me-initial-admin-password';
   const passwordHash = await bcrypt.hash(password, 10);
+  const existing = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   const user = await prisma.user.upsert({
     where: { email },
-    update: { passwordHash, role: 'ADMIN', status: 'active' },
+    // 重跑 seed 只确保管理员角色，不覆盖已有密码、状态，避免默认口令重置生产账号。
+    update: { role: 'ADMIN' },
     create: {
       email,
       name: '系统管理员',
@@ -110,6 +113,9 @@ async function seedAdmin(): Promise<string> {
       status: 'active',
     },
   });
+  if (!existing && !configuredPassword) {
+    console.warn('⚠ 未设置 ADMIN_PASSWORD，初始管理员使用默认口令；请登录后立即修改。');
+  }
   return user.id;
 }
 

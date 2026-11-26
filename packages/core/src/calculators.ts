@@ -226,7 +226,8 @@ export const CALCULATORS: CalculatorDef[] = [
       },
     ],
     compute: (i) => {
-      const h = (i.capacity * 0.85 * i.tempFactor) / i.draw;
+      const draw = i.draw > 0 ? i.draw : 1;
+      const h = (i.capacity * 0.85 * i.tempFactor) / draw;
       return [
         { key: 'hours', label: '预计续航', value: r2(h), unit: 'h' },
         {
@@ -334,8 +335,9 @@ export const CALCULATORS: CalculatorDef[] = [
       },
     ],
     compute: (i) => {
-      const remain = i.total - i.elapsed;
-      const ratio = remain / i.total;
+      const total = i.total > 0 ? i.total : 1;
+      const remain = total - i.elapsed;
+      const ratio = Math.max(0, Math.min(1, remain / total));
       return [
         {
           key: 'remain',

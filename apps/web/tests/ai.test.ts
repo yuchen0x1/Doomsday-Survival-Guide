@@ -61,6 +61,20 @@ describe('streamChat', () => {
     await expect(streamChat(messages, { onDelta: () => {} })).rejects.toThrow('boom');
   });
 
+  it('处理流结束时没有换行符的最后一帧', async () => {
+    stubFetch(['data: {"type":"delta","text":"尾帧"}']);
+    const deltas: string[] = [];
+    let done = '';
+    await streamChat(messages, {
+      onDelta: (t) => deltas.push(t),
+      onDone: (full) => {
+        done = full;
+      },
+    });
+    expect(deltas).toEqual(['尾帧']);
+    expect(done).toBe('尾帧');
+  });
+
   it('不完整帧被忽略，不影响后续帧', async () => {
     stubFetch(['data: {broken-json\n', 'data: {"type":"delta","text":"ok"}\n']);
     const deltas: string[] = [];

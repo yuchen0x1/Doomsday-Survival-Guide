@@ -1,22 +1,33 @@
 import { Body, Controller, Get, Post, Res } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsIn, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import {
+  ArrayMaxSize,
+  IsArray,
+  IsIn,
+  IsNotEmpty,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
 import type { Response } from 'express';
 import { AuthUser, CurrentUser, Public } from '../common/decorators';
 import { AIService, type IdentifyResult } from './ai.service';
 
 class ChatMessageDto {
-  @IsIn(['system', 'user', 'assistant'])
-  role!: 'system' | 'user' | 'assistant';
+  // system 提示词由服务端注入，禁止客户端覆盖。
+  @IsIn(['user', 'assistant'])
+  role!: 'user' | 'assistant';
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(12000)
   content!: string;
 }
 
 class ChatBodyDto {
   @IsArray()
+  @ArrayMaxSize(50)
   @ValidateNested({ each: true })
   @Type(() => ChatMessageDto)
   messages!: ChatMessageDto[];
@@ -25,6 +36,7 @@ class ChatBodyDto {
 class IdentifyBodyDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(8_000_000)
   image!: string;
 
   @IsIn(['plant', 'animal'])

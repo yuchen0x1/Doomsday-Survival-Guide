@@ -12,6 +12,6 @@
 
 ## 当前仓库状态说明
 
-2026-11-12 检查时，GitHub 远程只存在 `main`，没有其他远程分支或未合并 Pull Request。当前同步盘工作区的 `.git` 是 Microsoft 云同步占位点，不能读取本地分支和提交状态。
+2026-11-26 检查：本地 `.git` 是真实 Git 元数据，当前分支 `main`，工作区包含完整的 Web、API、桌面和移动端源码。此前的 `.evolution/`、`.git-cloud-placeholder-*` 目录已不存在，无需再保留。
 
-2026-11-13：本地 Git 已从远程 main 的真实历史恢复（HEAD b0ba6ddf47c4f74e326161c62e268378e77b7205）。`.git` 现在指向 `.evolution/repository.git`，原占位目录保留为 `.git-cloud-placeholder-20261113`。恢复没有 checkout 或覆盖工作文件；大量既有修改和 API/桌面文件缺失仍保留。上述两个本地恢复目录必须一同保留，不要误删。
+远程长期分支只保留 `main`。Dependabot 自动生成的分支随对应依赖 PR 存在，关闭 PR 后应删除；不要把它们当作功能分支长期保留。

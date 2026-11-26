@@ -17,4 +17,8 @@ describe('PWA update helpers', () => {
   it('formats an absent check timestamp without throwing', () => {
     expect(formatUpdateTime(null)).toBe('尚未检查');
   });
+
+  it('handles an invalid persisted timestamp without throwing', () => {
+    expect(formatUpdateTime('not-a-date')).toBe('时间格式无效');
+  });
 });

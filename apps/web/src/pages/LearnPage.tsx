@@ -1,5 +1,5 @@
 import type { LearningProgress } from '@apocalypse/core';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Icon } from '../components/Icon';
 import { EmptyState, PageHeader, Panel, Progress, Tabs, Tag } from '../components/ui';
@@ -54,20 +54,26 @@ export default function LearnPage() {
     setSessionScore({ correct: 0, total: 0 });
   };
 
+  const answering = useRef(false);
   const answer = async (choiceIdx: number) => {
-    if (!session || session.chosen !== null) return;
+    if (!session || session.chosen !== null || answering.current) return;
     const q = getQuiz(session.ids[session.idx]);
     if (!q) return;
-    const correct = choiceIdx === q.answerIndex;
-    await addQuizRecord({
-      questionId: q.id,
-      chosenIndex: choiceIdx,
-      correct,
-      at: new Date().toISOString(),
-    });
-    setSession({ ...session, chosen: choiceIdx, revealed: true });
-    setSessionScore((s) => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
-    refresh();
+    answering.current = true;
+    try {
+      const correct = choiceIdx === q.answerIndex;
+      await addQuizRecord({
+        questionId: q.id,
+        chosenIndex: choiceIdx,
+        correct,
+        at: new Date().toISOString(),
+      });
+      setSession({ ...session, chosen: choiceIdx, revealed: true });
+      setSessionScore((s) => ({ correct: s.correct + (correct ? 1 : 0), total: s.total + 1 }));
+      refresh();
+    } finally {
+      answering.current = false;
+    }
   };
 
   const nextQ = () => {

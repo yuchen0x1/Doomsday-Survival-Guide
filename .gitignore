@@ -26,6 +26,19 @@ __pycache__/
 .pytest_cache/
 .venv/
 
+# Editor / OS / local diagnostic leftovers
+Thumbs.db
+desktop.ini
+*.bak
+*.old
+*.orig
+*~
+*.swp
+.eslintcache
+.cache/
+.idea/
+.vscode/
+
 # Downloaded installers and local diagnostic dumps
 *.apk
 *.aab
