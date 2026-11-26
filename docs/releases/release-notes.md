@@ -32,19 +32,19 @@ Windows 和 Android 可以在设置中查询新版本并打开官方发行页。
 
 按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3–v1.1.7 为此前已发布的正式 GitHub Release；v1.1.2 为未完成的发布尝试，v1.1.8 的发布已取消，均没有创建正式 Release。本轮发布版本为 v1.1.9，安装包与最终发布状态以 GitHub Release 页面为准。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
 
-| 版本                                                                               | 发布日期     | 提供内容 / 状态                                  |
-| ---------------------------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| 版本                                                                               | 发布日期     | 提供内容 / 状态                                                       |
+| ---------------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------- |
 | [v1.1.9](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.9) | 2026-11-27   | 本轮发布；Web/PWA、Windows x64、签名 Android APK，以 Release 附件为准 |
-| v1.1.8                                                                             | 2026-11-26   | 发布已取消，未创建正式 Release；修复随 v1.1.9 交付 |
-| [v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
-| [v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
-| [v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5) | 2026-11-18   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
-| [v1.1.4](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.4) | 2026-11-17   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
-| [v1.1.3](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.3) | 2026-11-16   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
-| v1.1.2                                                                             | 2026-11-16   | 标签已推送；Windows 构建失败，未创建正式 Release |
-| [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
-| [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                           |
-| v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                  |
+| v1.1.8                                                                             | 2026-11-26   | 发布已取消，未创建正式 Release；修复随 v1.1.9 交付                    |
+| [v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK                       |
+| [v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK                       |
+| [v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5) | 2026-11-18   | Web/PWA、Windows x64 安装程序、签名 Android APK                       |
+| [v1.1.4](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.4) | 2026-11-17   | Web/PWA、Windows x64 安装程序、签名 Android APK                       |
+| [v1.1.3](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.3) | 2026-11-16   | Web/PWA、Windows x64 安装程序、签名 Android APK                       |
+| v1.1.2                                                                             | 2026-11-16   | 标签已推送；Windows 构建失败，未创建正式 Release                      |
+| [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK                       |
+| [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                                                |
+| v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                                       |
 
 ## v1.1.4 · 2026-11-17
 
