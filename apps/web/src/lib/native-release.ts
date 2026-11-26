@@ -1,7 +1,13 @@
+import { registerPlugin } from '@capacitor/core';
+
 const REPOSITORY = 'yuchen0x1/Doomsday-Survival-Guide';
 const STABLE_VERSION = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$/;
 
 export type NativeReleasePlatform = 'windows' | 'android';
+
+export const androidUpdates = registerPlugin<{
+  openRelease(options: { tag: string }): Promise<void>;
+}>('SurvivalUpdate');
 
 export interface NativeRelease {
   tag: string;

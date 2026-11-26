@@ -184,8 +184,8 @@ export class AdminService {
         KIND_DEFS[kind].delegate
       ];
       // 已提交/已审核/已发布内容被修改后，原审核结论失效，同一事务内退回草稿并留痕。
-      const updated = await txDelegate.update({
-        where: { id },
+      const updated = await updateCurrentContent(txDelegate, {
+        where: { id, version: existing.version, reviewStatus: currentStatus },
         data: {
           ...data,
           version: { increment: 1 },
@@ -305,8 +305,8 @@ export class AdminService {
         KIND_DEFS[kind].delegate
       ];
       // 状态更新与审核记录必须使用同一个事务客户端，任何一步失败都整体回滚。
-      const next = await txDelegate.update({
-        where: { id },
+      const next = await updateCurrentContent(txDelegate, {
+        where: { id, version: row.version, reviewStatus: from },
         data: {
           reviewStatus: to,
           reviewNote: input.note ?? null,
@@ -455,5 +455,23 @@ export class AdminService {
       orderBy: { createdAt: 'desc' },
       take: 100,
     }) as unknown as Promise<Record<string, unknown>[]>;
+  }
+}
+
+/** 校验后若内容已被其他请求修改或审核，不得覆盖新版本或发布旧审核结果。 */
+async function updateCurrentContent(
+  delegate: ContentDelegate,
+  args: unknown,
+): Promise<Record<string, unknown>> {
+  try {
+    return await delegate.update(args);
+  } catch (error) {
+    if (error && typeof error === 'object' && 'code' in error && error.code === 'P2025') {
+      throw new ConflictException({
+        code: 'CONTENT_CHANGED',
+        message: '内容已被其他请求修改或审核，请刷新后重试',
+      });
+    }
+    throw error;
   }
 }

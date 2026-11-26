@@ -232,6 +232,7 @@ export async function loadPackageStates(): Promise<PackageState[]> {
             : existing.status;
       return {
         ...existing,
+        ...def,
         sizeBytes,
         status,
         def,
@@ -254,7 +255,6 @@ export async function downloadPackage(
     await new Promise((r) => setTimeout(r, 90 + Math.random() * 120));
     onProgress(Math.round((i / steps) * 100));
   }
-  await db.setSetting(KEY_PREFIX + def.id, data);
   const pkg: OfflinePackage = {
     id: def.id,
     name: def.name,
@@ -266,7 +266,23 @@ export async function downloadPackage(
     status: 'downloaded',
     progress: 100,
   };
-  await db.saveOfflinePackage(pkg);
+  const database = await db.getDB();
+  const tx = database.transaction(['settings', 'offlinePackages'], 'readwrite');
+  const done = tx.done;
+  void done.catch(() => {});
+  try {
+    await tx.objectStore('settings').put({ key: KEY_PREFIX + def.id, value: data });
+    await tx.objectStore('offlinePackages').put(pkg);
+    await done;
+  } catch (error) {
+    try {
+      tx.abort();
+    } catch {
+      // The transaction may already have aborted.
+    }
+    await done.catch(() => {});
+    throw error;
+  }
 }
 
 export async function deletePackage(id: string): Promise<void> {

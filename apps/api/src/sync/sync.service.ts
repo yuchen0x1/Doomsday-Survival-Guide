@@ -207,6 +207,17 @@ export class SyncService {
     const conversations = items
       .map((raw) => toObject(raw))
       .filter((v): v is Record<string, unknown> => Boolean(v));
+    for (const item of conversations) {
+      if (
+        item.messages !== undefined &&
+        (!Array.isArray(item.messages) || item.messages.some((message) => !toObject(message)))
+      ) {
+        throw new BadRequestException({
+          code: 'INVALID_SYNC_PAYLOAD',
+          message: '会话消息必须是对象数组，不允许空值或非对象条目',
+        });
+      }
+    }
     await this.prisma.$transaction(async (tx) => {
       await tx.aIMessage.deleteMany({ where: { conversation: { userId } } });
       await tx.aIConversation.deleteMany({ where: { userId } });
@@ -238,15 +249,16 @@ export class SyncService {
 }
 
 function extractItems(resource: string, payload: unknown): unknown[] {
-  if (Array.isArray(payload)) return payload;
-  if (payload && typeof payload === 'object') {
-    const obj = payload as Record<string, unknown>;
-    if (Array.isArray(obj.items)) return obj.items;
-    if (resource === 'profile') return [obj];
+  const obj = toObject(payload);
+  if (resource === 'profile') {
+    if (obj) return [obj];
+  } else {
+    const items = Array.isArray(payload) ? payload : obj?.items;
+    if (Array.isArray(items) && items.every((item) => toObject(item) !== null)) return items;
   }
   throw new BadRequestException({
     code: 'INVALID_SYNC_PAYLOAD',
-    message: '同步载荷必须是数组（profile 为对象）',
+    message: '同步载荷必须是对象数组（profile 为对象），不允许空值或非对象条目',
   });
 }
 

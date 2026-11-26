@@ -102,7 +102,7 @@ export const useApp = create<AppState>((set, get) => ({
       return false;
     }
     const created = await db.addBookmark({ kind, refId, title, tags: [] });
-    set((s) => ({ bookmarks: [created, ...s.bookmarks] }));
+    set((s) => ({ bookmarks: [created, ...s.bookmarks.filter((b) => b.id !== created.id)] }));
     get().toast('已加入收藏', 'success');
     return true;
   },

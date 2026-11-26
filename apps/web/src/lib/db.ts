@@ -110,10 +110,15 @@ async function clear(store: StoreName): Promise<void> {
 export const listBookmarks = () => all<Bookmark>('bookmarks');
 export async function addBookmark(b: Omit<Bookmark, 'id' | 'createdAt'>): Promise<Bookmark> {
   const db = await getDB();
-  const existing = await db.getAllFromIndex('bookmarks', 'by_ref', b.refId);
-  if (existing.length > 0) return existing[0];
+  // A readwrite transaction serializes competing clicks and tabs before checking the reference.
+  const tx = db.transaction('bookmarks', 'readwrite');
+  const existing = await tx.store.index('by_ref').get(b.refId);
+  if (existing) {
+    await tx.done;
+    return existing;
+  }
   const item: Bookmark = { ...b, id: uid(), createdAt: new Date().toISOString() };
-  await put('bookmarks', item);
+  await Promise.all([tx.store.put(item), tx.done]);
   return item;
 }
 export const removeBookmark = (id: string) => del('bookmarks', id);

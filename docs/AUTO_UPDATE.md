@@ -42,11 +42,11 @@ README 的在线入口已指向 GitHub Pages。历史 WorkBuddy Demo 属于另�
 git checkout main
 git pull --ff-only origin main
 # 将根、Web、桌面、移动、Cargo、Tauri 与 Android 版本统一为下一版本
-# 例如下一补丁版本 1.1.8；同时递增 Android versionCode
+# 例如补丁版本 1.1.8；同时递增 Android versionCode
 node scripts/verify-release-versions.cjs
-# 完成验证，提交版本改动和 docs/releases/v1.1.7.md（文件名必须与标签一致且非空）
-git tag v1.1.7
-git push origin main v1.1.7
+# 完成验证，提交版本改动和 docs/releases/v1.1.8.md（文件名必须与标签一致且非空）
+git tag v1.1.8
+git push origin main v1.1.8
 ```
 
 推送 `main` 会触发 GitHub Pages 部署，用户访问的站点会得到新构建；推送 `v*.*.*` 标签会自动触发 `Three-platform release`，三端构建与校验通过后直接创建 Release。若只想先验证构件，可手动运行该工作流并保持 `publish_release=false`；确认无误后再以相同标签、`publish_release=true` 重跑。
@@ -78,3 +78,10 @@ git push origin main v1.1.7
 - **Windows**：设置检查稳定版并在系统浏览器打开官方发行页。下载 x64 安装程序后关闭应用并覆盖安装。可使用 `gh release verify-asset TAG FILE` 核对不可变发行证明。安装程序当前无 Authenticode 签名。
 - **Android**：设置打开官方发行页，系统安装器验证 APK 签名并覆盖安装。同一正式签名的证书摘要由发布流程检查。旧版本号 APK 可能受系统降级限制。
 - **回退**：静态自托管保留上一套完整资源，回退时一起部署 HTML、脚本和 worker。原生端先导出 JSON，遵循系统限制恢复，签名自动安装和一键回退尚无完整实现。
+
+## v1.1.8 检查恢复与旧版兼容
+
+- Windows / Android 从 v1.1.6 起自动检查 GitHub 稳定发行；v1.1.8 修复离线启动后不再补查、失败请求占用每日额度和未来时间戳阻断检查。联网或回到前台会补查，失败请求最多每 5 分钟重试一次，成功检查仍按每天一次执行。
+- Web/PWA 只在 Service Worker 检查成功后记录成功时间；失败检查与成功检查的频率分开处理，不清除已有离线资源或个人数据。
+- 官方仓库、`releases/latest` 接口、稳定标签格式、安装包命名、Android 应用标识与签名保持兼容。v1.1.5 原生端可在设置手动检查，v1.1.6–v1.1.7 可自动检查；遇到旧版离线启动缺陷时可重新联网启动或在设置手动检查。
+- v1.1.0–v1.1.4 原生包没有更新检查代码，无法通过发布新版本让它们凭空获得提示，须从官方发行页手动下载覆盖安装。不要先卸载，以免清除本机数据。

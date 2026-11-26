@@ -10,7 +10,7 @@ import {
   useState,
 } from 'react';
 import { detectPlatform } from './platform';
-import { getInitialUpdateStatus, type UpdateStatus } from './update-helpers';
+import { getInitialUpdateStatus, isUpdateCheckDue, type UpdateStatus } from './update-helpers';
 
 const LAST_CHECK_KEY = 'apocalypse-survival:last-update-check';
 const CHECK_FREQUENCY_KEY = 'apocalypse-survival:update-check-frequency';
@@ -130,10 +130,7 @@ function WebUpdateProvider({ children }: { children: ReactNode }) {
 
   const runCheck = useCallback(async () => {
     if (checkInProgress.current || activationTimer.current !== undefined) return;
-    const checkedAt = new Date().toISOString();
-    lastAttemptAt.current = Date.parse(checkedAt);
-    setLastCheckedAt(checkedAt);
-    savePreference(LAST_CHECK_KEY, checkedAt);
+    lastAttemptAt.current = Date.now();
     setError(null);
 
     if (import.meta.env.DEV) {
@@ -158,6 +155,9 @@ function WebUpdateProvider({ children }: { children: ReactNode }) {
         return;
       }
       if (!registration.waiting) await registration.update();
+      const checkedAt = new Date().toISOString();
+      setLastCheckedAt(checkedAt);
+      savePreference(LAST_CHECK_KEY, checkedAt);
       if (registration.waiting) {
         setNeedRefresh(true);
         setStatus('available');
@@ -182,11 +182,14 @@ function WebUpdateProvider({ children }: { children: ReactNode }) {
     if (!interval || import.meta.env.DEV || !('serviceWorker' in navigator)) return;
     const checkIfDue = () => {
       if (!navigator.onLine || document.visibilityState !== 'visible') return;
-      const last = Math.max(
-        lastAttemptAt.current,
-        Date.parse(readPreference(LAST_CHECK_KEY) ?? '') || 0,
-      );
-      if (Date.now() - last >= interval) void runCheck();
+      if (
+        isUpdateCheckDue({
+          lastAttemptAt: lastAttemptAt.current,
+          lastSuccessfulAt: Date.parse(readPreference(LAST_CHECK_KEY) ?? ''),
+          intervalMs: interval,
+        })
+      )
+        void runCheck();
     };
     const timer = window.setInterval(checkIfDue, 60_000);
     window.addEventListener('focus', checkIfDue);

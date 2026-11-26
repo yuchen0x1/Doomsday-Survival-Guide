@@ -244,7 +244,7 @@ jobs:
             echo "::error::Release or draft already exists. Verify the existing release, or review the draft and resume it manually."
             exit 1
           fi
-          gh release create "$RELEASE_TAG" release/* --repo "$GITHUB_REPOSITORY" --verify-tag --draft --title "$RELEASE_TAG · Web / Windows / Android" --notes-file "$notes"
+          gh release create "$RELEASE_TAG" release/* --repo "$GITHUB_REPOSITORY" --verify-tag --draft --title "APOCALYPSE SURVIVAL $RELEASE_TAG" --notes-file "$notes"
           gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --dir verify
           cmp release/SHA256SUMS verify/SHA256SUMS
           (cd verify && sha256sum -c SHA256SUMS)

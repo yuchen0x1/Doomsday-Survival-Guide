@@ -1,5 +1,11 @@
 # 更新历史
 
+## v1.1.8 · 2026-11-26
+
+修复地图定位、并发收藏、AI 会话切换、离线包升级和更新检查恢复；增加服务端内容审核并发保护，拒绝非法同步条目并脱敏个人同步审计载荷。删除两份无用模板测试。
+
+[完整版本说明](v1.1.8.md)
+
 ## v1.1.7 · 2026-11-26
 
 安全与兼容性补丁：管理端修改已发布内容会自动退回草稿并重新审核；生产环境默认启用 CORS 白名单、关闭 Swagger，数据库异常时健康检查返回 503；AI 流式回答改为空闲超时。同时修复旧 WebView 崩溃、分类搜索越界和备份读取无上限等缺陷。
@@ -18,10 +24,11 @@ Windows 和 Android 可以在设置中查询新版本并打开官方发行页。
 
 [完整版本说明](v1.1.5.md)
 
-按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3–v1.1.7 为正式 GitHub Release；v1.1.2 仅为未完成的发布尝试，没有创建正式 Release。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
+按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3–v1.1.8 为正式 GitHub Release；v1.1.2 仅为未完成的发布尝试，没有创建正式 Release。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
 
 | 版本                                                                               | 发布日期     | 提供内容 / 状态                                  |
 | ---------------------------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| [v1.1.8](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.8) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5) | 2026-11-18   | Web/PWA、Windows x64 安装程序、签名 Android APK  |

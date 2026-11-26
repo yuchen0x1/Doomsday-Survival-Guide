@@ -1,10 +1,22 @@
-import { describe, expect, it } from 'vitest';
+import 'fake-indexeddb/auto';
+import { IDBObjectStore } from 'fake-indexeddb';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import * as db from '../src/lib/db';
 import {
   buildPackagePayload,
   computePackageSize,
+  loadPackagePayload,
+  loadPackageStates,
   PACKAGE_DEFS,
   packageEntryCount,
+  updatePackage,
 } from '../src/lib/offline';
+
+afterEach(async () => {
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+  await db.clearAllData();
+});
 
 function getPackageDef(id: string) {
   const def = PACKAGE_DEFS.find((item) => item.id === id);
@@ -62,5 +74,39 @@ describe('offline package payloads', () => {
         }
       }
     }
+  });
+
+  it('uses the bundled target version when upgrading an older saved package', async () => {
+    const def = getPackageDef('pkg-plants');
+    await db.saveOfflinePackage({ ...def, version: '0.9.0', sizeBytes: 1, status: 'downloaded' });
+    await db.setSetting(`pkgdata:${def.id}`, JSON.stringify(buildPackagePayload(def)));
+    const state = (await loadPackageStates()).find((item) => item.id === def.id);
+    expect(state).toMatchObject({ status: 'update_available', version: def.version });
+    if (!state) throw new Error('Missing saved package');
+    await updatePackage(state, () => {});
+    expect((await loadPackageStates()).find((item) => item.id === def.id)).toMatchObject({
+      status: 'downloaded',
+      version: def.version,
+    });
+  });
+
+  it('preserves the previous payload and metadata when updating metadata fails', async () => {
+    const def = getPackageDef('pkg-plants');
+    const oldPayload = { plants: [{ id: 'old-plant' }] };
+    const oldMetadata = { ...def, version: '0.9.0', sizeBytes: 1, status: 'downloaded' as const };
+    await db.saveOfflinePackage(oldMetadata);
+    await db.setSetting(`pkgdata:${def.id}`, JSON.stringify(oldPayload));
+    const original = IDBObjectStore.prototype.put;
+    vi.spyOn(IDBObjectStore.prototype, 'put').mockImplementation(function (
+      this: IDBObjectStore,
+      ...args: Parameters<typeof original>
+    ) {
+      if (this.name === 'offlinePackages')
+        throw new DOMException('Quota exceeded', 'QuotaExceededError');
+      return original.apply(this, args);
+    });
+    await expect(updatePackage(def, () => {})).rejects.toThrow('Quota');
+    expect(await loadPackagePayload(def.id)).toEqual(oldPayload);
+    expect(await db.listOfflinePackages()).toEqual([oldMetadata]);
   });
 });

@@ -75,6 +75,8 @@ export default function OfflinePage() {
         (pct) => setStates((s) => s.map((x) => (x.id === def.id ? { ...x, progress: pct } : x))),
       );
       toast(`「${def.name}」已更新`, 'success');
+    } catch {
+      toast('更新失败，已保留原有离线包，请重试', 'error');
     } finally {
       setBusy(null);
       refresh();

@@ -39,6 +39,9 @@ function redactValue(value: unknown, depth = 0): unknown {
 
 function auditPayload(path: string, body: unknown): object | undefined {
   if (!body || typeof body !== 'object') return undefined;
+  if (/(?:^|\/)sync(?:\/|$)/.test(path)) {
+    return { redacted: true, reason: 'personal-data' };
+  }
   if (AI_CONTENT_PATHS.some((prefix) => path.includes(prefix))) {
     return { redacted: true, reason: 'ai-content' };
   }

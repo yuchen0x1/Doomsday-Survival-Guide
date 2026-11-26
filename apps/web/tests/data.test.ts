@@ -4,12 +4,14 @@ import { openDB } from 'idb';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { parseBackup } from '../src/lib/backup';
 import {
+  addBookmark,
   addInventory,
   changeInventoryQuantity,
   clearAllData,
   exportAllData,
   getDB,
   importAllData,
+  listBookmarks,
   listInventory,
   listTransactions,
   setSetting,
@@ -112,6 +114,24 @@ describe('backup validation and atomic persistence', () => {
     expect(await listInventory()).toEqual([]);
     expect(await other.get('data', 'sentinel')).toBe('keep');
     other.close();
+  });
+});
+
+describe('bookmark integrity', () => {
+  const bookmark = { kind: 'article' as const, refId: 'article-test', title: '测试文章', tags: [] };
+  it('serializes concurrent additions of the same reference', async () => {
+    const results = await Promise.all(Array.from({ length: 20 }, () => addBookmark(bookmark)));
+    expect(new Set(results.map((item) => item.id)).size).toBe(1);
+    expect(await listBookmarks()).toHaveLength(1);
+  });
+  it('keeps the visible bookmark list unique during simultaneous additions', async () => {
+    useApp.setState({ bookmarks: [] });
+    await Promise.all([
+      useApp.getState().toggleBookmark(bookmark),
+      useApp.getState().toggleBookmark(bookmark),
+    ]);
+    expect(useApp.getState().bookmarks).toHaveLength(1);
+    expect(await listBookmarks()).toHaveLength(1);
   });
 });
 

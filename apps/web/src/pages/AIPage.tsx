@@ -82,13 +82,16 @@ export default function AIPage() {
         nextMsgs,
         {
           onDelta: (d) => {
+            if (ctrl.signal.aborted) return;
             acc += d;
             setMessages([...nextMsgs, { role: 'assistant', content: acc }]);
           },
           onToolCall: (c) => {
+            if (ctrl.signal.aborted) return;
             setToolCalls((t) => [...t, c.name]);
           },
           onError: (msg) => {
+            if (ctrl.signal.aborted) return;
             // 服务端异常 → 降级本地检索（明确标注）
             const fallback = localFallbackAnswer(content);
             setMessages([
@@ -109,8 +112,11 @@ export default function AIPage() {
         setAiAvailable(false);
       }
     } finally {
-      setStreaming(false);
-      abortRef.current = null;
+      // A cancelled conversation may already have started a different request.
+      if (abortRef.current === ctrl) {
+        setStreaming(false);
+        abortRef.current = null;
+      }
     }
   };
 
@@ -139,6 +145,7 @@ export default function AIPage() {
 
   const stopPending = () => {
     abortRef.current?.abort();
+    abortRef.current = null;
     if (fallbackTimer.current !== undefined) {
       window.clearTimeout(fallbackTimer.current);
       fallbackTimer.current = undefined;
@@ -302,7 +309,7 @@ export default function AIPage() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
+                    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
                       e.preventDefault();
                       send();
                     }

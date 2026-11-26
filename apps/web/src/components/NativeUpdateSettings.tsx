@@ -1,7 +1,7 @@
-import { registerPlugin } from '@capacitor/core';
 import { invoke } from '@tauri-apps/api/core';
 import { useState } from 'react';
 import {
+  androidUpdates,
   checkNativeRelease,
   type NativeRelease,
   type NativeReleasePlatform,
@@ -9,10 +9,6 @@ import {
 import { detectPlatform } from '../lib/platform';
 import { APP_VERSION, formatVersion } from '../lib/version';
 import { Icon } from './Icon';
-
-const androidUpdates = registerPlugin<{ openRelease(options: { tag: string }): Promise<void> }>(
-  'SurvivalUpdate',
-);
 
 export function NativeUpdateSettings() {
   const platform: NativeReleasePlatform | null =

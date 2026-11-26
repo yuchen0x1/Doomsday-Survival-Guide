@@ -1,39 +1,15 @@
-import { registerPlugin } from '@capacitor/core';
 import { invoke } from '@tauri-apps/api/core';
 import { useEffect, useState } from 'react';
 import {
-  checkNativeRelease,
+  androidUpdates,
   type NativeRelease,
   type NativeReleasePlatform,
 } from '../lib/native-release';
+import { dismissNativeRelease, watchNativeRelease } from '../lib/native-release-watch';
 import { detectPlatform } from '../lib/platform';
 import { useApp } from '../lib/store';
 import { APP_VERSION, formatVersion } from '../lib/version';
 import { Icon } from './Icon';
-
-const CHECK_KEY = 'apocalypse-survival:native-update-check';
-const DISMISSED_KEY = 'apocalypse-survival:native-update-dismissed';
-const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000;
-
-const androidUpdates = registerPlugin<{ openRelease(options: { tag: string }): Promise<void> }>(
-  'SurvivalUpdate',
-);
-
-function readStorage(key: string): string | null {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function writeStorage(key: string, value: string): void {
-  try {
-    window.localStorage.setItem(key, value);
-  } catch {
-    // 本地存储受限时仍然允许本次提示。
-  }
-}
 
 /** 原生端启动后每天检查一次稳定版，发现新版本时给出覆盖安装提示。 */
 export function NativeUpdateBanner() {
@@ -47,23 +23,8 @@ export function NativeUpdateBanner() {
   const [release, setRelease] = useState<NativeRelease | null>(null);
 
   useEffect(() => {
-    if (!platform || !navigator.onLine) return;
-    const last = Number(readStorage(CHECK_KEY));
-    if (Number.isFinite(last) && Date.now() - last < CHECK_INTERVAL_MS) return;
-    writeStorage(CHECK_KEY, String(Date.now()));
-    let cancelled = false;
-    checkNativeRelease(APP_VERSION, platform)
-      .then((next) => {
-        if (cancelled || !next) return;
-        if (readStorage(DISMISSED_KEY) === next.tag) return;
-        setRelease(next);
-      })
-      .catch(() => {
-        // 离线、限流或缺少资产时保持静默，设置页仍可手动检查。
-      });
-    return () => {
-      cancelled = true;
-    };
+    if (!platform) return;
+    return watchNativeRelease({ version: APP_VERSION, platform, onRelease: setRelease });
   }, [platform]);
 
   if (!release) return null;
@@ -79,7 +40,7 @@ export function NativeUpdateBanner() {
   }
 
   function dismiss() {
-    if (release) writeStorage(DISMISSED_KEY, release.tag);
+    if (release) dismissNativeRelease(release.tag);
     setRelease(null);
   }
 

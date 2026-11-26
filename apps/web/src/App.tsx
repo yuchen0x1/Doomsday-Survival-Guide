@@ -1,5 +1,5 @@
 import { Component, lazy, type ReactNode, Suspense } from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Link, Route, Routes, useLocation } from 'react-router-dom';
 import { AppLayout } from './components/AppLayout';
 
 /* 路由级代码分割（核心图鉴页直接打包，保证首屏与离线可用） */
@@ -86,9 +86,10 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 }
 
 export default function App() {
+  const { pathname } = useLocation();
   return (
     <AppLayout>
-      <ErrorBoundary>
+      <ErrorBoundary key={pathname}>
         <Suspense fallback={<Loading />}>
           <Routes>
             <Route path="/" element={<Home />} />

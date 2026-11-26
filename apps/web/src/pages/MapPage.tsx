@@ -3,6 +3,14 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Icon } from '../components/Icon';
 import { Confirm, EmptyState, Modal, PageHeader, Panel } from '../components/ui';
 import { listMapMarkers, removeMapMarker, saveMapMarker, uid } from '../lib/db';
+import {
+  MAP_ZOOM,
+  mapTiles,
+  normalizeCoordinates,
+  projectOffset,
+  TILE_SIZE,
+  unprojectOffset,
+} from '../lib/map';
 import { useApp } from '../lib/store';
 
 /**
@@ -30,17 +38,6 @@ const MARKER_KINDS: { key: MapMarkerKind; label: string; color: string }[] = [
   { key: 'route', label: '路线点', color: '#e08b34' },
   { key: 'custom', label: '自定义', color: '#9aa096' },
 ];
-
-const ZOOM = 13;
-const TILE_SIZE = 256;
-
-function deg2num(lat: number, lon: number, zoom: number) {
-  const n = 2 ** zoom;
-  const x = Math.floor(((lon + 180) / 360) * n);
-  const latRad = (lat * Math.PI) / 180;
-  const y = Math.floor(((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2) * n);
-  return { x, y };
-}
 
 export default function MapPage() {
   const { online, toast } = useApp();
@@ -70,55 +67,23 @@ export default function MapPage() {
       return;
     }
     navigator.geolocation.getCurrentPosition(
-      (p) => setCenter({ lat: p.coords.latitude, lng: p.coords.longitude }),
+      (p) => setCenter(normalizeCoordinates({ lat: p.coords.latitude, lng: p.coords.longitude })),
       () => toast('定位失败，已保持当前视野', 'warn'),
       { enableHighAccuracy: true, timeout: 8000 },
     );
   };
 
-  // 投影：中心 → 瓦片坐标
-  const { x: cx, y: cy } = useMemo(() => deg2num(center.lat, center.lng, ZOOM), [center]);
-  const world = 2 ** ZOOM;
-  const tiles: { x: number; y: number }[] = [];
-  // 行优先顺序（y 外层、x 内层），与下方按 i % 5 / i / 5 的网格定位保持一致。
-  for (let dy = -2; dy <= 2; dy++) {
-    for (let dx = -2; dx <= 2; dx++) {
-      const x = (((cx + dx) % world) + world) % world;
-      const y = cy + dy;
-      if (y >= 0 && y < world) tiles.push({ x, y });
-    }
-  }
+  const tiles = useMemo(() => mapTiles(center), [center]);
 
   // 标记投影：相对中心的像素偏移（WebMercator 简化）
   const project = useCallback(
-    (lat: number, lng: number) => {
-      const n = 2 ** ZOOM * TILE_SIZE;
-      const toX = (l: number) => ((l + 180) / 360) * n;
-      const toY = (la: number) => {
-        const r = (la * Math.PI) / 180;
-        return ((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * n;
-      };
-      const px = toX(lng) - toX(center.lng);
-      const py = toY(lat) - toY(center.lat);
-      return { px, py };
-    },
+    (lat: number, lng: number) => projectOffset(center, { lat, lng }),
     [center],
   );
 
   // 点击地图 → 取经纬度（反投影）
   const unproject = useCallback(
-    (px: number, py: number) => {
-      const n = 2 ** ZOOM * TILE_SIZE;
-      const fromX = (x: number) => (x / n) * 360 - 180;
-      const fromY = (y: number) => {
-        const t = Math.PI - (2 * Math.PI * y) / n;
-        return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(t) - Math.exp(-t)));
-      };
-      const cxPx = ((center.lng + 180) / 360) * n;
-      const r = (center.lat * Math.PI) / 180;
-      const cyPx = ((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2) * n;
-      return { lat: fromY(cyPx + py), lng: fromX(cxPx + px) };
-    },
+    (px: number, py: number) => unprojectOffset(center, px, py),
     [center],
   );
 
@@ -159,7 +124,7 @@ export default function MapPage() {
   };
 
   const pan = (dLat: number, dLng: number) => {
-    setCenter((c) => ({ lat: c.lat + dLat, lng: c.lng + dLng }));
+    setCenter((c) => normalizeCoordinates({ lat: c.lat + dLat, lng: c.lng + dLng }));
   };
 
   return (
@@ -216,36 +181,35 @@ export default function MapPage() {
             );
           })}
           <span className="ml-auto font-mono text-[11px] text-[var(--color-ink-faint)]">
-            {center.lat.toFixed(4)}, {center.lng.toFixed(4)} · z{ZOOM}
+            {center.lat.toFixed(4)}, {center.lng.toFixed(4)} · z{MAP_ZOOM}
           </span>
         </div>
 
         {/* 地图主体 */}
         <div className="relative h-[480px] cursor-crosshair overflow-hidden bg-[#1a1f1a] select-none">
           {/* 瓦片层 */}
-          <div className="absolute left-1/2 top-1/2" style={{ transform: 'translate(-50%, -50%)' }}>
-            <div className="relative" style={{ width: TILE_SIZE * 5, height: TILE_SIZE * 5 }}>
-              {tiles.map((t, i) => (
-                <img
-                  key={`${t.x}-${t.y}`}
-                  src={TILE_URL.replace('{z}', String(ZOOM))
-                    .replace('{x}', String(t.x))
-                    .replace('{y}', String(t.y))}
-                  alt=""
-                  className="absolute"
-                  style={{
-                    left: (i % 5) * TILE_SIZE,
-                    top: Math.floor(i / 5) * TILE_SIZE,
-                    width: TILE_SIZE,
-                    height: TILE_SIZE,
-                    opacity: online ? 0.9 : 0.06,
-                    filter: online ? 'saturate(0.55) brightness(0.72) contrast(1.1)' : 'none',
-                  }}
-                  onError={() => setTileError(true)}
-                  draggable={false}
-                />
-              ))}
-            </div>
+          <div className="absolute left-1/2 top-1/2">
+            {tiles.map((t) => (
+              <img
+                key={`${t.x}-${t.y}`}
+                src={TILE_URL.replace('{z}', String(MAP_ZOOM))
+                  .replace('{x}', String(t.x))
+                  .replace('{y}', String(t.y))}
+                alt=""
+                className="absolute"
+                style={{
+                  left: t.left,
+                  top: t.top,
+                  width: TILE_SIZE,
+                  height: TILE_SIZE,
+                  maxWidth: 'none',
+                  opacity: online ? 0.9 : 0.06,
+                  filter: online ? 'saturate(0.55) brightness(0.72) contrast(1.1)' : 'none',
+                }}
+                onError={() => setTileError(true)}
+                draggable={false}
+              />
+            ))}
           </div>
 
           <button
@@ -279,7 +243,6 @@ export default function MapPage() {
           {markers.map((m) => {
             const { px, py } = project(m.lat, m.lng);
             const color = MARKER_KINDS.find((k) => k.key === m.kind)?.color ?? '#9aa096';
-            if (Math.abs(px) > 400 || Math.abs(py) > 400) return null;
             return (
               <button
                 type="button"
@@ -325,8 +288,8 @@ export default function MapPage() {
           {/* 方向控制 */}
           <div className="absolute right-3 top-3 z-20 flex flex-col gap-1">
             {[
-              { d: [-0.03, 0], icon: 'chevron-down', rot: 180 },
-              { d: [0.03, 0], icon: 'chevron-down', rot: 0 },
+              { d: [0.03, 0], icon: 'chevron-down', rot: 180 },
+              { d: [-0.03, 0], icon: 'chevron-down', rot: 0 },
               { d: [0, -0.04], icon: 'chevron-down', rot: 90 },
               { d: [0, 0.04], icon: 'chevron-down', rot: -90 },
             ].map((b) => (
@@ -467,7 +430,7 @@ export default function MapPage() {
                   type="button"
                   className="btn !px-2 !py-1"
                   onClick={() => {
-                    setCenter({ lat: m.lat, lng: m.lng });
+                    setCenter(normalizeCoordinates({ lat: m.lat, lng: m.lng }));
                     setListOpen(false);
                   }}
                 >
