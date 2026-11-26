@@ -4,9 +4,9 @@
 
 <!-- github-release:start -->
 
-**[v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7)** · 2026-11-26
+**[v1.1.9](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.9)** · 2026-11-26
 
-本次更新是安全与兼容性补丁：管理端修改已发布内容会自动退回草稿并重新审核；生产环境默认启用 CORS 白名单、关闭 Swagger，数据库异常时健康检查返回 503；AI 流式回答改为空闲超时，不再因总时长被截断。同时修复旧 WebView 崩溃、分类搜索越界和备份读取无上限等缺陷。
+本次更新修复桌面端 Rust 依赖安全漏洞，并把 RustSec 检查加入安全检查和发布流程。同时交付此前 v1.1.8 未发布的地图、收藏、AI 会话、离线包、更新检查和服务端隐私修复，改善手机导航显示。v1.1.8 的发布已取消，用户可从已发布的旧版本直接升级到本版本，无需安装中间版本。
 
 [全部发行记录](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases)
 
