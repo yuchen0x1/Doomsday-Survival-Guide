@@ -21,13 +21,16 @@ export default function KnowledgeList() {
 
   const filtered = useMemo(() => {
     const list = query.trim()
-      ? search(query, 200, { kind: 'article' })
+      ? search(query, 200, {
+          kind: 'article',
+          ...(activeCategory ? { category: activeCategory.slug } : {}),
+        })
           .map((r) => articles.find((a) => `article:${a.id}` === r.document.id))
-          .filter(Boolean)
+          .filter((a): a is (typeof articles)[number] => a !== undefined)
       : activeCategory
         ? articles.filter((a) => a.categorySlug === activeCategory.slug)
         : articles;
-    let out = list as typeof articles;
+    let out = list;
     if (tag) out = out.filter((a) => a.tags.includes(tag));
     if (difficulty) out = out.filter((a) => a.difficulty === difficulty);
     if (maxDanger) {

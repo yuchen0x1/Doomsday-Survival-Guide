@@ -1,5 +1,11 @@
 # 更新历史
 
+## v1.1.7 · 2026-11-26
+
+安全与兼容性补丁：管理端修改已发布内容会自动退回草稿并重新审核；生产环境默认启用 CORS 白名单、关闭 Swagger，数据库异常时健康检查返回 503；AI 流式回答改为空闲超时。同时修复旧 WebView 崩溃、分类搜索越界和备份读取无上限等缺陷。
+
+[完整版本说明](v1.1.7.md)
+
 ## v1.1.6 · 2026-11-26
 
 安全与稳定性补丁：审计日志不再记录密码、令牌和 AI 对话内容；修复依赖安全告警与发布链路阻断；Windows / Android 启动后可自动检查稳定版；同时修正危险等级展示、同步 API、地图与离线更新等缺陷。
@@ -12,10 +18,11 @@ Windows 和 Android 可以在设置中查询新版本并打开官方发行页。
 
 [完整版本说明](v1.1.5.md)
 
-按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3 为正式 GitHub Release；v1.1.2 仅为未完成的发布尝试，没有创建正式 Release。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
+按实际发布记录整理。v1.1.0、v1.1.1、v1.1.3–v1.1.7 为正式 GitHub Release；v1.1.2 仅为未完成的发布尝试，没有创建正式 Release。v1.0.0 仅记录历史源码能力。在线站点始终运行当前部署版本，不是旧版体验入口。
 
 | 版本                                                                               | 发布日期     | 提供内容 / 状态                                  |
 | ---------------------------------------------------------------------------------- | ------------ | ------------------------------------------------ |
+| [v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) | 2026-11-26   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.5](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.5) | 2026-11-18   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.4](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.4) | 2026-11-17   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
@@ -24,13 +31,6 @@ Windows 和 Android 可以在设置中查询新版本并打开官方发行页。
 | [v1.1.1](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.1) | 2026-11-13   | Web/PWA、Windows x64 安装程序、签名 Android APK  |
 | [v1.1.0](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.0) | 2026-11-13   | Web/PWA 静态站点压缩包                           |
 | v1.0.0                                                                             | 历史源码基线 | 源码；未创建正式 GitHub Release                  |
-
-## Unreleased · 2026-11-17
-
-### Changed
-
-- 网页/PWA 壳层支持按浏览器或系统语言自动选择中文或 English，设置入口支持手动选择并持久化。
-- 导航、搜索、离线状态和错误恢复提示会随语言即时更新；生存知识数据保持原文。
 
 ## v1.1.4 · 2026-11-17
 

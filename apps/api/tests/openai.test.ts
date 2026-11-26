@@ -8,7 +8,7 @@ vi.mock('../src/prisma/prisma.service', () => ({
 }));
 
 import { AIService } from '../src/ai/ai.service';
-import { describeError, forwardChat, joinUrl } from '../src/ai/openai';
+import { createIdleTimer, describeError, forwardChat, joinUrl } from '../src/ai/openai';
 import { formatSSE, SSE_DONE } from '../src/ai/sse';
 
 function makeService(apiKey?: string): AIService {
@@ -157,6 +157,27 @@ describe('forwardChat：mock fetch 把流式 delta 转成前端 SSE 事件', () 
       events.push(event);
     }
     expect(events).toEqual([{ type: 'error', error: 'ECONNREFUSED' }]);
+  });
+});
+
+describe('createIdleTimer：流式空闲超时', () => {
+  it('每次 touch 重置计时，只有持续空闲才触发', () => {
+    vi.useFakeTimers();
+    try {
+      const onTimeout = vi.fn();
+      const timer = createIdleTimer(1000, onTimeout);
+      vi.advanceTimersByTime(900);
+      timer.touch();
+      vi.advanceTimersByTime(900);
+      expect(onTimeout).not.toHaveBeenCalled();
+      vi.advanceTimersByTime(101);
+      expect(onTimeout).toHaveBeenCalledTimes(1);
+      timer.clear();
+      vi.advanceTimersByTime(5000);
+      expect(onTimeout).toHaveBeenCalledTimes(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });
 

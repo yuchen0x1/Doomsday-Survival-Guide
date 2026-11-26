@@ -31,20 +31,26 @@ export default function SearchPage() {
     if (q) setSubmitted(q);
   }, [params]);
 
-  const results = useMemo(() => {
+  const totalDocs = searchDocuments().length;
+
+  const allResults = useMemo(() => {
     if (!submitted.trim()) return [];
-    return search(submitted, 60, kind ? { kind } : undefined);
-  }, [submitted, kind]);
+    // 先取全部命中再按类型过滤，避免切换类型后其他类型的计数消失。
+    return search(submitted, totalDocs);
+  }, [submitted, totalDocs]);
+
+  const results = useMemo(() => {
+    const filtered = kind ? allResults.filter((r) => r.document.kind === kind) : allResults;
+    return filtered.slice(0, 60);
+  }, [allResults, kind]);
 
   const kindCounts = useMemo(() => {
     const m = new Map<string, number>();
-    results.forEach((r) => {
+    allResults.forEach((r) => {
       m.set(r.document.kind, (m.get(r.document.kind) ?? 0) + 1);
     });
     return m;
-  }, [results]);
-
-  const totalDocs = searchDocuments().length;
+  }, [allResults]);
 
   const doSubmit = (q: string) => {
     setSubmitted(q);

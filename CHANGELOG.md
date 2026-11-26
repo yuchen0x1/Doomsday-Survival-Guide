@@ -6,6 +6,47 @@
 
 - TypeScript 7.0.2 跨大版本升级因 CI（validate / postgres-smoke）未通过暂缓，待单独评估后再升级。
 
+## [1.1.7] - 2026-11-26
+
+发布页：[v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7) · [完整版本说明](docs/releases/v1.1.7.md)
+
+### 📢 版本概述
+
+安全与兼容性补丁：管理端修改已发布内容会自动退回草稿并重新审核；生产环境默认启用 CORS 白名单、关闭 Swagger、数据库异常时健康检查返回 503；AI 流式回答改为空闲超时，不再因总时长被截断。同时修复旧 WebView 崩溃、分类搜索越界和备份读取无上限等缺陷。
+
+### 🔧 改进与优化
+
+- **内容复审**：管理端 PATCH 修改已提交、已审核或已发布内容时，同一事务内退回 `draft`、清空审核人/审核时间并写入审核记录，必须重新走状态机才能发布。
+- **AI 流式超时**：`AI_TIMEOUT_MS` 对对话流改为两次数据之间的空闲超时，长回答只要持续输出就不会被 60 秒总时限中断；图片识别仍使用总超时。
+- **生产安全默认值**：CORS 仅使用 `CORS_ORIGINS` 白名单（`ENABLE_CORS_WHITELIST=false` 仅在 development/test 生效）；Swagger 在 production 默认关闭；新增 `TRUST_PROXY` 配置，未设置时不信任 `X-Forwarded-For`。
+- **健康检查**：数据库探测失败返回 HTTP 503，便于负载均衡摘除异常实例。
+- **备份读取**：桌面端读取 JSON 备份前检查文件大小，超过 25 MB 直接拒绝，避免一次性读入超大文件。
+
+### 🐛 问题修复
+
+- **旧 WebView 崩溃**：物资流水页改用兼容写法，修复 Android 5.1 旧 WebView / 旧 Safari 不支持 `Array.prototype.toSorted` 导致的页面报错。
+- **搜索类型计数**：全局搜索切换类型后不再丢失其他类型的筛选 chip 与计数。
+- **分类内搜索**：在图鉴分类页搜索时只返回当前分类文章，不再越界到全库。
+- **AI 超时误判**：持续输出的长回答不再被固定总时长截断。
+- **死代码清理**：移除同步服务未使用的委托变量与认证服务未使用导入。
+
+### 🔒 安全与兼容性
+
+- **CORS 行为变化**：生产环境必须设置 `CORS_ORIGINS` 为实际前端域名；未配置时跨源浏览器请求会被拒绝，同源部署不受影响。
+- **Swagger 默认关闭**：生产环境如需接口文档，显式设置 `ENABLE_SWAGGER=true`，并限制访问来源。
+- **反向代理**：仅在可信代理后设置 `TRUST_PROXY`（如 `1` 或 `loopback`），否则限流与审计会按代理 IP 统计。
+- **内容下线**：修改已发布内容会立即退回草稿并从公开接口消失，重新发布前请确认这是预期行为。
+- 无数据库结构变更，覆盖安装保留本地数据。
+
+### 📦 下载与安装
+
+Web/PWA 下载 `.tar.gz` 后部署到 HTTPS 静态服务器；Windows 10/11 x64 关闭应用后覆盖安装；Android 使用系统安装器覆盖安装 APK（沿用正式签名）。文件名、平台、大小见 Release 页与 `release-metadata.json`，`SHA256SUMS` 提供下载文件摘要。Windows 安装程序未做 Authenticode 签名。
+
+### 🧪 验证结果
+
+- 本地 `pnpm lint`、`pnpm typecheck`、`pnpm test`（145 项）、`pnpm build`、`pnpm build:api`、`pnpm audit --prod --audit-level=high` 与 `node scripts/verify-release-versions.cjs` 全部通过。
+- 三端安装包由标签触发的 `Three-platform release` 构建，并校验 Android 签名与 `SHA256SUMS`。
+
 ## [1.1.6] - 2026-11-26
 
 发布页：[v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6) · [完整版本说明](docs/releases/v1.1.6.md)

@@ -4,9 +4,9 @@
 
 <!-- github-release:start -->
 
-**[v1.1.6](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.6)** · 2026-11-26
+**[v1.1.7](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/tag/v1.1.7)** · 2026-11-26
 
-本次更新是安全与稳定性补丁：审计日志不再记录密码、令牌和 AI 对话内容，修复依赖安全告警与发布链路阻断；Windows / Android 启动后可自动检查稳定版，Web/PWA 继续使用 Service Worker 更新提示。同时修正危险等级展示、同步 API、AI 系统提示词、地图与离线更新等缺陷。
+安全与兼容性补丁：管理端修改已发布内容会自动退回草稿并重新审核；生产环境默认启用 CORS 白名单、关闭 Swagger，数据库异常时健康检查返回 503；AI 流式回答改为空闲超时。同时修复旧 WebView 崩溃、分类搜索越界和备份读取无上限等缺陷。
 
 [全部发行记录](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases)
 
@@ -22,7 +22,7 @@
 | Windows 10/11 x64 | [Windows 安装程序（.exe）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest)，包含 WebView2 离线安装组件                                                                         |
 | Android           | [Android 安装包（.apk）](https://github.com/yuchen0x1/Doomsday-Survival-Guide/releases/latest)，正式发布密钥签名                                                                                     |
 
-安装说明、校验方法及测试范围见 [v1.1.3 三端验证记录](docs/releases/v1.1.3-platforms.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。
+安装说明、校验方法及测试范围见 [v1.1.7 发布说明](docs/releases/v1.1.7.md)。Windows 安装程序未做 Authenticode 签名，可能显示系统安全提示。个人数据分别保存在各设备中，可通过 JSON 备份手动迁移；更新前建议备份，不要通过卸载来升级。
 
 **一份可离线运行、跨平台的末日生存百科全书。** 全部知识随应用打包，断网照样能查；AI 只做辅助，绝不替代审核结论。
 

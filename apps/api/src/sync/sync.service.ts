@@ -165,7 +165,6 @@ export class SyncService {
         message: `未知同步资源：${resource}`,
       });
     }
-    const delegate = this.delegate(resource);
     const count = await this.prisma.$transaction(async (tx) => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const scoped: any = (tx as unknown as Record<string, unknown>)[def.delegate];

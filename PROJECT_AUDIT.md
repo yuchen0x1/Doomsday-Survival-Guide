@@ -1,5 +1,7 @@
 # PROJECT AUDIT
 
+> 历史快照（2026-11-16）：部分结论已被后续版本修复或取代。当前状态以 [CHANGELOG.md](CHANGELOG.md) 和 [v1.1.7 发布说明](docs/releases/v1.1.7.md) 为准。
+
 审计日期：2026-11-16（Asia/Shanghai）
 
 项目路径：E:\移动云盘同步盘\Doomsday Survival Guide

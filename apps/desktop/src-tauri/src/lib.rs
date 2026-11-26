@@ -69,6 +69,11 @@ fn read_backup(app: tauri::AppHandle) -> Result<String, String> {
     let path = fp
         .into_path()
         .map_err(|e| format!("解析文件路径失败: {e}"))?;
+    let metadata = fs::metadata(&path).map_err(|e| format!("读取备份信息失败: {e}"))?;
+    // 与前端导出上限保持一致，避免一次性把超大文件读入内存。
+    if metadata.len() > 25 * 1024 * 1024 {
+        return Err("备份文件超过 25 MB 上限".into());
+    }
     fs::read_to_string(path).map_err(|e| format!("读取备份失败: {e}"))
 }
 

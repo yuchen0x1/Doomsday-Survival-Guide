@@ -1,5 +1,7 @@
 # UPGRADE ROADMAP
 
+> 历史快照（2026-11-16）：部分条目已被后续版本完成或调整。当前状态以 [CHANGELOG.md](CHANGELOG.md) 和 [v1.1.7 发布说明](docs/releases/v1.1.7.md) 为准。
+
 建立日期：2026-11-16
 
 状态枚举：COMPLETE = 已有代码并在本轮或既有测试中核实；PARTIAL = 有部分实现或证据；PLANNED = 已确认有价值但尚未实施；BLOCKED = 需要当前工作区缺失文件、外部服务或用户决定。

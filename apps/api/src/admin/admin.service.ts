@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import type { Prisma } from '@prisma/client';
-import { canTransition, isReviewStatus } from '../common/content-state';
+import { canTransition, isReviewStatus, reviewStatusAfterEdit } from '../common/content-state';
 import { type ContentMeta, type ValidationIssue, validateContentMeta } from '../common/core';
 import type { AuthUser } from '../common/decorators';
 import {
@@ -171,10 +171,50 @@ export class AdminService {
       if (PROTECTED_FIELDS.has(key) || key === 'id') continue;
       data[key] = value;
     }
-    const record = (await delegate.update({
-      where: { id },
-      data: { ...data, version: { increment: 1 } },
-    })) as Record<string, unknown>;
+    if (Object.keys(data).length === 0 && !Array.isArray(body.tags)) {
+      const sources = await this.loadSources(existing.sourceIds as string[]);
+      return def.serialize(existing, sources);
+    }
+
+    const currentStatus = existing.reviewStatus as import('../common/core').ReviewStatus;
+    const nextStatus = reviewStatusAfterEdit(currentStatus);
+    const reviewReset = nextStatus !== currentStatus;
+    const record = await this.prisma.$transaction(async (tx) => {
+      const txDelegate = (tx as unknown as Record<string, ContentDelegate>)[
+        KIND_DEFS[kind].delegate
+      ];
+      // 已提交/已审核/已发布内容被修改后，原审核结论失效，同一事务内退回草稿并留痕。
+      const updated = await txDelegate.update({
+        where: { id },
+        data: {
+          ...data,
+          version: { increment: 1 },
+          ...(reviewReset
+            ? {
+                reviewStatus: nextStatus,
+                reviewedAt: null,
+                reviewedBy: null,
+                reviewNote: '内容已修改，需重新审核',
+              }
+            : {}),
+        },
+      });
+      if (reviewReset) {
+        await tx.reviewRecord.create({
+          data: {
+            contentKind: kind,
+            contentId: id,
+            fromStatus: currentStatus,
+            toStatus: nextStatus,
+            decision: 'content_edited',
+            note: '内容字段修改后自动退回草稿，需重新审核',
+            reviewerId: actor.sub,
+            reviewerEmail: actor.email,
+          },
+        });
+      }
+      return updated;
+    });
     if (Array.isArray(body.tags)) {
       await this.syncTags(kind, id, body.tags as string[]);
     }
@@ -185,7 +225,7 @@ export class AdminService {
         method: 'PATCH',
         path: `/api/admin/content/${kind}/${id}`,
         status: 200,
-        payload: { id } as Prisma.InputJsonValue,
+        payload: { id, reviewStatus: nextStatus, reviewReset } as Prisma.InputJsonValue,
       },
     });
     const sources = await this.loadSources(record.sourceIds as string[]);

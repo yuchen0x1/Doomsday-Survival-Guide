@@ -1,5 +1,7 @@
 # 项目审计与升级报告
 
+> 历史快照（2026-11-09）：部分结论已被后续版本修复或取代。当前状态以 [CHANGELOG.md](CHANGELOG.md) 和 [v1.1.7 发布说明](docs/releases/v1.1.7.md) 为准。
+
 审计日期：2026-11-09
 项目路径：`C:\Users\lenmo\Desktop\Doomsday Survival Guide`
 分支：`main`（起始时与 `origin/main` 同步）

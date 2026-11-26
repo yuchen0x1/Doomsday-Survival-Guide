@@ -27,6 +27,29 @@ export function joinUrl(baseUrl: string, path: string): string {
   return `${baseUrl.replace(/\/+$/, '')}${path}`;
 }
 
+export interface IdleTimer {
+  touch(): void;
+  clear(): void;
+}
+
+/**
+ * 可重置的空闲计时器：上游每次有数据时调用 touch() 重新计时。
+ * 流式响应使用空闲超时，而不是固定总时长，避免长回答被中途截断。
+ */
+export function createIdleTimer(timeoutMs: number, onTimeout: () => void): IdleTimer {
+  let handle: ReturnType<typeof setTimeout> | undefined = setTimeout(onTimeout, timeoutMs);
+  return {
+    touch() {
+      if (handle !== undefined) clearTimeout(handle);
+      handle = setTimeout(onTimeout, timeoutMs);
+    },
+    clear() {
+      if (handle !== undefined) clearTimeout(handle);
+      handle = undefined;
+    },
+  };
+}
+
 /**
  * 转发 OpenAI 兼容 /chat/completions（stream:true），逐行产出前端契约事件。
  * 网络/上游错误统一转成 {type:'error'} 事件，绝不假装成功。
@@ -36,7 +59,7 @@ export async function* forwardChat(
 ): AsyncGenerator<AIStreamEvent, UsageSnapshotLike, undefined> {
   const doFetch = opts.fetchImpl ?? fetch;
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), opts.timeoutMs);
+  const idle = createIdleTimer(opts.timeoutMs, () => controller.abort());
   const onOuterAbort = () => controller.abort();
   opts.signal?.addEventListener('abort', onOuterAbort);
 
@@ -78,6 +101,7 @@ export async function* forwardChat(
       yield { type: 'error', error: 'AI 服务未返回流式响应体' };
       return transformer.usage;
     }
+    idle.touch();
 
     const reader = response.body.getReader();
     const decoder = new TextDecoder();
@@ -85,6 +109,7 @@ export async function* forwardChat(
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
+      idle.touch();
       buffer += decoder.decode(value, { stream: true });
       const lines = buffer.split(/\r?\n/);
       buffer = lines.pop() ?? '';
@@ -104,7 +129,7 @@ export async function* forwardChat(
     }
     return transformer.usage;
   } finally {
-    clearTimeout(timer);
+    idle.clear();
     opts.signal?.removeEventListener('abort', onOuterAbort);
   }
 }

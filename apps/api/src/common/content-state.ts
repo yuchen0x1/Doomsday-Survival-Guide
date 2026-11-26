@@ -34,3 +34,15 @@ export function canTransition(from: ReviewStatus, to: ReviewStatus): boolean {
 export function allowedTargets(from: ReviewStatus): ReviewStatus[] {
   return REVIEW_TRANSITIONS[from] ?? [];
 }
+
+/**
+ * 内容字段被修改后的审核状态。
+ * 已提交/已审核/已发布内容一旦改动，原审核结论失效，必须退回草稿重新走审核；
+ * 草稿和已下架内容不对外可见，保持原状态。
+ */
+export function reviewStatusAfterEdit(status: ReviewStatus): ReviewStatus {
+  if (status === 'pending_review' || status === 'reviewed' || status === 'published') {
+    return 'draft';
+  }
+  return status;
+}

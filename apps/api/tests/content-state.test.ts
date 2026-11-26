@@ -5,6 +5,7 @@ import {
   isReviewStatus,
   REVIEW_STATUS_LIST,
   REVIEW_TRANSITIONS,
+  reviewStatusAfterEdit,
 } from '../src/common/content-state';
 
 // 纯函数测试：不依赖数据库 / Nest 容器。
@@ -112,5 +113,13 @@ describe('内容审核状态机', () => {
     expect(isReviewStatus('Published')).toBe(false);
     expect(isReviewStatus('')).toBe(false);
     expect(isReviewStatus('DRAFT')).toBe(false);
+  });
+
+  it('内容修改后已提交/已审/已发布内容退回草稿，草稿和已下架保持原状态', () => {
+    expect(reviewStatusAfterEdit('draft')).toBe('draft');
+    expect(reviewStatusAfterEdit('pending_review')).toBe('draft');
+    expect(reviewStatusAfterEdit('reviewed')).toBe('draft');
+    expect(reviewStatusAfterEdit('published')).toBe('draft');
+    expect(reviewStatusAfterEdit('retired')).toBe('retired');
   });
 });

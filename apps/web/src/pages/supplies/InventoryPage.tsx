@@ -366,8 +366,8 @@ export default function InventoryPage() {
         <Panel className="mt-5 p-4">
           <span className="micro-label">最近消耗记录</span>
           <div className="mt-2.5 flex flex-col gap-1.5">
-            {transactions
-              .toSorted((a, b) => b.at.localeCompare(a.at))
+            {[...transactions]
+              .sort((a, b) => b.at.localeCompare(a.at))
               .slice(0, 8)
               .map((t) => {
                 const item = inventory.find((i) => i.id === t.entryId);

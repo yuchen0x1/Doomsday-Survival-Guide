@@ -96,21 +96,23 @@ volumes:
 
 完整清单见根 `.env.example`（复制为 `.env` 后填写）。**严禁把真实密钥提交到仓库或打包进前端 bundle**。
 
-| 分组      | 变量                                                                                                      | 说明                                                              |
-| --------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| 服务      | `API_PORT`、`NODE_ENV`                                                                                    | 默认 `3000` / `development`                                       |
-| 数据库    | `DATABASE_URL`、`SQLITE_PATH`                                                                             | PostgreSQL 连接串；SQLite 为桌面端/开发回退                       |
-| 认证      | `JWT_SECRET`、`JWT_EXPIRES_IN`、`ADMIN_EMAIL`、`ADMIN_PASSWORD`                                           | 生产必须替换 `JWT_SECRET`（>= 32 字节强随机）、改掉初始管理员密码 |
-| AI        | `AI_BASE_URL`、`AI_MODEL`、`AI_API_KEY`、`AI_TIMEOUT_MS`、`AI_RATE_LIMIT_PER_MIN`                         | 密钥仅服务端                                                      |
-| 存储      | `S3_ENDPOINT`、`S3_REGION`、`S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY`、`S3_PUBLIC_BASE_URL` | 可选，图片与离线包托管                                            |
-| 地图      | `MAP_TILE_URL`、`MAP_ATTRIBUTION`（服务端）；`VITE_MAP_TILE_URL`、`VITE_MAP_ATTRIBUTION`（Web 构建）      | OSM 兼容瓦片服务；Web 端只暴露 `VITE_` 前缀变量                   |
-| 限流/安全 | `API_RATE_LIMIT_PER_MIN`、`UPLOAD_MAX_BYTES`、`ENABLE_CORS_WHITELIST`、`CORS_ORIGINS`                     | 生产建议 `ENABLE_CORS_WHITELIST=true` 并收紧来源                  |
+| 分组      | 变量                                                                                                                   | 说明                                                                                    |
+| --------- | ---------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 服务      | `API_PORT`、`NODE_ENV`                                                                                                 | 默认 `3000` / `development`                                                             |
+| 数据库    | `DATABASE_URL`、`SQLITE_PATH`                                                                                          | PostgreSQL 连接串；SQLite 为桌面端/开发回退                                             |
+| 认证      | `JWT_SECRET`、`JWT_EXPIRES_IN`、`ADMIN_EMAIL`、`ADMIN_PASSWORD`                                                        | 生产必须替换 `JWT_SECRET`（>= 32 字节强随机）、改掉初始管理员密码                       |
+| AI        | `AI_BASE_URL`、`AI_MODEL`、`AI_API_KEY`、`AI_TIMEOUT_MS`、`AI_RATE_LIMIT_PER_MIN`                                      | 密钥仅服务端                                                                            |
+| 存储      | `S3_ENDPOINT`、`S3_REGION`、`S3_BUCKET`、`S3_ACCESS_KEY_ID`、`S3_SECRET_ACCESS_KEY`、`S3_PUBLIC_BASE_URL`              | 可选，图片与离线包托管                                                                  |
+| 地图      | `MAP_TILE_URL`、`MAP_ATTRIBUTION`（服务端）；`VITE_MAP_TILE_URL`、`VITE_MAP_ATTRIBUTION`（Web 构建）                   | OSM 兼容瓦片服务；Web 端只暴露 `VITE_` 前缀变量                                         |
+| 限流/安全 | `API_RATE_LIMIT_PER_MIN`、`UPLOAD_MAX_BYTES`、`CORS_ORIGINS`、`ENABLE_CORS_WHITELIST`、`TRUST_PROXY`、`ENABLE_SWAGGER` | 生产必须配置 `CORS_ORIGINS`；Swagger 生产默认关闭；仅在可信反向代理后设置 `TRUST_PROXY` |
 
 安全红线：
 
 - `AI_API_KEY` 只写入服务端 `.env`；前端只调 `/api/ai/chat`（SSE）与 `/api/ai/identify`，**不得**出现在 `apps/web`、`apps/desktop`、`apps/mobile` 的环境变量或产物里。
 - `JWT_SECRET` 与各 `*_SECRET_ACCESS_KEY` 使用强随机值，按最小权限配置。
-- 生产环境设置 `NODE_ENV=production`、`JWT_SECRET` 强随机、`ENABLE_CORS_WHITELIST=true`、`CORS_ORIGINS` 仅列可信域名。
+- 生产环境设置 `NODE_ENV=production`、`JWT_SECRET` 强随机、`CORS_ORIGINS` 仅列可信域名；CORS 不再默认反射任意来源。
+- 反向代理后按实际跳数设置 `TRUST_PROXY`（如 `1` 或 `loopback`），否则限流与审计会按代理 IP 统计。
+- Swagger 在生产环境默认关闭；确需公开时设置 `ENABLE_SWAGGER=true`，并限制访问来源。
 - `.env` 加入 `.gitignore`（不随镜像/仓库分发）；容器环境优先用 secrets / 注入环境变量而非把文件打进镜像。
 
 ### AI 服务参数
@@ -121,7 +123,7 @@ volumes:
 | 模型     | `mimo-v2.6-Flash`                                                                     |
 | 协议     | OpenAI 兼容 `/chat/completions`（流式）                                               |
 | 密钥     | `AI_API_KEY`，只存服务端 `.env`                                                       |
-| 超时     | `AI_TIMEOUT_MS`（默认 `60000`）                                                       |
+| 超时     | `AI_TIMEOUT_MS`（默认 `60000`；流式对话为两次数据之间的空闲超时）                     |
 | AI 限流  | `AI_RATE_LIMIT_PER_MIN`（默认 `20`）                                                  |
 | 前端入口 | `POST /api/ai/chat`（SSE）、`POST /api/ai/identify`、`GET /api/ai/health`（健康检查） |
 

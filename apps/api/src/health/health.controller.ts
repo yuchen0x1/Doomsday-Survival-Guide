@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, ServiceUnavailableException } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SkipThrottle } from '@nestjs/throttler';
 import { version } from '../../package.json';
@@ -13,7 +13,7 @@ export class HealthController {
   constructor(private readonly prisma: PrismaService) {}
 
   @Get()
-  @ApiOperation({ summary: '健康检查（含数据库探测）' })
+  @ApiOperation({ summary: '健康检查（数据库不可用时返回 503）' })
   async health(): Promise<{
     status: string;
     db: 'up' | 'down';
@@ -27,11 +27,14 @@ export class HealthController {
     } catch {
       db = 'down';
     }
-    return {
+    const payload = {
       status: db === 'up' ? 'ok' : 'degraded',
       db,
       version: process.env.API_VERSION ?? version,
       uptimeSec: Math.round(process.uptime()),
     };
+    // 503 让负载均衡/探针能摘除数据库不可用的实例，而不是继续转发流量。
+    if (db === 'down') throw new ServiceUnavailableException(payload);
+    return payload;
   }
 }
